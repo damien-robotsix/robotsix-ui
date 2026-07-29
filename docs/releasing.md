@@ -16,6 +16,7 @@ npx changeset
 ```
 
 Answer the prompts:
+
 1. **Bump type**: `patch` (bug fix), `minor` (new feature), or `major` (breaking).
 2. **Summary**: A one-line description that will appear in the changelog.
 
