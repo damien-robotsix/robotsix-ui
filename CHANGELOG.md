@@ -1,5 +1,6 @@
 ## 0.0.0 (unreleased)
 
+- Add CI publish workflow for canary releases (`npm publish --tag next` on git tag push).
 - Initial scaffold of the `@robotsix/ui` shared component library with `ConfigPanel`, form primitives, CI pipeline, and build tooling.
 
 # Changelog

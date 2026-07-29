@@ -1,0 +1,20 @@
+name: Publish
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish-next:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.3.0
+        with:
+          node-version: "22"
+          cache: "npm"
+          registry-url: "https://registry.npmjs.org"
+      - run: npm ci
+      - run: npm publish --tag next --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
