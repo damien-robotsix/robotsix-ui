@@ -5,7 +5,7 @@ Shared UI component library for RobotSix deployed UIs.
 ## Installation
 
 `@robotsix/ui` is distributed as a **git-based package** — there is no
-public npm registry publish.  Pin a git tag or commit SHA in your
+public npm registry publish. Pin a git tag or commit SHA in your
 `package.json`:
 
 ```json
