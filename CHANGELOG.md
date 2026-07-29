@@ -1,6 +1,7 @@
 ## 0.0.0 (unreleased)
 
 - Initial scaffold of the `@robotsix/ui` shared component library with `ConfigPanel`, form primitives, CI pipeline, and build tooling.
+
 # Changelog
 
 ## 0.1.0 (unreleased)
