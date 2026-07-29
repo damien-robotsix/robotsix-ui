@@ -1,5 +1,6 @@
 ## 0.0.0 (unreleased)
 
+- Re-scope distribution to git-based: drop npm publish, add auto-release tagging (`v*`), and document git-install syntax in README.
 - Initial scaffold of the `@robotsix/ui` shared component library with `ConfigPanel`, form primitives, CI pipeline, and build tooling.
 
 # Changelog
