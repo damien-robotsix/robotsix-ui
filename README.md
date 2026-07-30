@@ -4,9 +4,19 @@ Shared UI component library for RobotSix deployed UIs.
 
 ## Installation
 
-```bash
-npm install @robotsix/ui
+`@robotsix/ui` is distributed as a **git-based package** — there is no
+public npm registry publish. Pin a git tag or commit SHA in your
+`package.json`:
+
+```json
+"dependencies": {
+  "@robotsix/ui": "git+https://github.com/damien-robotsix/robotsix-ui.git#v0.1.0"
+}
 ```
+
+The `prepare` script builds the library automatically when you run
+`npm install`, so no pre-built artifacts are committed to the
+repository.
 
 ## Usage
 
