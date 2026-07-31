@@ -1,8 +1,8 @@
 ## 0.0.0 (unreleased)
 
 - Bootstrap periodic workflows (audit, health, survey, changelog_autofill, repo_description_sync, completeness_check, copy_paste) via `.robotsix-mill/` presence files.
-## 0.1.1 (unreleased)
 
+## 0.1.1 (unreleased)
 
 ## 0.1.0 (2026-07-30)
 
