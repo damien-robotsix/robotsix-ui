@@ -1,0 +1,118 @@
+/*
+ * robotsix-ui Design Tokens
+ * Framework-agnostic CSS custom properties consumed by all RobotSix web UIs.
+ * Override these in consumer repos for repo-specific theming.
+ */
+
+:root {
+  /* ── Color palette ─────────────────────────────────────────── */
+
+  /* Brand / primary */
+  --rsu-color-primary: #2563eb;
+  --rsu-color-primary-hover: #1d4ed8;
+  --rsu-color-primary-text: #ffffff;
+
+  /* Semantic status */
+  --rsu-color-success: #16a34a;
+  --rsu-color-success-bg: #f0fdf4;
+  --rsu-color-warning: #d97706;
+  --rsu-color-warning-bg: #fffbeb;
+  --rsu-color-error: #dc2626;
+  --rsu-color-error-bg: #fef2f2;
+  --rsu-color-info: #0891b2;
+  --rsu-color-info-bg: #ecfeff;
+
+  /* Neutral gray scale */
+  --rsu-color-gray-50: #f9fafb;
+  --rsu-color-gray-100: #f3f4f6;
+  --rsu-color-gray-200: #e5e7eb;
+  --rsu-color-gray-300: #d1d5db;
+  --rsu-color-gray-400: #9ca3af;
+  --rsu-color-gray-500: #6b7280;
+  --rsu-color-gray-600: #4b5563;
+  --rsu-color-gray-700: #374151;
+  --rsu-color-gray-800: #1f2937;
+  --rsu-color-gray-900: #111827;
+
+  /* ── Semantic mappings (light theme) ───────────────────────── */
+
+  --rsu-color-bg: #ffffff;
+  --rsu-color-bg-secondary: var(--rsu-color-gray-50);
+  --rsu-color-text: var(--rsu-color-gray-900);
+  --rsu-color-text-secondary: var(--rsu-color-gray-500);
+  --rsu-color-border: var(--rsu-color-gray-200);
+  --rsu-color-border-focus: var(--rsu-color-primary);
+
+  /* ── Spacing scale ─────────────────────────────────────────── */
+
+  --rsu-space-xs: 0.25rem; /* 4px */
+  --rsu-space-sm: 0.5rem; /* 8px */
+  --rsu-space-md: 1rem; /* 16px */
+  --rsu-space-lg: 1.5rem; /* 24px */
+  --rsu-space-xl: 2rem; /* 32px */
+
+  /* ── Typography ────────────────────────────────────────────── */
+
+  --rsu-font-family:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --rsu-font-family-mono:
+    ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, Consolas, monospace;
+
+  --rsu-font-size-xs: 0.75rem; /* 12px */
+  --rsu-font-size-sm: 0.875rem; /* 14px */
+  --rsu-font-size-md: 1rem; /* 16px */
+  --rsu-font-size-lg: 1.125rem; /* 18px */
+  --rsu-font-size-xl: 1.25rem; /* 20px */
+
+  --rsu-font-weight-normal: 400;
+  --rsu-font-weight-medium: 500;
+  --rsu-font-weight-semibold: 600;
+  --rsu-font-weight-bold: 700;
+
+  --rsu-line-height: 1.5;
+  --rsu-line-height-heading: 1.25;
+
+  /* ── Borders & radii ───────────────────────────────────────── */
+
+  --rsu-radius-sm: 0.25rem; /* 4px */
+  --rsu-radius-md: 0.375rem; /* 6px */
+  --rsu-radius-lg: 0.5rem; /* 8px */
+
+  --rsu-border-width: 1px;
+
+  /* ── Shadows ───────────────────────────────────────────────── */
+
+  --rsu-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --rsu-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+
+  /* ── Transitions ───────────────────────────────────────────── */
+
+  --rsu-transition-fast: 150ms ease;
+  --rsu-transition-normal: 200ms ease;
+}
+
+/*
+ * Dark theme — activate via:
+ *   <html data-theme="dark">       (explicit)
+ *   @media (prefers-color-scheme: dark)  (automatic)
+ *
+ * Consumer repos choose one or both; the base ships both selectors so
+ * either mechanism works without additional config.
+ */
+[data-theme="dark"] {
+  --rsu-color-bg: var(--rsu-color-gray-900);
+  --rsu-color-bg-secondary: var(--rsu-color-gray-800);
+  --rsu-color-text: var(--rsu-color-gray-50);
+  --rsu-color-text-secondary: var(--rsu-color-gray-400);
+  --rsu-color-border: var(--rsu-color-gray-700);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --rsu-color-bg: var(--rsu-color-gray-900);
+    --rsu-color-bg-secondary: var(--rsu-color-gray-800);
+    --rsu-color-text: var(--rsu-color-gray-50);
+    --rsu-color-text-secondary: var(--rsu-color-gray-400);
+    --rsu-color-border: var(--rsu-color-gray-700);
+  }
+}

@@ -1,0 +1,67 @@
+/*
+ * robotsix-ui Base Styles
+ * Minimal reset and typography defaults.
+ * Include after tokens.css.
+ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--rsu-font-family);
+  font-size: var(--rsu-font-size-md);
+  font-weight: var(--rsu-font-weight-normal);
+  line-height: var(--rsu-line-height);
+  color: var(--rsu-color-text);
+  background-color: var(--rsu-color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Typography defaults ────────────────────────────────────── */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0 0 var(--rsu-space-sm);
+  font-weight: var(--rsu-font-weight-semibold);
+  line-height: var(--rsu-line-height-heading);
+}
+
+p {
+  margin: 0 0 var(--rsu-space-sm);
+}
+
+a {
+  color: var(--rsu-color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ── Form element normalization ─────────────────────────────── */
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+/* ── Focus ring ─────────────────────────────────────────────── */
+
+:focus-visible {
+  outline: 2px solid var(--rsu-color-border-focus);
+  outline-offset: 2px;
+}

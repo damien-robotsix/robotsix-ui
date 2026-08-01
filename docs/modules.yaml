@@ -1,0 +1,33 @@
+modules:
+  core:
+    description: "Core library entry point and types"
+    paths:
+      - src/index.ts
+      - src/types.ts
+
+  styles:
+    description: "Design tokens, base CSS, and shared component styles"
+    paths:
+      - src/styles/tokens.css
+      - src/styles/base.css
+      - src/styles/components.css
+      - src/styles/index.css
+
+  config-panel:
+    description: "Schema-driven configuration form component"
+    paths:
+      - src/components/ConfigPanel/ConfigPanel.tsx
+      - src/components/ConfigPanel/ConfigPanel.test.tsx
+      - src/components/ConfigPanel/FormField.tsx
+      - src/components/ConfigPanel/FormField.test.tsx
+      - src/components/ConfigPanel/index.ts
+
+  test-support:
+    description: "Test setup utilities"
+    paths:
+      - src/test-setup.ts
+
+  docs:
+    description: "Documentation"
+    paths:
+      - docs/consumption.md

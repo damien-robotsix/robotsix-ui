@@ -1,0 +1,139 @@
+/*
+ * robotsix-ui Component Styles
+ * Styles for shared components (rsu-* prefixed classes).
+ * Include after tokens.css and base.css.
+ */
+
+/* ── ConfigPanel ─────────────────────────────────────────────── */
+
+.rsu-config-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rsu-space-lg);
+  padding: var(--rsu-space-lg);
+  background: var(--rsu-color-bg);
+  border: var(--rsu-border-width) solid var(--rsu-color-border);
+  border-radius: var(--rsu-radius-lg);
+}
+
+/* ── FormField ──────────────────────────────────────────────── */
+
+.rsu-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rsu-space-xs);
+}
+
+.rsu-field-label {
+  font-size: var(--rsu-font-size-sm);
+  font-weight: var(--rsu-font-weight-medium);
+  color: var(--rsu-color-text);
+}
+
+.rsu-field-description {
+  margin: 0;
+  font-size: var(--rsu-font-size-xs);
+  color: var(--rsu-color-text-secondary);
+}
+
+/* ── Shared form control base ────────────────────────────────── */
+
+.rsu-field input[type="text"],
+.rsu-field input[type="number"],
+.rsu-field select {
+  width: 100%;
+  padding: var(--rsu-space-sm) var(--rsu-space-md);
+  font-size: var(--rsu-font-size-sm);
+  color: var(--rsu-color-text);
+  background: var(--rsu-color-bg);
+  border: var(--rsu-border-width) solid var(--rsu-color-border);
+  border-radius: var(--rsu-radius-md);
+  transition:
+    border-color var(--rsu-transition-fast),
+    box-shadow var(--rsu-transition-fast);
+}
+
+.rsu-field input[type="text"]:focus,
+.rsu-field input[type="number"]:focus,
+.rsu-field select:focus {
+  border-color: var(--rsu-color-border-focus);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  outline: none;
+}
+
+.rsu-field input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--rsu-color-primary);
+  cursor: pointer;
+}
+
+/* ── Shared button (placeholder — extend as components ship) ── */
+
+.rsu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--rsu-space-sm);
+  padding: var(--rsu-space-sm) var(--rsu-space-md);
+  font-size: var(--rsu-font-size-sm);
+  font-weight: var(--rsu-font-weight-medium);
+  line-height: var(--rsu-line-height);
+  color: var(--rsu-color-primary-text);
+  background: var(--rsu-color-primary);
+  border: var(--rsu-border-width) solid transparent;
+  border-radius: var(--rsu-radius-md);
+  cursor: pointer;
+  transition: background var(--rsu-transition-fast);
+}
+
+.rsu-btn:hover {
+  background: var(--rsu-color-primary-hover);
+}
+
+.rsu-btn:focus-visible {
+  outline: 2px solid var(--rsu-color-border-focus);
+  outline-offset: 2px;
+}
+
+/* ── Shared badge (placeholder — extend as components ship) ─── */
+
+.rsu-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--rsu-space-sm);
+  font-size: var(--rsu-font-size-xs);
+  font-weight: var(--rsu-font-weight-medium);
+  line-height: 1.5;
+  border-radius: 9999px;
+}
+
+.rsu-badge--success {
+  color: var(--rsu-color-success);
+  background: var(--rsu-color-success-bg);
+}
+
+.rsu-badge--warning {
+  color: var(--rsu-color-warning);
+  background: var(--rsu-color-warning-bg);
+}
+
+.rsu-badge--error {
+  color: var(--rsu-color-error);
+  background: var(--rsu-color-error-bg);
+}
+
+.rsu-badge--info {
+  color: var(--rsu-color-info);
+  background: var(--rsu-color-info-bg);
+}
+
+/* ── Shared card (placeholder — extend as components ship) ──── */
+
+.rsu-card {
+  padding: var(--rsu-space-lg);
+  background: var(--rsu-color-bg);
+  border: var(--rsu-border-width) solid var(--rsu-color-border);
+  border-radius: var(--rsu-radius-lg);
+  box-shadow: var(--rsu-shadow-sm);
+}
