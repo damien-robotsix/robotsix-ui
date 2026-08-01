@@ -6,11 +6,12 @@ modules:
       - src/types.ts
 
   styles:
-    description: "Design tokens, base CSS, and shared component styles"
+    description: "Design tokens, base CSS, shared component styles, and utilities"
     paths:
       - src/styles/tokens.css
       - src/styles/base.css
       - src/styles/components.css
+      - src/styles/utilities.css
       - src/styles/index.css
 
   config-panel:

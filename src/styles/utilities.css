@@ -1,0 +1,24 @@
+/*
+ * robotsix-ui Utility Classes
+ * Framework-agnostic accessibility and layout helpers.
+ * Include after tokens.css, base.css, and components.css.
+ */
+
+/* ── Screen-reader-only ─────────────────────────────────────── */
+
+/*
+ * Visually hides content while keeping it accessible to screen readers.
+ * Use for skip-to-content links, hidden labels, and other assistive-tech
+ * affordances that should not appear in the visual layout.
+ */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
