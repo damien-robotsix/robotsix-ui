@@ -1,3 +1,6 @@
+## 0.1.4 (unreleased)
+
+
 ## 0.0.0 (unreleased)
 
 - Make React and ReactDOM peer dependencies optional (`peerDependenciesMeta`) so
@@ -13,7 +16,7 @@
 - Update consumption guide with peer-dependency note, text hierarchy table,
   dark hue-tint documentation, and accessibility utilities section.
 
-## 0.1.3 (unreleased)
+## 0.1.3 (2026-08-01)
 
 ## 0.1.2 (2026-08-01)
 
