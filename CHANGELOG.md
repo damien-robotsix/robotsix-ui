@@ -1,4 +1,7 @@
-## 0.1.2 (unreleased)
+## 0.1.3 (unreleased)
+
+
+## 0.1.2 (2026-08-01)
 
 - Add shared design tokens (`src/styles/tokens.css`): CSS custom properties for
   colors (primary, semantic status, neutral gray scale), spacing, typography,
