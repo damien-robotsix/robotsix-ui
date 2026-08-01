@@ -40,8 +40,14 @@
   --rsu-color-bg-secondary: var(--rsu-color-gray-50);
   --rsu-color-text: var(--rsu-color-gray-900);
   --rsu-color-text-secondary: var(--rsu-color-gray-500);
+  --rsu-color-text-muted: var(--rsu-color-gray-400);
   --rsu-color-border: var(--rsu-color-gray-200);
   --rsu-color-border-focus: var(--rsu-color-primary);
+
+  /* Dark theme hue tint — override --rsu-dark-hue to match your board palette
+     (e.g. 260 for purple, 200 for cyan, 0 for neutral gray). */
+  --rsu-dark-hue: 220;
+  --rsu-dark-saturation: 12%;
 
   /* ── Spacing scale ─────────────────────────────────────────── */
 
@@ -100,19 +106,21 @@
  * either mechanism works without additional config.
  */
 [data-theme="dark"] {
-  --rsu-color-bg: var(--rsu-color-gray-900);
-  --rsu-color-bg-secondary: var(--rsu-color-gray-800);
+  --rsu-color-bg: hsl(var(--rsu-dark-hue), var(--rsu-dark-saturation), 9%);
+  --rsu-color-bg-secondary: hsl(var(--rsu-dark-hue), var(--rsu-dark-saturation), 14%);
   --rsu-color-text: var(--rsu-color-gray-50);
   --rsu-color-text-secondary: var(--rsu-color-gray-400);
-  --rsu-color-border: var(--rsu-color-gray-700);
+  --rsu-color-text-muted: var(--rsu-color-gray-500);
+  --rsu-color-border: hsl(var(--rsu-dark-hue), var(--rsu-dark-saturation), 24%);
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --rsu-color-bg: var(--rsu-color-gray-900);
-    --rsu-color-bg-secondary: var(--rsu-color-gray-800);
+    --rsu-color-bg: hsl(var(--rsu-dark-hue), var(--rsu-dark-saturation), 9%);
+    --rsu-color-bg-secondary: hsl(var(--rsu-dark-hue), var(--rsu-dark-saturation), 14%);
     --rsu-color-text: var(--rsu-color-gray-50);
     --rsu-color-text-secondary: var(--rsu-color-gray-400);
-    --rsu-color-border: var(--rsu-color-gray-700);
+    --rsu-color-text-muted: var(--rsu-color-gray-500);
+    --rsu-color-border: hsl(var(--rsu-dark-hue), var(--rsu-dark-saturation), 24%);
   }
 }

@@ -1,9 +1,11 @@
 # Consuming robotsix-ui Styles
 
 `@robotsix/ui` ships a single compiled stylesheet (`dist/style.css`) that
-provides design tokens (CSS custom properties), a minimal reset, and
-shared component styles. All visual primitives are **framework-agnostic**
-— they work with React, plain HTML, or any other rendering layer.
+provides design tokens (CSS custom properties), a minimal reset, shared
+component styles, and utility classes. All visual primitives are
+**framework-agnostic** — they work with React, plain HTML, or any other
+rendering layer, with **zero JavaScript peer dependencies** required for
+stylesheet-only consumption.
 
 ## Git-based installation
 
@@ -18,7 +20,13 @@ via git — no npm registry publication. Pin a tag or commit SHA in your
 ```
 
 The `prepare` script builds the library automatically on `npm install`,
-so built artifacts (JS + CSS) are available immediately.
+so the compiled `dist/style.css` is available immediately — no build
+toolchain needed on your side.
+
+> **React is optional.** The package declares React and ReactDOM as
+> _optional_ peer dependencies. If your project only imports the
+> stylesheet (no JS components), `npm install` will succeed without
+> React installed and without peer-dependency warnings.
 
 ## Importing the stylesheet
 
@@ -62,9 +70,10 @@ Then link it from your HTML or import from your own bundle.
 
 | Layer          | File             | Purpose                                                                                                       |
 | -------------- | ---------------- | ------------------------------------------------------------------------------------------------------------- |
-| **Tokens**     | `tokens.css`     | `--rsu-*` CSS custom properties: colors, spacing, typography, radii, shadows                                  |
+| **Tokens**     | `tokens.css`     | `--rsu-*` CSS custom properties: colors, spacing, typography, radii, shadows, dark theme hue controls         |
 | **Base**       | `base.css`       | Minimal reset (`box-sizing`, `body` defaults), typography, form normalization                                 |
 | **Components** | `components.css` | Styles for `rsu-*`-prefixed classes: `.rsu-config-panel`, `.rsu-field`, `.rsu-btn`, `.rsu-badge`, `.rsu-card` |
+| **Utilities**  | `utilities.css`  | Accessibility helpers: `.sr-only` (screen-reader-only)                                                        |
 
 ## Customizing via design tokens
 
@@ -81,6 +90,17 @@ component styles reference tokens, so overrides propagate everywhere:
 }
 ```
 
+### Text hierarchy tokens
+
+| Token                        | Purpose                                   |
+| ---------------------------- | ----------------------------------------- |
+| `--rsu-color-text`           | Primary body text                         |
+| `--rsu-color-text-secondary` | Secondary / less prominent text           |
+| `--rsu-color-text-muted`     | Muted / dim text (placeholders, captions) |
+
+All three are defined for both light and dark themes. Override them
+individually per theme if needed.
+
 ### Dark theme
 
 The base stylesheet supports dark mode via two mechanisms:
@@ -90,6 +110,40 @@ The base stylesheet supports dark mode via two mechanisms:
 
 Consumer repos can pick either approach. To lock to light mode, set
 `data-theme="light"` on `<html>`.
+
+#### Dark theme hue tint
+
+The dark theme surfaces are **hue-tinted** by default (blue-leaning,
+`--rsu-dark-hue: 220`). Consumer repos can shift the tint to match
+their board palette by overriding one token:
+
+```css
+:root {
+  --rsu-dark-hue: 260; /* purple tint */
+}
+```
+
+Set `--rsu-dark-hue: 0` for a neutral (pure gray) dark theme, or any
+value 0–360 to match your primary hue. The saturation level is
+controlled by `--rsu-dark-saturation` (default `12%`).
+
+| Token                   | Purpose                                          |
+| ----------------------- | ------------------------------------------------ |
+| `--rsu-dark-hue`        | Hue angle for dark surfaces (default 220 — blue) |
+| `--rsu-dark-saturation` | Saturation for dark surfaces (default 12%)       |
+
+### Accessibility utilities
+
+| Class      | Purpose                                                              |
+| ---------- | -------------------------------------------------------------------- |
+| `.sr-only` | Visually hides content while keeping it accessible to screen readers |
+
+Use `.sr-only` for skip-to-content links, hidden form labels, and other
+assistive-tech affordances that should not appear in the visual layout.
+
+```html
+<a class="sr-only" href="#main-content">Skip to main content</a>
+```
 
 ## Repo-specific styling
 

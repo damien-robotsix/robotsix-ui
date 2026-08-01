@@ -1,5 +1,18 @@
-## 0.1.3 (unreleased)
+## 0.0.0 (unreleased)
 
+- Make React and ReactDOM peer dependencies optional (`peerDependenciesMeta`) so
+  consumers importing only the stylesheet (`import "@robotsix/ui/style.css"`)
+  can install without React and without peer-dependency warnings.
+- Add `--rsu-color-text-muted` design token for muted/dim text (light and dark
+  themes).
+- Add dark theme hue-tint mechanism: `--rsu-dark-hue` and `--rsu-dark-saturation`
+  tokens control the hue of dark surfaces. Defaults to a subtle blue tint
+  (hue 220); consumer repos override `--rsu-dark-hue` to match their board
+  palette (set to 0 for neutral gray).
+- Add `.sr-only` screen-reader-only utility class in new `src/styles/utilities.css`.
+- Update consumption guide with peer-dependency note, text hierarchy table,
+  dark hue-tint documentation, and accessibility utilities section.
+## 0.1.3 (unreleased)
 
 ## 0.1.2 (2026-08-01)
 
