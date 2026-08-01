@@ -69,6 +69,11 @@ function App() {
 | `boolean` | `<input type="checkbox">`        |
 | `select`  | `<select>` with provided options |
 
+## Documentation
+
+- [Consuming robotsix-ui Styles](docs/consumption.md) — how to import and customize
+  the shared design tokens and base stylesheet in consumer repos.
+
 ## Development
 
 ```bash

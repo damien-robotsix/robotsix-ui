@@ -12,6 +12,7 @@ export default defineConfig({
       name: "RobotsixUI",
       formats: ["es", "cjs"],
       fileName: (format) => `index.${format === "cjs" ? "cjs" : "js"}`,
+      cssFileName: "style",
     },
     rollupOptions: {
       external: ["react", "react-dom", "react/jsx-runtime"],
