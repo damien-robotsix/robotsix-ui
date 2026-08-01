@@ -1,4 +1,7 @@
-## 0.1.4 (unreleased)
+## 0.1.5 (unreleased)
+
+
+## 0.1.4 (2026-08-01)
 
 - Make React and ReactDOM peer dependencies optional (`peerDependenciesMeta`) so
   consumers importing only the stylesheet (`import "@robotsix/ui/style.css"`)
