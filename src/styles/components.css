@@ -40,6 +40,7 @@
 
 .rsu-field input[type="text"],
 .rsu-field input[type="number"],
+.rsu-field input[type="password"],
 .rsu-field select {
   width: 100%;
   padding: var(--rsu-space-sm) var(--rsu-space-md);
@@ -55,6 +56,7 @@
 
 .rsu-field input[type="text"]:focus,
 .rsu-field input[type="number"]:focus,
+.rsu-field input[type="password"]:focus,
 .rsu-field select:focus {
   border-color: var(--rsu-color-border-focus);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);

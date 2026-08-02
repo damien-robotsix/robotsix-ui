@@ -1,3 +1,6 @@
+## 0.0.0 (unreleased)
+
+- Add `input[type="password"]` to the shared `.rsu-field` input selector so password fields inherit the same form-control styling as text/number inputs
 ## 0.1.5 (unreleased)
 
 
