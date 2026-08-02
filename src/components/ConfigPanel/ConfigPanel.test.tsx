@@ -20,9 +20,10 @@ function fakeClient(): ConfigClient {
 describe("ConfigPanel (React wrapper)", () => {
   it("mounts the shared panel and renders the same fields", async () => {
     const client = fakeClient();
-    const { container, findByText } = render(<ConfigPanel client={client} title="Settings" />);
+    const { container, findByRole } = render(<ConfigPanel client={client} title="Panel" />);
 
-    await findByText("Settings");
+    // By role, not by text: the tab strip also carries a "Settings" label.
+    await findByRole("heading", { name: "Panel" });
     // The wrapper delegates entirely to the framework-free core.
     expect(container.querySelector(".rsu-config-panel")).not.toBeNull();
     expect(client.getConfig).toHaveBeenCalled();

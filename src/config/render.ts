@@ -122,7 +122,11 @@ function renderNode(
     const scalars: [string, JsonSchemaNode][] = [];
     const objects: [string, JsonSchemaNode][] = [];
     for (const entry of entries) {
-      (isObjectNode(resolveRef(entry[1], ctx.defs)) ? objects : scalars).push(entry);
+      const resolved = resolveRef(entry[1], ctx.defs);
+      // A list of objects renders as its own repeatable section, so it belongs
+      // with the sections rather than as a scalar row under "General".
+      const isSection = isObjectNode(resolved) || arrayItemObject(resolved, ctx.defs);
+      (isSection ? objects : scalars).push(entry);
     }
     if (scalars.length > 0) {
       const section = makeSection("General");
