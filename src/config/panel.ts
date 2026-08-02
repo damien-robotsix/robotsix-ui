@@ -161,7 +161,7 @@ export function mountConfigPanel(
     hideBanner();
     saveBtn.disabled = true;
     const entered = collectConfigValues(schema, formEl, { plane });
-    const updates = diffConfigValues(loaded, entered);
+    const updates = diffConfigValues(loaded, entered, schema);
     if (Object.keys(updates).length === 0) {
       showBanner("No changes to save.", "success");
       return true;

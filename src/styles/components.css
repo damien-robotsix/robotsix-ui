@@ -175,6 +175,23 @@
   cursor: pointer;
 }
 
+/* ── Keyed map sections ──────────────────────────────────────── */
+
+/* The entry's key is configuration too (a Langfuse project name, an
+   OpenRouter alias), so it is an input rather than a static heading. */
+.rsu-config-map-name {
+  flex: 1;
+  min-width: 0;
+  margin-right: var(--rsu-space-sm);
+  padding: var(--rsu-space-xs) var(--rsu-space-sm);
+  font-family: var(--rsu-font-family-mono);
+  font-size: var(--rsu-font-size-sm);
+  color: var(--rsu-color-text);
+  background: var(--rsu-color-bg);
+  border: var(--rsu-border-width) solid var(--rsu-color-border);
+  border-radius: var(--rsu-radius-sm);
+}
+
 /* ── Actions and history ─────────────────────────────────────── */
 
 .rsu-config-advanced-bar {

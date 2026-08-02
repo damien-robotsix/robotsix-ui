@@ -19,6 +19,12 @@ export interface JsonSchemaNode {
   properties?: Record<string, JsonSchemaNode>;
   required?: string[];
   items?: JsonSchemaNode | JsonSchemaNode[];
+  /**
+   * The value schema of an open-ended map — pydantic's `dict[str, X]`, which
+   * has no `properties` because its keys are data.  The canonical credential
+   * blocks (`langfuse.projects`, `openrouter.keys`) are exactly this shape.
+   */
+  additionalProperties?: JsonSchemaNode | boolean;
   anyOf?: JsonSchemaNode[];
   oneOf?: JsonSchemaNode[];
   $ref?: string;

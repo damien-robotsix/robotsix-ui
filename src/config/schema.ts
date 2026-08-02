@@ -95,6 +95,27 @@ export function arrayItemObject(
 }
 
 /**
+ * The value schema of an open-ended map, or `null` for anything else.
+ *
+ * A pydantic `dict[str, X]` carries its value type in `additionalProperties`
+ * and has no `properties`, because its keys are *data* — the component
+ * standard's `langfuse.projects` (keyed by Langfuse project name) and
+ * `openrouter.keys` (keyed by the same aliases) are both this shape.  Such a
+ * node renders as a keyed, repeatable section rather than the fixed rows an
+ * object node gets; the value schema returned here drives each entry's body,
+ * and may be an object (a credential block) or a scalar (an API key).
+ */
+export function mapValueSchema(
+  node: JsonSchemaNode,
+  defs: Record<string, JsonSchemaNode> | undefined,
+): JsonSchemaNode | null {
+  if (node.type !== "object" || node.properties) return null;
+  const values = node.additionalProperties;
+  if (!values || typeof values !== "object") return null;
+  return resolveRef(values, defs);
+}
+
+/**
  * Coerce anything schema-shaped into a JSON Schema object node.
  *
  * Components onboarded before the typed schema stored a raw template of plain

@@ -16,6 +16,7 @@ import {
   fieldPlane,
   isObjectNode,
   isSecretField,
+  mapValueSchema,
   resolveRef,
 } from "./schema.js";
 import type {
@@ -123,9 +124,13 @@ function renderNode(
     const objects: [string, JsonSchemaNode][] = [];
     for (const entry of entries) {
       const resolved = resolveRef(entry[1], ctx.defs);
-      // A list of objects renders as its own repeatable section, so it belongs
-      // with the sections rather than as a scalar row under "General".
-      const isSection = isObjectNode(resolved) || arrayItemObject(resolved, ctx.defs);
+      // A list of objects and an open-ended map each render as their own
+      // repeatable section, so they belong with the sections rather than as
+      // scalar rows under "General".
+      const isSection =
+        isObjectNode(resolved) ||
+        arrayItemObject(resolved, ctx.defs) ||
+        mapValueSchema(resolved, ctx.defs);
       (isSection ? objects : scalars).push(entry);
     }
     if (scalars.length > 0) {
@@ -146,6 +151,12 @@ function renderNode(
     const itemObject = arrayItemObject(resolved, ctx.defs);
     if (itemObject) {
       container.appendChild(buildArraySection(key, fullKey, resolved, itemObject, currentVal, ctx));
+      continue;
+    }
+
+    const mapValues = mapValueSchema(resolved, ctx.defs);
+    if (mapValues) {
+      container.appendChild(buildMapSection(key, fullKey, resolved, mapValues, currentVal, ctx));
       continue;
     }
 
@@ -392,6 +403,124 @@ function appendArrayItem(
   item.appendChild(body);
 
   container.appendChild(item);
+}
+
+function buildMapSection(
+  labelKey: string,
+  prefix: string,
+  node: JsonSchemaNode,
+  valueSchema: JsonSchemaNode,
+  currentVal: unknown,
+  ctx: RenderContext,
+): HTMLElement {
+  const section = document.createElement("div");
+  section.className = "rsu-config-section rsu-config-map";
+  section.dataset.mapKey = prefix;
+  applyFlags(section, node, ctx);
+  section.innerHTML =
+    `<h3 class="rsu-config-section-title">${escHtml(labelKey)}</h3>` +
+    (node.description ? renderDescription(node.description) : "");
+
+  const entries = document.createElement("div");
+  entries.className = "rsu-config-map-entries";
+  section.appendChild(entries);
+
+  const values = isPlainObject(currentVal) ? currentVal : {};
+  for (const [name, value] of Object.entries(values)) {
+    appendMapEntry(entries, prefix, name, valueSchema, value, ctx);
+  }
+
+  const addBtn = document.createElement("button");
+  addBtn.type = "button";
+  addBtn.className = "rsu-btn rsu-config-map-add";
+  addBtn.textContent = `+ Add ${labelKey} entry`;
+  addBtn.addEventListener("click", () => {
+    appendMapEntry(entries, prefix, "", valueSchema, undefined, ctx);
+    setAdvancedVisible(entries, false);
+    ctx.onChange?.();
+  });
+  section.appendChild(addBtn);
+  return section;
+}
+
+/**
+ * Render one `name → value` entry of a map.
+ *
+ * The entry's key is an editable input, because the key *is* configuration —
+ * a Langfuse project name, an OpenRouter key alias.  Renaming it re-stamps
+ * the `data-key` path of every field below it, which is what keeps the
+ * collector and the surface's `422` field paths pointing at the same row.
+ */
+function appendMapEntry(
+  container: HTMLElement,
+  prefix: string,
+  name: string,
+  valueSchema: JsonSchemaNode,
+  value: unknown,
+  ctx: RenderContext,
+): void {
+  const entry = document.createElement("div");
+  entry.className = "rsu-config-array-item rsu-config-map-entry";
+  entry.dataset.mapPrefix = prefix;
+  entry.dataset.mapName = name;
+
+  const header = document.createElement("div");
+  header.className = "rsu-config-array-item-header rsu-config-map-entry-header";
+  header.innerHTML =
+    `<input type="text" class="rsu-config-map-name" value="${escAttr(name)}"` +
+    ' spellcheck="false" placeholder="name">';
+  entry.appendChild(header);
+
+  const body = document.createElement("div");
+  body.className = "rsu-config-array-item-body";
+  entry.appendChild(body);
+
+  const renderBody = (entryName: string) => {
+    body.innerHTML = "";
+    const path = `${prefix}.${entryName}`;
+    if (isObjectNode(valueSchema)) {
+      renderNode(valueSchema, value, path, body, ctx);
+    } else {
+      body.appendChild(buildRow(path, "value", valueSchema, value, [], ctx));
+    }
+  };
+  renderBody(name);
+
+  const nameInput = header.querySelector(".rsu-config-map-name") as HTMLInputElement;
+  nameInput.addEventListener("input", () => {
+    const next = nameInput.value.trim();
+    if (next === entry.dataset.mapName) return;
+    entry.dataset.mapName = next;
+    // Re-stamping beats re-rendering: it keeps whatever the operator has
+    // already typed into the entry's fields.
+    restampMapEntry(body, prefix, next);
+    ctx.onChange?.();
+  });
+
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "rsu-config-array-remove";
+  removeBtn.textContent = "Remove";
+  removeBtn.addEventListener("click", () => {
+    entry.remove();
+    ctx.onChange?.();
+  });
+  header.appendChild(removeBtn);
+
+  container.appendChild(entry);
+}
+
+/** Point every `data-key` under a renamed map entry at the new key. */
+function restampMapEntry(body: HTMLElement, prefix: string, name: string): void {
+  body.querySelectorAll("[data-key]").forEach((node) => {
+    const input = node as HTMLElement;
+    const key = input.dataset.key;
+    if (!key || !key.startsWith(`${prefix}.`)) return;
+    const tail = key.slice(prefix.length + 1);
+    // The old entry name is the first path segment after the prefix.
+    const rest = tail.includes(".") ? tail.slice(tail.indexOf(".")) : "";
+    input.dataset.key = `${prefix}.${name}${rest}`;
+  });
 }
 
 /** Renumber `data-key` paths after a removal so indices stay contiguous. */

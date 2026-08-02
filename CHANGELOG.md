@@ -1,5 +1,16 @@
 ## 0.1.7 (unreleased)
 
+- Render open-ended maps (`dict[str, …]`, i.e. a schema node whose value type
+  is in `additionalProperties`) as keyed, repeatable sections with an editable
+  key, add/remove, and full support for object *or* scalar values. Without
+  this, the component standard's canonical credential blocks —
+  `langfuse.projects` keyed by Langfuse project name and `openrouter.keys`
+  keyed by the same aliases — rendered as a single unusable text input, so a
+  component that had migrated its credentials to the standard shape could no
+  longer set them from its own Settings panel.
+- `diffConfigValues` accepts the schema as an optional third argument and
+  diffs a map as one value. Diffed as a plain object, a *removed* map entry
+  cancelled out to nothing and the deletion never reached the surface.
 
 ## 0.1.6 (2026-08-02)
 

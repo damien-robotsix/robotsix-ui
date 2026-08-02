@@ -25,6 +25,7 @@ export {
   fieldPlane,
   isObjectNode,
   isSecretField,
+  mapValueSchema,
   resolveRef,
   setNestedValue,
 } from "./schema.js";
