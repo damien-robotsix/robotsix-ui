@@ -1,4 +1,7 @@
-## 0.1.6 (unreleased)
+## 0.1.7 (unreleased)
+
+
+## 0.1.6 (2026-08-02)
 
 - **BREAKING** — `ConfigPanel` is now driven by a component's committed
   `config/config.schema.json` (JSON Schema) instead of a bespoke flat
