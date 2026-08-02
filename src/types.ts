@@ -1,20 +1,22 @@
-/** A single field definition in the config schema. */
-export interface ConfigField {
-  key: string;
-  label: string;
-  type: "string" | "number" | "boolean" | "select";
-  defaultValue?: string | number | boolean;
-  description?: string;
-  /** Options for 'select' fields. */
-  options?: { value: string; label: string }[];
-  /** Minimum value for 'number' fields. */
-  min?: number;
-  /** Maximum value for 'number' fields. */
-  max?: number;
-}
+/**
+ * Public types.
+ *
+ * The canonical definitions live in `./config/types.ts`, next to the code that
+ * consumes them; this module re-exports them so `@robotsix/ui` keeps one stable
+ * import path for types.
+ */
 
-/** A schema is an ordered list of field definitions. */
-export type ConfigSchema = ConfigField[];
-
-/** Flat key-value config object. */
-export type ConfigValues = Record<string, string | number | boolean>;
+export type {
+  ConfigFormOptions,
+  ConfigProblem,
+  ConfigResponse,
+  ConfigSchema,
+  ConfigValues,
+  ConfigVersion,
+  ConfigVersionsResponse,
+  ConfigWriteResponse,
+  DeployPlane,
+  JsonSchemaNode,
+  RenderConfigFormOptions,
+} from "./config/types.js";
+export { ConfigValidationError, parseProblemKey } from "./config/types.js";

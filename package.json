@@ -21,6 +21,11 @@
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
+    "./vanilla": {
+      "types": "./dist/vanilla.d.ts",
+      "import": "./dist/vanilla.js",
+      "require": "./dist/vanilla.cjs"
+    },
     "./style.css": "./dist/style.css"
   },
   "files": [

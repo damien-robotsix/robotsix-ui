@@ -20,57 +20,53 @@ repository.
 
 ## Usage
 
-### ConfigPanel
+### The config panel
 
-The `ConfigPanel` component renders a schema-driven configuration form.  
-Define a schema describing your configurable fields, pass the current
-values, and receive updates via the `onChange` callback.
+This library owns the fleet's **only** settings renderer. A component does not
+write its own — it mounts this one, driven by the `config/config.schema.json`
+it already commits and the standard config HTTP surface it already exposes
+(`GET`/`PUT /config`, `GET /config/versions`, `POST /config/rollback`). That is
+what makes every RobotSix UI present the same fields the same way.
 
-```tsx
-import React, { useState } from "react";
-import { ConfigPanel, type ConfigSchema, type ConfigValues } from "@robotsix/ui";
+Fleet UIs are server-rendered pages with no bundler, so they use the
+React-free build:
 
-const schema: ConfigSchema = [
-  { key: "title", label: "Title", type: "string", description: "Dashboard title" },
-  {
-    key: "refreshInterval",
-    label: "Refresh (s)",
-    type: "number",
-    defaultValue: 30,
-    min: 5,
-    max: 300,
-  },
-  { key: "autoRefresh", label: "Auto-refresh", type: "boolean", defaultValue: true },
-  {
-    key: "theme",
-    label: "Theme",
-    type: "select",
-    defaultValue: "light",
-    options: [
-      { value: "light", label: "Light" },
-      { value: "dark", label: "Dark" },
-    ],
-  },
-];
-
-function App() {
-  const [config, setConfig] = useState<ConfigValues>({});
-
-  return <ConfigPanel schema={schema} config={config} onChange={(updated) => setConfig(updated)} />;
-}
+```html
+<link rel="stylesheet" href="/static/robotsix-ui.css" />
+<div id="settings"></div>
+<script type="module">
+  import { mountConfigPanel } from "/static/robotsix-ui-vanilla.js";
+  mountConfigPanel(document.getElementById("settings"), { title: "Settings" });
+</script>
 ```
 
-### Field Types
+React hosts get the same panel through a thin wrapper:
 
-| Type      | Renders as                       |
-| --------- | -------------------------------- |
-| `string`  | `<input type="text">`            |
-| `number`  | `<input type="number">`          |
-| `boolean` | `<input type="checkbox">`        |
-| `select`  | `<select>` with provided options |
+```tsx
+import { ConfigPanel } from "@robotsix/ui";
+import "@robotsix/ui/style.css";
+
+<ConfigPanel baseUrl="/api" title="Settings" />;
+```
+
+The panel handles typed inputs, nested and repeatable sections, masked secrets
+with merge-on-write, the advanced-settings toggle, changed-keys-only saves,
+inline validation errors, and version history with rollback.
+
+| Schema                                    | Renders as                                   |
+| ----------------------------------------- | -------------------------------------------- |
+| `"type": "integer"` / `"number"`          | `<input type="number">`                      |
+| `"type": "boolean"`                       | `<input type="checkbox">`                    |
+| `"enum": [...]`                           | `<select>`                                   |
+| `"type": "object"`                        | a titled section, nested to any depth        |
+| `"type": "array"` of objects              | repeatable section with add/remove           |
+| `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed |
+| `"advanced": true`                        | hidden behind "Show advanced settings"       |
 
 ## Documentation
 
+- [The shared config panel](docs/config-panel.md) — mounting it, the schema
+  keywords it reads, and the `x-deploy-plane` ownership annotation.
 - [Consuming robotsix-ui Styles](docs/consumption.md) — how to import and customize
   the shared design tokens and base stylesheet in consumer repos.
 

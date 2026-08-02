@@ -16,32 +16,214 @@
   border-radius: var(--rsu-radius-lg);
 }
 
-/* ── FormField ──────────────────────────────────────────────── */
-
-.rsu-field {
+.rsu-config-panel-header {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  gap: var(--rsu-space-md);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.rsu-config-panel-title {
+  margin: 0;
+  font-size: var(--rsu-font-size-lg);
+  font-weight: var(--rsu-font-weight-semibold);
+  line-height: var(--rsu-line-height-heading);
+}
+
+.rsu-config-panel-tabs {
+  display: flex;
   gap: var(--rsu-space-xs);
 }
 
-.rsu-field-label {
+.rsu-config-tab {
+  padding: var(--rsu-space-xs) var(--rsu-space-md);
+  font-size: var(--rsu-font-size-sm);
+  color: var(--rsu-color-text-secondary);
+  background: none;
+  border: var(--rsu-border-width) solid transparent;
+  border-radius: var(--rsu-radius-md);
+  cursor: pointer;
+}
+
+.rsu-config-tab--active {
+  color: var(--rsu-color-text);
+  background: var(--rsu-color-bg-secondary);
+  border-color: var(--rsu-color-border);
+}
+
+/* ── Banner ──────────────────────────────────────────────────── */
+
+.rsu-config-banner {
+  padding: var(--rsu-space-sm) var(--rsu-space-md);
+  font-size: var(--rsu-font-size-sm);
+  border-radius: var(--rsu-radius-md);
+}
+
+.rsu-config-banner--error {
+  color: var(--rsu-color-error);
+  background: var(--rsu-color-error-bg);
+}
+
+.rsu-config-banner--success {
+  color: var(--rsu-color-success);
+  background: var(--rsu-color-success-bg);
+}
+
+/* ── Sections and rows ───────────────────────────────────────── */
+
+.rsu-config-section {
+  margin-bottom: var(--rsu-space-lg);
+}
+
+.rsu-config-section-title {
+  margin: 0 0 var(--rsu-space-sm);
+  font-size: var(--rsu-font-size-sm);
+  font-weight: var(--rsu-font-weight-semibold);
+  color: var(--rsu-color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rsu-config-row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr) auto;
+  gap: var(--rsu-space-sm) var(--rsu-space-md);
+  align-items: center;
+  padding: var(--rsu-space-xs) 0;
+}
+
+.rsu-config-key {
   font-size: var(--rsu-font-size-sm);
   font-weight: var(--rsu-font-weight-medium);
   color: var(--rsu-color-text);
+  overflow-wrap: anywhere;
 }
 
-.rsu-field-description {
-  margin: 0;
+.rsu-config-help,
+.rsu-config-error {
+  grid-column: 2 / -1;
   font-size: var(--rsu-font-size-xs);
   color: var(--rsu-color-text-secondary);
 }
 
+.rsu-config-error {
+  color: var(--rsu-color-error);
+}
+
+.rsu-config-row--invalid .rsu-config-value {
+  border-color: var(--rsu-color-error);
+}
+
+.rsu-config-hint {
+  font-size: var(--rsu-font-size-xs);
+  color: var(--rsu-color-text-muted);
+}
+
+/* A field the other plane owns: shown for orientation, never editable here. */
+.rsu-config-foreign {
+  opacity: 0.6;
+}
+
+/* ── Descriptions ────────────────────────────────────────────── */
+
+.rsu-config-desc {
+  margin: 0 0 var(--rsu-space-sm);
+  font-size: var(--rsu-font-size-xs);
+  color: var(--rsu-color-text-secondary);
+}
+
+.rsu-config-desc-toggle {
+  margin-left: var(--rsu-space-xs);
+  color: var(--rsu-color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.rsu-config-desc--collapsed .rsu-config-desc-full {
+  display: none;
+}
+
+.rsu-config-desc:not(.rsu-config-desc--collapsed) .rsu-config-desc-short {
+  display: none;
+}
+
+/* ── Repeatable array sections ───────────────────────────────── */
+
+.rsu-config-array-item {
+  padding: var(--rsu-space-md);
+  margin-bottom: var(--rsu-space-sm);
+  background: var(--rsu-color-bg-secondary);
+  border: var(--rsu-border-width) solid var(--rsu-color-border);
+  border-radius: var(--rsu-radius-md);
+}
+
+.rsu-config-array-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--rsu-space-sm);
+  font-weight: var(--rsu-font-weight-medium);
+}
+
+.rsu-config-array-remove {
+  font-size: var(--rsu-font-size-xs);
+  color: var(--rsu-color-error);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* ── Actions and history ─────────────────────────────────────── */
+
+.rsu-config-advanced-bar {
+  display: flex;
+  gap: var(--rsu-space-sm);
+  align-items: center;
+  margin-bottom: var(--rsu-space-md);
+  font-size: var(--rsu-font-size-sm);
+  color: var(--rsu-color-text-secondary);
+}
+
+.rsu-config-actions {
+  display: flex;
+  gap: var(--rsu-space-md);
+  align-items: center;
+}
+
+.rsu-config-version {
+  font-size: var(--rsu-font-size-xs);
+  color: var(--rsu-color-text-muted);
+}
+
+.rsu-config-history {
+  width: 100%;
+  font-size: var(--rsu-font-size-sm);
+  border-collapse: collapse;
+}
+
+.rsu-config-history th,
+.rsu-config-history td {
+  padding: var(--rsu-space-sm);
+  text-align: left;
+  border-bottom: var(--rsu-border-width) solid var(--rsu-color-border);
+}
+
+.rsu-config-rollback {
+  font-size: var(--rsu-font-size-xs);
+  color: var(--rsu-color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 /* ── Shared form control base ────────────────────────────────── */
 
-.rsu-field input[type="text"],
-.rsu-field input[type="number"],
-.rsu-field input[type="password"],
-.rsu-field select {
+.rsu-config-row input[type="text"],
+.rsu-config-row input[type="number"],
+.rsu-config-row input[type="password"],
+.rsu-config-row select {
   width: 100%;
   padding: var(--rsu-space-sm) var(--rsu-space-md);
   font-size: var(--rsu-font-size-sm);
@@ -54,20 +236,21 @@
     box-shadow var(--rsu-transition-fast);
 }
 
-.rsu-field input[type="text"]:focus,
-.rsu-field input[type="number"]:focus,
-.rsu-field input[type="password"]:focus,
-.rsu-field select:focus {
+.rsu-config-row input[type="text"]:focus,
+.rsu-config-row input[type="number"]:focus,
+.rsu-config-row input[type="password"]:focus,
+.rsu-config-row select:focus {
   border-color: var(--rsu-color-border-focus);
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
   outline: none;
 }
 
-.rsu-field input[type="checkbox"] {
+.rsu-config-row input[type="checkbox"] {
   width: 1rem;
   height: 1rem;
   accent-color: var(--rsu-color-primary);
   cursor: pointer;
+  justify-self: start;
 }
 
 /* ── Shared button (placeholder — extend as components ship) ── */
