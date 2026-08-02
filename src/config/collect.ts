@@ -12,6 +12,7 @@ import {
   fieldPlane,
   isObjectNode,
   isSecretField,
+  mapValueSchema,
   resolveRef,
 } from "./schema.js";
 import type { ConfigFormOptions, ConfigValues, JsonSchemaNode } from "./types.js";
@@ -68,6 +69,13 @@ function collectProperties(
       continue;
     }
 
+    const valueSchema = mapValueSchema(node, ctx.defs);
+    if (valueSchema) {
+      const entries = collectMapEntries(fullKey, valueSchema, ctx);
+      if (entries !== null) result[key] = entries;
+      continue;
+    }
+
     if (isObjectNode(node)) {
       const nested: ConfigValues = {};
       collectProperties(node, nested, fullKey, ctx);
@@ -99,6 +107,43 @@ function collectArrayItems(
       items.push(entry);
     });
   return items;
+}
+
+/**
+ * Read one map section back into a `{name: value}` object.
+ *
+ * The whole map is always returned, never a per-key subset: a map is stored
+ * as one value, so an entry the operator removed has to be absent from what
+ * is sent, and a partial map would silently resurrect it.  Entries with a
+ * blank name are skipped — that is a half-added row, not a deletion.
+ */
+function collectMapEntries(
+  prefix: string,
+  valueSchema: JsonSchemaNode,
+  ctx: CollectContext,
+): ConfigValues | null {
+  const section = ctx.container.querySelector(`[data-map-key="${cssEscape(prefix)}"]`);
+  if (!section) return null;
+  const entries: ConfigValues = {};
+  section
+    .querySelectorAll(":scope > .rsu-config-map-entries > .rsu-config-map-entry")
+    .forEach((el) => {
+      const name = ((el as HTMLElement).dataset.mapName || "").trim();
+      if (!name) return;
+      const path = `${prefix}.${name}`;
+      if (isObjectNode(valueSchema)) {
+        const value: ConfigValues = {};
+        collectProperties(valueSchema, value, path, ctx);
+        entries[name] = value;
+        return;
+      }
+      const value = readField(path, valueSchema, ctx);
+      // A blank scalar entry keeps its name with an empty value rather than
+      // vanishing: dropping it would read as "the operator removed this
+      // alias", when all it means is "I did not retype this secret".
+      entries[name] = value === OMIT ? "" : value;
+    });
+  return entries;
 }
 
 /** Sentinel meaning "this field contributes nothing to the update". */
@@ -151,13 +196,34 @@ function cssEscape(value: string): string {
  * The Settings panel sends only changed keys, per config-ownership.md.  Keys
  * absent from *next* (an unchanged secret, an omitted blank) are never
  * resurrected, and a nested object that ends up empty is dropped.
+ *
+ * Pass *schema* whenever the config has maps (`dict[str, …]`): a map is one
+ * value, so it is diffed whole.  Without the schema a map is indistinguishable
+ * from a nested object and a *removed* entry would diff away to nothing —
+ * the deletion would never reach the surface.
  */
-export function diffConfigValues(current: ConfigValues, next: ConfigValues): ConfigValues {
+export function diffConfigValues(
+  current: ConfigValues,
+  next: ConfigValues,
+  schema?: unknown,
+): ConfigValues {
+  const root = schema === undefined ? undefined : ensureJsonSchema(schema);
+  return diffValues(current, next, root, root?.$defs);
+}
+
+function diffValues(
+  current: ConfigValues,
+  next: ConfigValues,
+  schema: JsonSchemaNode | undefined,
+  defs: Record<string, JsonSchemaNode> | undefined,
+): ConfigValues {
   const changed: ConfigValues = {};
   for (const [key, value] of Object.entries(next)) {
     const before = current[key];
-    if (isPlainObject(value) && isPlainObject(before)) {
-      const nested = diffConfigValues(before, value);
+    const node = schema?.properties ? resolveRef(schema.properties[key], defs) : undefined;
+    const isMap = node ? mapValueSchema(node, defs) !== null : false;
+    if (!isMap && isPlainObject(value) && isPlainObject(before)) {
+      const nested = diffValues(before, value, node, defs);
       if (Object.keys(nested).length > 0) changed[key] = nested;
       continue;
     }
