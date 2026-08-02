@@ -1,8 +1,9 @@
 modules:
   core:
-    description: "Core library entry point and types"
+    description: "Library entry points (React and framework-free) and public types"
     paths:
       - src/index.ts
+      - src/vanilla.ts
       - src/types.ts
 
   styles:
@@ -15,12 +16,28 @@ modules:
       - src/styles/index.css
 
   config-panel:
-    description: "Schema-driven configuration form component"
+    description: >
+      Schema-driven settings panel: the fleet's reference implementation of the
+      config-ownership standard's UI affordance and HTTP surface.
+    paths:
+      - src/config/index.ts
+      - src/config/types.ts
+      - src/config/schema.ts
+      - src/config/render.ts
+      - src/config/collect.ts
+      - src/config/client.ts
+      - src/config/panel.ts
+      - src/config/html.ts
+      - src/config/schema.test.ts
+      - src/config/render.test.ts
+      - src/config/client.test.ts
+      - src/config/panel.test.ts
+
+  config-panel-react:
+    description: "React wrapper that mounts the framework-free config panel"
     paths:
       - src/components/ConfigPanel/ConfigPanel.tsx
       - src/components/ConfigPanel/ConfigPanel.test.tsx
-      - src/components/ConfigPanel/FormField.tsx
-      - src/components/ConfigPanel/FormField.test.tsx
       - src/components/ConfigPanel/index.ts
 
   test-support:
@@ -32,3 +49,4 @@ modules:
     description: "Documentation"
     paths:
       - docs/consumption.md
+      - docs/config-panel.md

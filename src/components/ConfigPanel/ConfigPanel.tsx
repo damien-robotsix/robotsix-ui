@@ -1,41 +1,36 @@
-import { useCallback } from "react";
-import type { ConfigSchema, ConfigValues } from "../../types.js";
-import { FormField } from "./FormField.js";
+import { useEffect, useRef } from "react";
+import { mountConfigPanel } from "../../config/panel.js";
+import type { ConfigPanelHandle, ConfigPanelOptions } from "../../config/panel.js";
 
-export interface ConfigPanelProps {
-  /** The schema describing the configurable fields. */
-  schema: ConfigSchema;
-  /** Current config values, keyed by field key. */
-  config: ConfigValues;
-  /** Called with updated config when any field changes. */
-  onChange: (updated: ConfigValues) => void;
+export interface ConfigPanelProps extends ConfigPanelOptions {
+  /** Extra class names for the wrapper element. */
+  className?: string;
 }
 
 /**
- * ConfigPanel renders a schema-driven configuration form.
+ * React wrapper around the framework-free config panel.
  *
- * Each field in the schema maps to a form control (text, number,
- * checkbox, or select).  The host UI mounts this panel and receives
- * updated config via the `onChange` callback.
+ * It mounts the same `mountConfigPanel` implementation that vanilla hosts use,
+ * so a React UI and a server-rendered one cannot present a component's
+ * settings differently — the "cross-UI uniformity" invariant of
+ * robotsix-standards `config-ownership.md`.
  */
-export function ConfigPanel({ schema, config, onChange }: ConfigPanelProps) {
-  const handleFieldChange = useCallback(
-    (key: string, value: string | number | boolean) => {
-      onChange({ ...config, [key]: value });
-    },
-    [config, onChange],
-  );
+export function ConfigPanel({ className, ...options }: ConfigPanelProps) {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const handleRef = useRef<ConfigPanelHandle | null>(null);
+  // Keep the latest options reachable without re-mounting on every render.
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
-  return (
-    <div className="rsu-config-panel">
-      {schema.map((field) => (
-        <FormField
-          key={field.key}
-          field={field}
-          value={config[field.key] ?? field.defaultValue ?? ""}
-          onChange={(value) => handleFieldChange(field.key, value)}
-        />
-      ))}
-    </div>
-  );
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    handleRef.current = mountConfigPanel(host, optionsRef.current);
+    return () => {
+      handleRef.current?.destroy();
+      handleRef.current = null;
+    };
+  }, []);
+
+  return <div ref={hostRef} className={className} />;
 }

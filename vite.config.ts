@@ -8,10 +8,16 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 export default defineConfig({
   build: {
     lib: {
-      entry: resolve(__dirname, "src/index.ts"),
+      // Two entries: `index` pulls in the React wrapper, `vanilla` is
+      // React-free so server-rendered UIs can load it with a plain
+      // <script type="module"> and no bundler.
+      entry: {
+        index: resolve(__dirname, "src/index.ts"),
+        vanilla: resolve(__dirname, "src/vanilla.ts"),
+      },
       name: "RobotsixUI",
       formats: ["es", "cjs"],
-      fileName: (format) => `index.${format === "cjs" ? "cjs" : "js"}`,
+      fileName: (format, entryName) => `${entryName}.${format === "cjs" ? "cjs" : "js"}`,
       cssFileName: "style",
     },
     rollupOptions: {
@@ -29,7 +35,10 @@ export default defineConfig({
   plugins: [
     dts({
       include: ["src"],
-      rollupTypes: true,
+      exclude: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test-setup.ts"],
+      // Per-file declarations rather than a single rolled-up bundle: with two
+      // library entries each needs its own .d.ts next to its .js.
+      rollupTypes: false,
     }),
   ],
   test: {

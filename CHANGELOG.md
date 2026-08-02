@@ -1,5 +1,27 @@
 ## 0.1.6 (unreleased)
 
+- **BREAKING** — `ConfigPanel` is now driven by a component's committed
+  `config/config.schema.json` (JSON Schema) instead of a bespoke flat
+  `ConfigField[]`. The old `ConfigField` type and the `FormField` export are
+  removed. The panel is the fleet's reference settings UI: it implements the
+  standard config HTTP surface (`GET`/`PUT /config`, `GET /config/versions`,
+  `POST /config/rollback`) from robotsix-standards `config-ownership.md`, with
+  typed inputs, nested sections, repeatable array sections, `writeOnly` secret
+  masking with merge-on-write, the `advanced` toggle from `config-standard.md`
+  § 4, changed-keys-only saves, inline `422` messages, and version history with
+  rollback.
+- Add a **framework-free** build, `@robotsix/ui/vanilla` (`dist/vanilla.js`),
+  that imports no React — fleet UIs are server-rendered pages with no bundler
+  and can load it directly with `<script type="module">`. The React
+  `ConfigPanel` is a thin wrapper over the same core, so the two cannot render
+  a component's settings differently.
+- Add an `x-deploy-plane` field annotation so one renderer serves both planes:
+  a panel edits the fields its own plane owns and shows the rest read-only,
+  which keeps the deploy UI and a component's Settings panel from both writing
+  the same key.
+- Add config-panel styles (sections, rows, secret badges, array items, history
+  table) to `components.css`; the shared form-control base moved from
+  `.rsu-field` to `.rsu-config-row`.
 
 ## 0.0.0 (unreleased)
 
