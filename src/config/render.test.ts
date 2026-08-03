@@ -137,6 +137,84 @@ describe("renderConfigForm", () => {
     expect(container.querySelector("img")).toBeNull();
     expect(container.querySelector(".rsu-config-help")?.textContent).toContain("<img onerror=x>");
   });
+
+  it("renders no toggle for a short single-line description", () => {
+    renderConfigForm(
+      container,
+      {
+        type: "object",
+        properties: {
+          imap: {
+            type: "object",
+            description: "Mailbox connection",
+            properties: { host: { type: "string" } },
+          },
+        },
+      },
+      {},
+    );
+    expect(container.querySelector(".rsu-config-desc-toggle")).toBeNull();
+  });
+
+  it("renders a working toggle for a long description", () => {
+    const longDesc = "A".repeat(150);
+    renderConfigForm(
+      container,
+      {
+        type: "object",
+        properties: {
+          imap: {
+            type: "object",
+            description: longDesc,
+            properties: { host: { type: "string" } },
+          },
+        },
+      },
+      {},
+    );
+
+    const toggle = container.querySelector(".rsu-config-desc-toggle") as HTMLElement;
+    expect(toggle).not.toBeNull();
+    expect(toggle.textContent).toBe("more…");
+
+    const block = toggle.parentElement as HTMLElement;
+    expect(block.classList.contains("rsu-config-desc--collapsed")).toBe(true);
+
+    // Expand.
+    toggle.click();
+    expect(block.classList.contains("rsu-config-desc--collapsed")).toBe(false);
+    expect(toggle.textContent).toBe("less");
+
+    // Collapse again.
+    toggle.click();
+    expect(block.classList.contains("rsu-config-desc--collapsed")).toBe(true);
+    expect(toggle.textContent).toBe("more…");
+  });
+
+  it("renders a working toggle for a multiline description", () => {
+    renderConfigForm(
+      container,
+      {
+        type: "object",
+        properties: {
+          imap: {
+            type: "object",
+            description: "Line one.\nLine two.",
+            properties: { host: { type: "string" } },
+          },
+        },
+      },
+      {},
+    );
+
+    const toggle = container.querySelector(".rsu-config-desc-toggle") as HTMLElement;
+    expect(toggle).not.toBeNull();
+
+    const block = toggle.parentElement as HTMLElement;
+    toggle.click();
+    expect(block.classList.contains("rsu-config-desc--collapsed")).toBe(false);
+    expect(toggle.textContent).toBe("less");
+  });
 });
 
 describe("array sections", () => {

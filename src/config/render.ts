@@ -58,6 +58,18 @@ export function renderConfigForm(
   };
   renderNode(root, current ?? {}, "", container, ctx);
   setAdvancedVisible(container, false);
+
+  // Wire the collapsible-description toggle via event delegation so it
+  // covers rows and sections uniformly — even those rendered later by
+  // array/map add buttons.
+  container.addEventListener("click", (event) => {
+    const button = (event.target as HTMLElement).closest(".rsu-config-desc-toggle");
+    if (!button) return;
+    const block = button.parentElement;
+    if (!block) return;
+    const collapsed = block.classList.toggle("rsu-config-desc--collapsed");
+    (button as HTMLElement).textContent = collapsed ? "more…" : "less";
+  });
 }
 
 /** True when the rendered form contains at least one advanced field. */
@@ -206,15 +218,8 @@ function applyFlags(el: HTMLElement, node: JsonSchemaNode, ctx: RenderContext): 
   return foreign;
 }
 
-/** Wire the collapsible-description toggle and the change callback. */
+/** Wire the change callback on every input in the row. */
 function wireRow(row: HTMLElement, ctx: RenderContext): HTMLElement {
-  row.querySelector(".rsu-config-desc-toggle")?.addEventListener("click", (event) => {
-    const button = event.currentTarget as HTMLElement;
-    const block = button.parentElement;
-    if (!block) return;
-    const collapsed = block.classList.toggle("rsu-config-desc--collapsed");
-    button.textContent = collapsed ? "more…" : "less";
-  });
   if (ctx.onChange) {
     row.querySelectorAll("[data-key]").forEach((input) => {
       input.addEventListener("change", () => ctx.onChange?.());

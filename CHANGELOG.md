@@ -1,6 +1,5 @@
 ## 0.1.8 (unreleased)
 
-
 ## 0.1.7 (2026-08-02)
 
 - Render open-ended maps (`dict[str, …]`, i.e. a schema node whose value type
@@ -42,6 +41,7 @@
 
 ## 0.0.0 (unreleased)
 
+- Config panel: fix `more…` / `less` toggle for section-level descriptions. The toggle is now wired via event delegation so it works in section headers (not just field rows), and the dead per-row wiring is removed.
 - Add `input[type="password"]` to the shared `.rsu-field` input selector so password fields inherit the same form-control styling as text/number inputs
 
 ## 0.1.5 (2026-08-02)
