@@ -60,7 +60,7 @@
 
 ## 0.0.0 (unreleased)
 
-- Remove unused devDependency `@testing-library/user-event` (never imported)
+- Add vitest coverage instrumentation (`@vitest/coverage-v8`) with CI gating: `npm run test:coverage` produces lcov/html/text reports and fails CI when thresholds (90% statements/lines/functions, 80% branches) are not met. Drop unused `@testing-library/user-event` devDependency.
 - Refactor `mountConfigPanel` into a module-scoped `ConfigPanelController` for
   independently testable behaviours; no behavioural change to the panel.
 - Refactor `buildRow` in `src/config/render.ts` into six per-type row builder helpers (`buildSecretRow`, `buildJsonListRow`, `buildSelectRow`, `buildNumberRow`, `buildBooleanRow`, `buildTextRow`) with a small dispatcher, improving readability and testability.
