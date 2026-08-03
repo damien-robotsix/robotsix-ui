@@ -100,12 +100,20 @@ emits:
 | `"type": "array"` of scalars              | one JSON-list input                            |
 | `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed   |
 | `"advanced": true`                        | hidden behind "Show advanced settings"         |
-| `"description"`                           | inline help (`code`, bold, italic, http links) |
+| `"description"`                           | inline help (`code`, bold, italic, http links); also the primary hover-tooltip text |
 | `$ref` / `$defs`, `anyOf: [X, null]`      | resolved and unwrapped before rendering        |
 
 Secrets follow merge-on-write: the field renders blank, and a blank field is
 omitted from the update, so the stored secret survives. Only a value the
 operator actually types overwrites it.
+
+### Hover tooltips
+
+Each setting label's hover tooltip surfaces information that is not already
+visible on the row: a field with a schema `description` shows that text (with
+the full dotted key path), and a field without one shows no redundant tooltip —
+except a nested field, whose full dotted path still appears so the namespacing
+context is available.
 
 ## `x-deploy-plane`
 
