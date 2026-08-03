@@ -44,6 +44,7 @@
 
 ## 0.0.0 (unreleased)
 
+- Config panel: suppress redundant hover tooltip on setting rows that lack a schema description, instead of repeating the already-visible key name. Nested fields without a description still show their full dotted path for namespace context.
 - Config panel: fix `more…` / `less` toggle for section-level descriptions. The toggle is now wired via event delegation so it works in section headers (not just field rows), and the dead per-row wiring is removed.
 - Add `input[type="password"]` to the shared `.rsu-field` input selector so password fields inherit the same form-control styling as text/number inputs
 
