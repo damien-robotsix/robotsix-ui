@@ -294,8 +294,7 @@ function buildSecretRow(p: RowBuilderParams): HTMLElement {
   // The value is never echoed, so "already set" is inferred from whatever
   // non-empty mask the surface returned.  Blank input means "keep stored
   // value" — the merge-on-write convention of config-standard.md § 3.
-  const alreadySet =
-    p.currentVal !== undefined && p.currentVal !== null && p.currentVal !== "";
+  const alreadySet = p.currentVal !== undefined && p.currentVal !== null && p.currentVal !== "";
   const placeholder = alreadySet
     ? "(already set — enter a new value to change)"
     : "(not set — can be saved later)";
@@ -325,8 +324,8 @@ function buildJsonListRow(p: RowBuilderParams): HTMLElement {
 
 function buildSelectRow(p: RowBuilderParams): HTMLElement {
   const selected = String(p.currentVal ?? p.defaultVal ?? "");
-  const options = p.node.enum!
-    .map((value) => {
+  const options = p.node
+    .enum!.map((value) => {
       const str = String(value);
       return `<option value="${escAttr(str)}"${str === selected ? " selected" : ""}>${escHtml(
         str,
@@ -351,8 +350,7 @@ function buildNumberRow(p: RowBuilderParams): HTMLElement {
 }
 
 function buildBooleanRow(p: RowBuilderParams): HTMLElement {
-  const checked =
-    p.displayVal === true || p.displayVal === "true" || p.displayVal === 1;
+  const checked = p.displayVal === true || p.displayVal === "true" || p.displayVal === 1;
   p.row.innerHTML =
     p.label +
     `<input type="checkbox" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
