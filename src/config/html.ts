@@ -18,6 +18,12 @@ export function escAttr(value: unknown): string {
   return escHtml(value);
 }
 
+/** Escape a value for use in a CSS selector (delegates to CSS.escape). */
+export function cssEscape(value: string): string {
+  const api = globalThis.CSS;
+  return api && typeof api.escape === "function" ? api.escape(value) : value;
+}
+
 /**
  * Render the inline-markdown subset used by pydantic field descriptions:
  * `code`, **bold**, *italic* and [links](url).

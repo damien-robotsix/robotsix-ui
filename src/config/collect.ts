@@ -11,10 +11,12 @@ import {
   ensureJsonSchema,
   fieldPlane,
   isObjectNode,
+  isPlainObject,
   isSecretField,
   mapValueSchema,
   resolveRef,
 } from "./schema.js";
+import { cssEscape } from "./html.js";
 import type { ConfigFormOptions, ConfigValues, JsonSchemaNode } from "./types.js";
 
 interface CollectContext {
@@ -185,11 +187,6 @@ function readField(fullKey: string, node: JsonSchemaNode, ctx: CollectContext): 
   return value === "" ? OMIT : value;
 }
 
-function cssEscape(value: string): string {
-  const api = globalThis.CSS;
-  return api && typeof api.escape === "function" ? api.escape(value) : value;
-}
-
 /**
  * Reduce *next* to only the keys whose value differs from *current*.
  *
@@ -230,10 +227,6 @@ function diffValues(
     if (!deepEqual(before, value)) changed[key] = value;
   }
   return changed;
-}
-
-function isPlainObject(value: unknown): value is ConfigValues {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function deepEqual(a: unknown, b: unknown): boolean {

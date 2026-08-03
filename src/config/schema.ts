@@ -77,6 +77,11 @@ export function isObjectNode(node: JsonSchemaNode): boolean {
   return node.type === "object" && node.properties !== undefined;
 }
 
+/** True when a value is a non-null, non-array object (a plain record). */
+export function isPlainObject(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 /**
  * The item schema of an array of objects, or `null` for any other array.
  *
