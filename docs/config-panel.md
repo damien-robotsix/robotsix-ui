@@ -90,18 +90,18 @@ drift from the vanilla one.
 The panel reads these keywords, all of which your pydantic model already
 emits:
 
-| Schema                                    | Rendered as                                    |
-| ----------------------------------------- | ---------------------------------------------- |
-| `"type": "integer"` / `"number"`          | number input (integers step by 1)              |
-| `"type": "boolean"`                       | checkbox                                       |
-| `"enum": [...]`                           | dropdown                                       |
-| `"type": "object"`                        | its own titled section, nested to any depth    |
-| `"type": "array"` of objects              | repeatable section with add/remove             |
-| `"type": "array"` of scalars              | one JSON-list input                            |
-| `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed   |
-| `"advanced": true`                        | hidden behind "Show advanced settings"         |
+| Schema                                    | Rendered as                                                                         |
+| ----------------------------------------- | ----------------------------------------------------------------------------------- |
+| `"type": "integer"` / `"number"`          | number input (integers step by 1)                                                   |
+| `"type": "boolean"`                       | checkbox                                                                            |
+| `"enum": [...]`                           | dropdown                                                                            |
+| `"type": "object"`                        | its own titled section, nested to any depth                                         |
+| `"type": "array"` of objects              | repeatable section with add/remove                                                  |
+| `"type": "array"` of scalars              | one JSON-list input                                                                 |
+| `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed                                        |
+| `"advanced": true`                        | hidden behind "Show advanced settings"                                              |
 | `"description"`                           | inline help (`code`, bold, italic, http links); also the primary hover-tooltip text |
-| `$ref` / `$defs`, `anyOf: [X, null]`      | resolved and unwrapped before rendering        |
+| `$ref` / `$defs`, `anyOf: [X, null]`      | resolved and unwrapped before rendering                                             |
 
 Secrets follow merge-on-write: the field renders blank, and a blank field is
 omitted from the update, so the stored secret survives. Only a value the
