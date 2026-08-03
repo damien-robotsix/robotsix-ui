@@ -1,6 +1,5 @@
 ## 0.1.13 (unreleased)
 
-
 ## 0.1.12 (2026-08-03)
 
 ## 0.1.11 (2026-08-03)
@@ -52,6 +51,7 @@
 
 ## 0.0.0 (unreleased)
 
+- Refactor `buildRow` in `src/config/render.ts` into six per-type row builder helpers (`buildSecretRow`, `buildJsonListRow`, `buildSelectRow`, `buildNumberRow`, `buildBooleanRow`, `buildTextRow`) with a small dispatcher, improving readability and testability.
 - Remove orphan `src/types.ts` re-export module. The config types it
   re-exported (ConfigSchema, ConfigValues, etc.) are already surfaced at
   the package root via `src/index.ts` re-exporting `src/config/index.ts`.
