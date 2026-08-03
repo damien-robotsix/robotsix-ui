@@ -1,6 +1,5 @@
 ## 0.1.8 (unreleased)
 
-
 ## 0.1.7 (2026-08-02)
 
 - Render open-ended maps (`dict[str, …]`, i.e. a schema node whose value type
