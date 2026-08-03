@@ -248,9 +248,14 @@ function buildRow(
   const defaultVal = node.default ?? "";
   const displayVal = currentVal !== undefined && currentVal !== null ? currentVal : defaultVal;
 
-  const helpTitle = node.description ? `${node.description}\n(${fullKey})` : fullKey;
+  const helpTitle = node.description
+    ? `${node.description}\n(${fullKey})`
+    : fullKey !== labelKey
+      ? fullKey
+      : "";
+  const titleAttr = helpTitle ? ` title="${escAttr(helpTitle)}"` : "";
   const label =
-    `<span class="rsu-config-key" title="${escAttr(helpTitle)}">` +
+    `<span class="rsu-config-key"${titleAttr}>` +
     `${escHtml(labelKey)}${isRequired ? " *" : ""}</span>`;
   const help = node.description
     ? `<span class="rsu-config-help">${renderInlineMarkdown(node.description)}</span>`

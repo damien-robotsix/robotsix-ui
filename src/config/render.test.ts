@@ -138,6 +138,45 @@ describe("renderConfigForm", () => {
     expect(container.querySelector(".rsu-config-help")?.textContent).toContain("<img onerror=x>");
   });
 
+  it("shows description in tooltip when present", () => {
+    renderConfigForm(
+      container,
+      { type: "object", properties: { a: { type: "string", description: "help text" } } },
+      {},
+    );
+    const title = container.querySelector(".rsu-config-key")?.getAttribute("title");
+    expect(title).toContain("help text");
+    expect(title).toContain("(a)");
+  });
+
+  it("omits redundant tooltip for a top-level field without a description", () => {
+    renderConfigForm(
+      container,
+      { type: "object", properties: { workers: { type: "integer", default: 4 } } },
+      {},
+    );
+    const title = container.querySelector(".rsu-config-key")?.getAttribute("title");
+    expect(title).toBeNull();
+  });
+
+  it("shows full key tooltip for a nested field without a description", () => {
+    renderConfigForm(
+      container,
+      {
+        type: "object",
+        properties: {
+          imap: {
+            type: "object",
+            properties: { host: { type: "string" } },
+          },
+        },
+      },
+      {},
+    );
+    const title = container.querySelector(".rsu-config-key")?.getAttribute("title");
+    expect(title).toBe("imap.host");
+  });
+
   it("renders no toggle for a short single-line description", () => {
     renderConfigForm(
       container,
