@@ -1,6 +1,5 @@
 ## 0.1.12 (unreleased)
 
-
 ## 0.1.11 (2026-08-03)
 
 ## 0.1.10 (2026-08-03)
@@ -54,6 +53,7 @@
   re-exported (ConfigSchema, ConfigValues, etc.) are already surfaced at
   the package root via `src/index.ts` re-exporting `src/config/index.ts`.
   The module had no importers, no build entry, and no package export subpath.
+- Deduplicate `cssEscape` and `isPlainObject` by extracting them into `html.ts` and `schema.ts` respectively (audit: dedup_css_escape_is_plain_object)
 - Config panel: suppress redundant hover tooltip on setting rows that lack a schema description, instead of repeating the already-visible key name. Nested fields without a description still show their full dotted path for namespace context.
 - Fix periodic workflow loading: move `.robotsix-mill/*.yml` to `.robotsix-mill/periodic/<name>.yaml` so the mill's periodic loader can discover them.
 - Config panel: fix `more…` / `less` toggle for section-level descriptions. The toggle is now wired via event delegation so it works in section headers (not just field rows), and the dead per-row wiring is removed.

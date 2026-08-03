@@ -9,12 +9,13 @@
  * semantics (config-ownership.md, "cross-UI uniformity").
  */
 
-import { escAttr, escHtml, renderInlineMarkdown } from "./html.js";
+import { cssEscape, escAttr, escHtml, renderInlineMarkdown } from "./html.js";
 import {
   arrayItemObject,
   ensureJsonSchema,
   fieldPlane,
   isObjectNode,
+  isPlainObject,
   isSecretField,
   mapValueSchema,
   resolveRef,
@@ -108,11 +109,6 @@ export function showFieldError(container: HTMLElement, key: string, message: str
   span.textContent = message;
   row.appendChild(span);
   return true;
-}
-
-function cssEscape(value: string): string {
-  const api = globalThis.CSS;
-  return api && typeof api.escape === "function" ? api.escape(value) : value;
 }
 
 function renderNode(
@@ -552,8 +548,4 @@ function reindexArrayItems(container: HTMLElement): void {
     }
     item.dataset.arrayIndex = String(newIndex);
   });
-}
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
