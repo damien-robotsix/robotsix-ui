@@ -29,6 +29,7 @@ modules:
       - src/config/html.ts
       - src/config/schema.test.ts
       - src/config/render.test.ts
+      - src/config/map.test.ts
       - src/config/client.test.ts
       - src/config/panel.test.ts
 

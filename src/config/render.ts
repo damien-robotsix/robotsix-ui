@@ -225,6 +225,19 @@ function wireRow(row: HTMLElement, ctx: RenderContext): HTMLElement {
   return row;
 }
 
+interface RowBuilderParams {
+  row: HTMLElement;
+  fullKey: string;
+  label: string;
+  help: string;
+  disabled: string;
+  displayVal: unknown;
+  node: JsonSchemaNode;
+  currentVal: unknown;
+  defaultVal: unknown;
+  ctx: RenderContext;
+}
+
 function buildRow(
   fullKey: string,
   labelKey: string,
@@ -240,7 +253,6 @@ function buildRow(
   const disabled = foreign ? " disabled" : "";
 
   const isRequired = requiredKeys.includes(labelKey);
-  const secret = isSecretField(node);
   const defaultVal = node.default ?? "";
   const displayVal = currentVal !== undefined && currentVal !== null ? currentVal : defaultVal;
 
@@ -257,81 +269,105 @@ function buildRow(
     ? `<span class="rsu-config-help">${renderInlineMarkdown(node.description)}</span>`
     : "";
 
-  if (secret) {
-    // The value is never echoed, so "already set" is inferred from whatever
-    // non-empty mask the surface returned.  Blank input means "keep stored
-    // value" — the merge-on-write convention of config-standard.md § 3.
-    const alreadySet = currentVal !== undefined && currentVal !== null && currentVal !== "";
-    const placeholder = alreadySet
-      ? "(already set — enter a new value to change)"
-      : "(not set — can be saved later)";
-    row.innerHTML =
-      label +
-      `<input type="password" class="rsu-config-value" data-key="${escAttr(fullKey)}"` +
-      ` data-secret="1" value="" placeholder="${escAttr(placeholder)}"` +
-      ` autocomplete="off"${disabled}>` +
-      `<span class="rsu-badge ${alreadySet ? "rsu-badge--success" : "rsu-badge--warning"}">` +
-      `${alreadySet ? "set" : "not set"}</span>` +
-      help;
-    return wireRow(row, ctx);
-  }
+  const params: RowBuilderParams = {
+    row,
+    fullKey,
+    label,
+    help,
+    disabled,
+    displayVal,
+    node,
+    currentVal,
+    defaultVal,
+    ctx,
+  };
 
-  if (node.type === "array" || Array.isArray(displayVal)) {
-    // A plain (non-object) list is edited as raw JSON.  An unparseable value is
-    // skipped on collect so the stored value survives.
-    const jsonVal = JSON.stringify(displayVal === "" ? [] : displayVal);
-    row.innerHTML =
-      label +
-      `<input type="text" class="rsu-config-value" data-key="${escAttr(fullKey)}"` +
-      ` data-json="1" value="${escAttr(jsonVal)}" spellcheck="false"${disabled}>` +
-      '<span class="rsu-config-hint">JSON list</span>' +
-      help;
-    return wireRow(row, ctx);
-  }
+  if (isSecretField(node)) return buildSecretRow(params);
+  if (node.type === "array" || Array.isArray(displayVal)) return buildJsonListRow(params);
+  if (Array.isArray(node.enum)) return buildSelectRow(params);
+  if (node.type === "integer" || node.type === "number") return buildNumberRow(params);
+  if (node.type === "boolean") return buildBooleanRow(params);
+  return buildTextRow(params);
+}
 
-  if (Array.isArray(node.enum)) {
-    const selected = String(currentVal ?? defaultVal ?? "");
-    const options = node.enum
-      .map((value) => {
-        const str = String(value);
-        return `<option value="${escAttr(str)}"${str === selected ? " selected" : ""}>${escHtml(
-          str,
-        )}</option>`;
-      })
-      .join("");
-    row.innerHTML =
-      label +
-      `<select class="rsu-config-value" data-key="${escAttr(fullKey)}"${disabled}>${options}</select>` +
-      help;
-    return wireRow(row, ctx);
-  }
+function buildSecretRow(p: RowBuilderParams): HTMLElement {
+  // The value is never echoed, so "already set" is inferred from whatever
+  // non-empty mask the surface returned.  Blank input means "keep stored
+  // value" — the merge-on-write convention of config-standard.md § 3.
+  const alreadySet =
+    p.currentVal !== undefined && p.currentVal !== null && p.currentVal !== "";
+  const placeholder = alreadySet
+    ? "(already set — enter a new value to change)"
+    : "(not set — can be saved later)";
+  p.row.innerHTML =
+    p.label +
+    `<input type="password" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
+    ` data-secret="1" value="" placeholder="${escAttr(placeholder)}"` +
+    ` autocomplete="off"${p.disabled}>` +
+    `<span class="rsu-badge ${alreadySet ? "rsu-badge--success" : "rsu-badge--warning"}">` +
+    `${alreadySet ? "set" : "not set"}</span>` +
+    p.help;
+  return wireRow(p.row, p.ctx);
+}
 
-  if (node.type === "integer" || node.type === "number") {
-    const step = node.type === "integer" ? ' step="1"' : "";
-    row.innerHTML =
-      label +
-      `<input type="number" class="rsu-config-value" data-key="${escAttr(fullKey)}"` +
-      ` value="${escAttr(String(displayVal))}"${step}${disabled}>` +
-      help;
-    return wireRow(row, ctx);
-  }
+function buildJsonListRow(p: RowBuilderParams): HTMLElement {
+  // A plain (non-object) list is edited as raw JSON.  An unparseable value is
+  // skipped on collect so the stored value survives.
+  const jsonVal = JSON.stringify(p.displayVal === "" ? [] : p.displayVal);
+  p.row.innerHTML =
+    p.label +
+    `<input type="text" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
+    ` data-json="1" value="${escAttr(jsonVal)}" spellcheck="false"${p.disabled}>` +
+    '<span class="rsu-config-hint">JSON list</span>' +
+    p.help;
+  return wireRow(p.row, p.ctx);
+}
 
-  if (node.type === "boolean") {
-    const checked = displayVal === true || displayVal === "true" || displayVal === 1;
-    row.innerHTML =
-      label +
-      `<input type="checkbox" class="rsu-config-value" data-key="${escAttr(fullKey)}"` +
-      `${checked ? " checked" : ""}${disabled}>` +
-      help;
-    return wireRow(row, ctx);
-  }
+function buildSelectRow(p: RowBuilderParams): HTMLElement {
+  const selected = String(p.currentVal ?? p.defaultVal ?? "");
+  const options = p.node.enum!
+    .map((value) => {
+      const str = String(value);
+      return `<option value="${escAttr(str)}"${str === selected ? " selected" : ""}>${escHtml(
+        str,
+      )}</option>`;
+    })
+    .join("");
+  p.row.innerHTML =
+    p.label +
+    `<select class="rsu-config-value" data-key="${escAttr(p.fullKey)}"${p.disabled}>${options}</select>` +
+    p.help;
+  return wireRow(p.row, p.ctx);
+}
 
-  row.innerHTML =
-    label +
-    `<input type="text" class="rsu-config-value" data-key="${escAttr(fullKey)}"` +
-    ` value="${escAttr(String(displayVal))}"${disabled}>` +
-    help;
-  return wireRow(row, ctx);
+function buildNumberRow(p: RowBuilderParams): HTMLElement {
+  const step = p.node.type === "integer" ? ' step="1"' : "";
+  p.row.innerHTML =
+    p.label +
+    `<input type="number" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
+    ` value="${escAttr(String(p.displayVal))}"${step}${p.disabled}>` +
+    p.help;
+  return wireRow(p.row, p.ctx);
+}
+
+function buildBooleanRow(p: RowBuilderParams): HTMLElement {
+  const checked =
+    p.displayVal === true || p.displayVal === "true" || p.displayVal === 1;
+  p.row.innerHTML =
+    p.label +
+    `<input type="checkbox" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
+    `${checked ? " checked" : ""}${p.disabled}>` +
+    p.help;
+  return wireRow(p.row, p.ctx);
+}
+
+function buildTextRow(p: RowBuilderParams): HTMLElement {
+  p.row.innerHTML =
+    p.label +
+    `<input type="text" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
+    ` value="${escAttr(String(p.displayVal))}"${p.disabled}>` +
+    p.help;
+  return wireRow(p.row, p.ctx);
 }
 
 function buildArraySection(
