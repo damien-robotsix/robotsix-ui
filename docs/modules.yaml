@@ -4,7 +4,6 @@ modules:
     paths:
       - src/index.ts
       - src/vanilla.ts
-      - src/types.ts
 
   styles:
     description: "Design tokens, base CSS, shared component styles, and utilities"
