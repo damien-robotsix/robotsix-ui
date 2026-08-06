@@ -115,6 +115,7 @@
 - Add vitest coverage instrumentation (`@vitest/coverage-v8`) with CI gating: `npm run test:coverage` produces lcov/html/text reports and fails CI when thresholds (90% statements/lines/functions, 80% branches) are not met. Drop unused `@testing-library/user-event` devDependency.
 - Refactor `mountConfigPanel` into a module-scoped `ConfigPanelController` for
   independently testable behaviours; no behavioural change to the panel.
+- Add round-trip test for array reindex→recollect after item removal, mirroring the existing map.test.ts pattern.
 - Refactor `buildRow` in `src/config/render.ts` into six per-type row builder helpers (`buildSecretRow`, `buildJsonListRow`, `buildSelectRow`, `buildNumberRow`, `buildBooleanRow`, `buildTextRow`) with a small dispatcher, improving readability and testability.
 - Remove orphan `src/types.ts` re-export module. The config types it
   re-exported (ConfigSchema, ConfigValues, etc.) are already surfaced at
