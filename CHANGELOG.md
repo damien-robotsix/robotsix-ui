@@ -54,6 +54,7 @@
 
 ## 0.0.0 (unreleased)
 
+- Add round-trip test for array reindex→recollect after item removal, mirroring the existing map.test.ts pattern.
 - Refactor `buildRow` in `src/config/render.ts` into six per-type row builder helpers (`buildSecretRow`, `buildJsonListRow`, `buildSelectRow`, `buildNumberRow`, `buildBooleanRow`, `buildTextRow`) with a small dispatcher, improving readability and testability.
 - Remove orphan `src/types.ts` re-export module. The config types it
   re-exported (ConfigSchema, ConfigValues, etc.) are already surfaced at
