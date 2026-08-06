@@ -1,6 +1,6 @@
 {
   "name": "@robotsix/ui",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Shared UI component library for RobotSix deployed UIs",
   "repository": {
     "type": "git",
