@@ -1,6 +1,5 @@
 ## 0.1.16 (unreleased)
 
-
 ## 0.1.15 (2026-08-06)
 
 ## 0.1.14 (2026-08-06)
@@ -59,6 +58,8 @@
 ## 0.0.0 (unreleased)
 
 - Remove unused devDependency `@testing-library/user-event` (never imported)
+- Refactor `mountConfigPanel` into a module-scoped `ConfigPanelController` for
+  independently testable behaviours; no behavioural change to the panel.
 - Refactor `buildRow` in `src/config/render.ts` into six per-type row builder helpers (`buildSecretRow`, `buildJsonListRow`, `buildSelectRow`, `buildNumberRow`, `buildBooleanRow`, `buildTextRow`) with a small dispatcher, improving readability and testability.
 - Remove orphan `src/types.ts` re-export module. The config types it
   re-exported (ConfigSchema, ConfigValues, etc.) are already surfaced at
