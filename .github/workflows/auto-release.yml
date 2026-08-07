@@ -49,6 +49,9 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Install dependencies
+        run: npm ci
+
       - name: Bump version and update changelog
         run: |
           OLD_VERSION=$(node -p "require('./package.json').version")
@@ -65,6 +68,9 @@ jobs:
 
           # Prepend a new unreleased section for the next dev cycle
           sed -i "1s/^/## $NEW_VERSION (unreleased)\n\n\n/" CHANGELOG.md
+
+          # Auto-format to keep CHANGELOG.md Prettier-clean
+          npx prettier --write CHANGELOG.md
 
       - name: Commit, tag, and push
         run: |
