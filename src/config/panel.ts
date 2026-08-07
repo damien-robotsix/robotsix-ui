@@ -308,7 +308,9 @@ export function mountConfigPanel(
   });
 
   root.querySelectorAll(".rsu-config-tab").forEach((el) => {
-    el.addEventListener("click", () => panel.selectTab((el as HTMLElement).dataset.tab || "fields"));
+    el.addEventListener("click", () =>
+      panel.selectTab((el as HTMLElement).dataset.tab || "fields"),
+    );
   });
   advancedToggle.addEventListener("change", () =>
     setAdvancedVisible(formEl, advancedToggle.checked),
