@@ -24,6 +24,7 @@ import type {
   ConfigValues,
   ConfigVersion,
   ConfigWriteResponse,
+  DeployPlane,
 } from "./types.js";
 import { ConfigValidationError } from "./types.js";
 
@@ -83,6 +84,188 @@ const PANEL_HTML = `
 </div>
 `;
 
+/**
+ * DOM refs and shared state threaded through the panel controller.
+ *
+ * The controller never touches the container or the static header setup —
+ * only these references — so each behaviour stays independently testable.
+ */
+interface PanelContext {
+  root: HTMLElement;
+  client: ConfigClient;
+  plane: DeployPlane;
+  onSaved?: (result: ConfigWriteResponse) => void;
+  formEl: HTMLElement;
+  banner: HTMLElement;
+  saveBtn: HTMLButtonElement;
+  versionEl: HTMLElement;
+  historyBody: HTMLElement;
+  advancedBar: HTMLElement;
+  advancedToggle: HTMLInputElement;
+  schema: ConfigSchema;
+  loaded: ConfigValues;
+}
+
+/**
+ * The panel's stateful behaviours, extracted from `mountConfigPanel`.
+ *
+ * Holds the DOM refs and the current `schema`/`loaded` state so each action
+ * (reload, save, rollback, history, tab switching) is a method rather than a
+ * nested closure, and independently testable without building the full panel.
+ */
+class ConfigPanelController {
+  private readonly client: ConfigClient;
+  private readonly plane: DeployPlane;
+  private readonly onSaved?: (result: ConfigWriteResponse) => void;
+  private readonly root: HTMLElement;
+  private readonly formEl: HTMLElement;
+  private readonly banner: HTMLElement;
+  private readonly saveBtn: HTMLButtonElement;
+  private readonly versionEl: HTMLElement;
+  private readonly historyBody: HTMLElement;
+  private readonly advancedBar: HTMLElement;
+  private readonly advancedToggle: HTMLInputElement;
+  private schema: ConfigSchema;
+  private loaded: ConfigValues;
+
+  constructor(ctx: PanelContext) {
+    this.client = ctx.client;
+    this.plane = ctx.plane;
+    this.onSaved = ctx.onSaved;
+    this.root = ctx.root;
+    this.formEl = ctx.formEl;
+    this.banner = ctx.banner;
+    this.saveBtn = ctx.saveBtn;
+    this.versionEl = ctx.versionEl;
+    this.historyBody = ctx.historyBody;
+    this.advancedBar = ctx.advancedBar;
+    this.advancedToggle = ctx.advancedToggle;
+    this.schema = ctx.schema;
+    this.loaded = ctx.loaded;
+  }
+
+  /** Re-fetch config and re-render the form, discarding unsaved edits. */
+  async reload(): Promise<void> {
+    try {
+      const response = await this.client.getConfig();
+      this.renderForm(response);
+      this.hideBanner();
+    } catch (err) {
+      this.showBanner(`Failed to load config: ${message(err)}`, "error");
+    }
+  }
+
+  /** Save the changed keys.  Resolves `false` when validation rejected them. */
+  async save(): Promise<boolean> {
+    clearFieldErrors(this.formEl);
+    this.hideBanner();
+    this.saveBtn.disabled = true;
+    const entered = collectConfigValues(this.schema, this.formEl, { plane: this.plane });
+    const updates = diffConfigValues(this.loaded, entered, this.schema);
+    if (Object.keys(updates).length === 0) {
+      this.showBanner("No changes to save.", "success");
+      return true;
+    }
+    try {
+      const result = await this.client.putConfig(updates);
+      this.renderForm({ config: result.config, schema: this.schema, version: result.version });
+      this.showBanner(`Saved — now at version ${result.version}.`, "success");
+      this.onSaved?.(result);
+      return true;
+    } catch (err) {
+      this.saveBtn.disabled = false;
+      if (err instanceof ConfigValidationError) {
+        const placed = err.key ? showFieldError(this.formEl, err.key, err.message) : false;
+        if (!placed) this.showBanner(err.message, "error");
+      } else {
+        this.showBanner(`Save failed: ${message(err)}`, "error");
+      }
+      return false;
+    }
+  }
+
+  /** Re-fetch and render the version history. */
+  async loadHistory(): Promise<void> {
+    this.historyBody.innerHTML = '<tr><td colspan="4">Loading…</td></tr>';
+    try {
+      const { versions } = await this.client.getVersions();
+      this.renderHistory(versions || []);
+    } catch (err) {
+      this.historyBody.innerHTML = `<tr><td colspan="4">${escHtml(message(err))}</td></tr>`;
+    }
+  }
+
+  /** Roll back to *version*, re-rendering the form on success. */
+  async rollback(version: number): Promise<void> {
+    try {
+      const result = await this.client.rollback(version);
+      this.renderForm({ config: result.config, schema: this.schema, version: result.version });
+      this.showBanner(`Rolled back — now at version ${result.version}.`, "success");
+      this.onSaved?.(result);
+      this.selectTab("fields");
+    } catch (err) {
+      this.showBanner(`Rollback failed: ${message(err)}`, "error");
+    }
+  }
+
+  /** Render *response* into the form, resetting schema/loaded and the save button. */
+  renderForm(response: ConfigResponse): void {
+    this.schema = response.schema;
+    this.loaded = response.config || {};
+    renderConfigForm(this.formEl, this.schema, this.loaded, {
+      plane: this.plane,
+      onChange: () => {
+        this.saveBtn.disabled = false;
+      },
+    });
+    this.advancedBar.hidden = !hasAdvancedFields(this.formEl);
+    this.advancedToggle.checked = false;
+    this.versionEl.textContent = response.version ? `version ${response.version}` : "";
+    this.saveBtn.disabled = true;
+  }
+
+  /** Render *versions* into the history table. */
+  renderHistory(versions: ConfigVersion[]): void {
+    if (versions.length === 0) {
+      this.historyBody.innerHTML = '<tr><td colspan="4">No previous versions.</td></tr>';
+      return;
+    }
+    this.historyBody.innerHTML = versions
+      .map(
+        (entry) =>
+          "<tr>" +
+          `<td>${escHtml(entry.version)}</td>` +
+          `<td>${escHtml(entry.timestamp)}</td>` +
+          `<td>${escHtml((entry.changed_keys || []).join(", "))}</td>` +
+          '<td><button type="button" class="rsu-config-rollback" ' +
+          `data-version="${escHtml(entry.version)}">Roll back</button></td>` +
+          "</tr>",
+      )
+      .join("");
+  }
+
+  /** Switch the visible tab, loading history the first time it is shown. */
+  selectTab(name: string): void {
+    this.root.querySelectorAll(".rsu-config-tab").forEach((el) => {
+      el.classList.toggle("rsu-config-tab--active", (el as HTMLElement).dataset.tab === name);
+    });
+    this.root.querySelectorAll(".rsu-config-tabpanel").forEach((el) => {
+      (el as HTMLElement).hidden = (el as HTMLElement).dataset.tab !== name;
+    });
+    if (name === "history") void this.loadHistory();
+  }
+
+  private showBanner(contents: string, kind: "error" | "success") {
+    this.banner.textContent = contents;
+    this.banner.className = `rsu-config-banner rsu-config-banner--${kind}`;
+    this.banner.hidden = false;
+  }
+
+  private hideBanner() {
+    this.banner.hidden = true;
+  }
+}
+
 /** Render a Settings panel into *container* and start loading its config. */
 export function mountConfigPanel(
   container: HTMLElement,
@@ -108,147 +291,46 @@ export function mountConfigPanel(
     (root.querySelector('.rsu-config-tab[data-tab="history"]') as HTMLElement).hidden = true;
   }
 
-  let schema: ConfigSchema = { type: "object", properties: {} };
-  let loaded: ConfigValues = {};
-
-  function showBanner(message: string, kind: "error" | "success") {
-    banner.textContent = message;
-    banner.className = `rsu-config-banner rsu-config-banner--${kind}`;
-    banner.hidden = false;
-  }
-
-  function hideBanner() {
-    banner.hidden = true;
-  }
-
-  function selectTab(name: string) {
-    root.querySelectorAll(".rsu-config-tab").forEach((el) => {
-      el.classList.toggle("rsu-config-tab--active", (el as HTMLElement).dataset.tab === name);
-    });
-    root.querySelectorAll(".rsu-config-tabpanel").forEach((el) => {
-      (el as HTMLElement).hidden = (el as HTMLElement).dataset.tab !== name;
-    });
-    if (name === "history") void loadHistory();
-  }
-
-  function renderForm(response: ConfigResponse) {
-    schema = response.schema;
-    loaded = response.config || {};
-    renderConfigForm(formEl, schema, loaded, {
-      plane,
-      onChange: () => {
-        saveBtn.disabled = false;
-      },
-    });
-    advancedBar.hidden = !hasAdvancedFields(formEl);
-    advancedToggle.checked = false;
-    versionEl.textContent = response.version ? `version ${response.version}` : "";
-    saveBtn.disabled = true;
-  }
-
-  async function reload() {
-    try {
-      const response = await client.getConfig();
-      renderForm(response);
-      hideBanner();
-    } catch (err) {
-      showBanner(`Failed to load config: ${message(err)}`, "error");
-    }
-  }
-
-  async function save(): Promise<boolean> {
-    clearFieldErrors(formEl);
-    hideBanner();
-    saveBtn.disabled = true;
-    const entered = collectConfigValues(schema, formEl, { plane });
-    const updates = diffConfigValues(loaded, entered, schema);
-    if (Object.keys(updates).length === 0) {
-      showBanner("No changes to save.", "success");
-      return true;
-    }
-    try {
-      const result = await client.putConfig(updates);
-      renderForm({ config: result.config, schema, version: result.version });
-      showBanner(`Saved — now at version ${result.version}.`, "success");
-      options.onSaved?.(result);
-      return true;
-    } catch (err) {
-      saveBtn.disabled = false;
-      if (err instanceof ConfigValidationError) {
-        const placed = err.key ? showFieldError(formEl, err.key, err.message) : false;
-        if (!placed) showBanner(err.message, "error");
-      } else {
-        showBanner(`Save failed: ${message(err)}`, "error");
-      }
-      return false;
-    }
-  }
-
-  async function loadHistory() {
-    historyBody.innerHTML = '<tr><td colspan="4">Loading…</td></tr>';
-    try {
-      const { versions } = await client.getVersions();
-      renderHistory(versions || []);
-    } catch (err) {
-      historyBody.innerHTML = `<tr><td colspan="4">${escHtml(message(err))}</td></tr>`;
-    }
-  }
-
-  function renderHistory(versions: ConfigVersion[]) {
-    if (versions.length === 0) {
-      historyBody.innerHTML = '<tr><td colspan="4">No previous versions.</td></tr>';
-      return;
-    }
-    historyBody.innerHTML = versions
-      .map(
-        (entry) =>
-          "<tr>" +
-          `<td>${escHtml(entry.version)}</td>` +
-          `<td>${escHtml(entry.timestamp)}</td>` +
-          `<td>${escHtml((entry.changed_keys || []).join(", "))}</td>` +
-          '<td><button type="button" class="rsu-config-rollback" ' +
-          `data-version="${escHtml(entry.version)}">Roll back</button></td>` +
-          "</tr>",
-      )
-      .join("");
-  }
-
-  async function rollback(version: number) {
-    try {
-      const result = await client.rollback(version);
-      renderForm({ config: result.config, schema, version: result.version });
-      showBanner(`Rolled back — now at version ${result.version}.`, "success");
-      options.onSaved?.(result);
-      selectTab("fields");
-    } catch (err) {
-      showBanner(`Rollback failed: ${message(err)}`, "error");
-    }
-  }
+  const panel = new ConfigPanelController({
+    root,
+    client,
+    plane,
+    onSaved: options.onSaved,
+    formEl,
+    banner,
+    saveBtn,
+    versionEl,
+    historyBody,
+    advancedBar,
+    advancedToggle,
+    schema: { type: "object", properties: {} },
+    loaded: {},
+  });
 
   root.querySelectorAll(".rsu-config-tab").forEach((el) => {
-    el.addEventListener("click", () => selectTab((el as HTMLElement).dataset.tab || "fields"));
+    el.addEventListener("click", () => panel.selectTab((el as HTMLElement).dataset.tab || "fields"));
   });
   advancedToggle.addEventListener("change", () =>
     setAdvancedVisible(formEl, advancedToggle.checked),
   );
-  saveBtn.addEventListener("click", () => void save());
+  saveBtn.addEventListener("click", () => void panel.save());
   historyBody.addEventListener("click", (event) => {
     const target = (event.target as HTMLElement).closest(".rsu-config-rollback");
     if (!target) return;
-    void rollback(Number((target as HTMLElement).dataset.version));
+    void panel.rollback(Number((target as HTMLElement).dataset.version));
   });
 
-  selectTab("fields");
+  panel.selectTab("fields");
   if (options.initial) {
-    renderForm(options.initial);
+    panel.renderForm(options.initial);
   } else {
-    void reload();
+    void panel.reload();
   }
 
   return {
     element: root,
-    reload,
-    save,
+    reload: () => panel.reload(),
+    save: () => panel.save(),
     destroy: () => {
       container.innerHTML = "";
     },
