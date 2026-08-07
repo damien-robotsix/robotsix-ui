@@ -1,11 +1,11 @@
 modules:
-  core:
+  - id: core
     description: "Library entry points (React and framework-free) and public types"
     paths:
       - src/index.ts
       - src/vanilla.ts
 
-  styles:
+  - id: styles
     description: "Design tokens, base CSS, shared component styles, and utilities"
     paths:
       - src/styles/tokens.css
@@ -14,7 +14,7 @@ modules:
       - src/styles/utilities.css
       - src/styles/index.css
 
-  config-panel:
+  - id: config-panel
     description: >
       Schema-driven settings panel: the fleet's reference implementation of the
       config-ownership standard's UI affordance and HTTP surface.
@@ -33,19 +33,19 @@ modules:
       - src/config/client.test.ts
       - src/config/panel.test.ts
 
-  config-panel-react:
+  - id: config-panel-react
     description: "React wrapper that mounts the framework-free config panel"
     paths:
       - src/components/ConfigPanel/ConfigPanel.tsx
       - src/components/ConfigPanel/ConfigPanel.test.tsx
       - src/components/ConfigPanel/index.ts
 
-  test-support:
+  - id: test-support
     description: "Test setup utilities"
     paths:
       - src/test-setup.ts
 
-  docs:
+  - id: docs
     description: "Documentation"
     paths:
       - docs/consumption.md
