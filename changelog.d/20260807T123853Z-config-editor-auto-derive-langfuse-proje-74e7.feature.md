@@ -1,0 +1,1 @@
+Add `componentId` option to the config panel. When set, map-entry keys (`langfuse.projects`, `openrouter.keys`) are auto-derived as read-only text rather than requiring manual entry, and the `project_id` field inside an object-valued map entry is auto-populated from the component id — eliminating redundant manual fields.

@@ -127,6 +127,32 @@ describe("map rendering", () => {
 
     expect(field("langfuse.projects.robotsix-auto-mail-triage.public_key").value).toBe("pk-lf-1");
   });
+
+  it("renders map key as read-only text when componentId is set", () => {
+    renderConfigForm(container, schema, current, { componentId: "robotsix-auto-mail" });
+
+    // The key is a <span>, not an <input>.
+    const nameEl = container.querySelector(".rsu-config-map-name") as HTMLElement;
+    expect(nameEl.tagName).toBe("SPAN");
+    expect(nameEl.textContent).toBe("robotsix-auto-mail");
+  });
+
+  it("auto-populates a blank map entry key with componentId", () => {
+    const empty = { langfuse: { host: "", projects: {} }, openrouter: { keys: {} } };
+    renderConfigForm(container, schema, empty, { componentId: "my-component" });
+    (container.querySelector(".rsu-config-map-add") as HTMLButtonElement).click();
+
+    const nameEl = container.querySelectorAll(".rsu-config-map-name")[0] as HTMLElement;
+    expect(nameEl.tagName).toBe("SPAN");
+    expect(nameEl.textContent).toBe("my-component");
+  });
+
+  it("auto-populates project_id from componentId in an object-valued map", () => {
+    renderConfigForm(container, schema, current, { componentId: "my-component" });
+
+    // The stored project_id "cm1" is overridden by the componentId default.
+    expect(field("langfuse.projects.robotsix-auto-mail.project_id").value).toBe("my-component");
+  });
 });
 
 describe("map collection", () => {
@@ -171,6 +197,23 @@ describe("map collection", () => {
       langfuse: { projects: Record<string, unknown> };
     };
     expect(Object.keys(collected.langfuse.projects)).toEqual(["robotsix-auto-mail"]);
+  });
+
+  it("collects a new entry keyed by componentId", () => {
+    renderConfigForm(container, schema, current, { componentId: "my-comp" });
+    (container.querySelector(".rsu-config-map-add") as HTMLButtonElement).click();
+
+    const secret = field("langfuse.projects.my-comp.secret_key");
+    secret.value = "sk-lf-new";
+
+    const collected = collectConfigValues(schema, container) as {
+      langfuse: { projects: Record<string, unknown> };
+    };
+    expect(Object.keys(collected.langfuse.projects)).toEqual(["robotsix-auto-mail", "my-comp"]);
+    expect(collected.langfuse.projects["my-comp"]).toEqual({
+      secret_key: "sk-lf-new",
+      project_id: "my-comp",
+    });
   });
 });
 
