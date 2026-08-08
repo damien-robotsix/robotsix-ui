@@ -539,7 +539,10 @@ function appendMapEntry(
         isPlainObject(valueSchema.properties) &&
         "project_id" in valueSchema.properties
       ) {
-        entryValue = { ...(isPlainObject(entryValue) ? entryValue : {}), project_id: ctx.componentId };
+        entryValue = {
+          ...(isPlainObject(entryValue) ? entryValue : {}),
+          project_id: ctx.componentId,
+        };
       }
       renderNode(valueSchema, entryValue, path, body, ctx);
     } else {
