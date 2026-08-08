@@ -104,6 +104,7 @@ interface PanelContext {
   advancedToggle: HTMLInputElement;
   schema: ConfigSchema;
   loaded: ConfigValues;
+  componentId?: string;
 }
 
 /**
@@ -125,6 +126,7 @@ class ConfigPanelController {
   private readonly historyBody: HTMLElement;
   private readonly advancedBar: HTMLElement;
   private readonly advancedToggle: HTMLInputElement;
+  private readonly componentId?: string;
   private schema: ConfigSchema;
   private loaded: ConfigValues;
 
@@ -140,6 +142,7 @@ class ConfigPanelController {
     this.historyBody = ctx.historyBody;
     this.advancedBar = ctx.advancedBar;
     this.advancedToggle = ctx.advancedToggle;
+    this.componentId = ctx.componentId;
     this.schema = ctx.schema;
     this.loaded = ctx.loaded;
   }
@@ -214,6 +217,7 @@ class ConfigPanelController {
     this.loaded = response.config || {};
     renderConfigForm(this.formEl, this.schema, this.loaded, {
       plane: this.plane,
+      componentId: this.componentId,
       onChange: () => {
         this.saveBtn.disabled = false;
       },
@@ -296,6 +300,7 @@ export function mountConfigPanel(
     client,
     plane,
     onSaved: options.onSaved,
+    componentId: options.componentId,
     formEl,
     banner,
     saveBtn,

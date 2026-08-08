@@ -36,6 +36,7 @@ interface RenderContext {
   plane: DeployPlane;
   defs: Record<string, JsonSchemaNode> | undefined;
   onChange?: () => void;
+  componentId?: string;
 }
 
 /**
@@ -56,6 +57,7 @@ export function renderConfigForm(
     plane: options.plane || "component",
     defs: root.$defs,
     onChange: options.onChange,
+    componentId: options.componentId,
   };
   renderNode(root, current ?? {}, "", container, ctx);
   setAdvancedVisible(container, false);
@@ -486,9 +488,12 @@ function buildMapSection(
 /**
  * Render one `name → value` entry of a map.
  *
- * The entry's key is an editable input, because the key *is* configuration —
- * a Langfuse project name, an OpenRouter key alias.  Renaming it re-stamps
- * the `data-key` path of every field below it, which is what keeps the
+ * When `ctx.componentId` is set the key is auto-derived rather than
+ * requiring manual entry: existing entries keep their stored key (displayed
+ * read-only), and new entries default to the component id.  Without it the
+ * key remains an editable input — the key *is* configuration (a Langfuse
+ * project name, an OpenRouter key alias).  Renaming it re-stamps the
+ * `data-key` path of every field below it, which is what keeps the
  * collector and the surface's `422` field paths pointing at the same row.
  */
 function appendMapEntry(
@@ -499,16 +504,23 @@ function appendMapEntry(
   value: unknown,
   ctx: RenderContext,
 ): void {
+  const entryName = name || ctx.componentId || "";
+  const isDerived = ctx.componentId !== undefined;
+
   const entry = document.createElement("div");
   entry.className = "rsu-config-array-item rsu-config-map-entry";
   entry.dataset.mapPrefix = prefix;
-  entry.dataset.mapName = name;
+  entry.dataset.mapName = entryName;
 
   const header = document.createElement("div");
   header.className = "rsu-config-array-item-header rsu-config-map-entry-header";
-  header.innerHTML =
-    `<input type="text" class="rsu-config-map-name" value="${escAttr(name)}"` +
-    ' spellcheck="false" placeholder="name">';
+  if (isDerived) {
+    header.innerHTML = `<span class="rsu-config-map-name">${escHtml(entryName)}</span>`;
+  } else {
+    header.innerHTML =
+      `<input type="text" class="rsu-config-map-name" value="${escAttr(entryName)}"` +
+      ' spellcheck="false" placeholder="name">';
+  }
   entry.appendChild(header);
 
   const body = document.createElement("div");
@@ -519,23 +531,38 @@ function appendMapEntry(
     body.innerHTML = "";
     const path = `${prefix}.${entryName}`;
     if (isObjectNode(valueSchema)) {
-      renderNode(valueSchema, value, path, body, ctx);
+      // When componentId is set, auto-populate a project_id field inside an
+      // object-valued map entry so the operator doesn't maintain it by hand.
+      let entryValue = value;
+      if (
+        ctx.componentId &&
+        isPlainObject(valueSchema.properties) &&
+        "project_id" in valueSchema.properties
+      ) {
+        entryValue = {
+          ...(isPlainObject(entryValue) ? entryValue : {}),
+          project_id: ctx.componentId,
+        };
+      }
+      renderNode(valueSchema, entryValue, path, body, ctx);
     } else {
       body.appendChild(buildRow(path, "value", valueSchema, value, [], ctx));
     }
   };
-  renderBody(name);
+  renderBody(entryName);
 
-  const nameInput = header.querySelector(".rsu-config-map-name") as HTMLInputElement;
-  nameInput.addEventListener("input", () => {
-    const next = nameInput.value.trim();
-    if (next === entry.dataset.mapName) return;
-    entry.dataset.mapName = next;
-    // Re-stamping beats re-rendering: it keeps whatever the operator has
-    // already typed into the entry's fields.
-    restampMapEntry(body, prefix, next);
-    ctx.onChange?.();
-  });
+  if (!isDerived) {
+    const nameInput = header.querySelector(".rsu-config-map-name") as HTMLInputElement;
+    nameInput.addEventListener("input", () => {
+      const next = nameInput.value.trim();
+      if (next === entry.dataset.mapName) return;
+      entry.dataset.mapName = next;
+      // Re-stamping beats re-rendering: it keeps whatever the operator has
+      // already typed into the entry's fields.
+      restampMapEntry(body, prefix, next);
+      ctx.onChange?.();
+    });
+  }
 
   const removeBtn = document.createElement("button");
   removeBtn.type = "button";

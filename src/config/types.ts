@@ -59,6 +59,13 @@ export interface ConfigFormOptions {
    * rendered read-only and are never collected.  Defaults to `"component"`.
    */
   plane?: DeployPlane;
+  /**
+   * The component's own identifier.  When set, map-entry keys
+   * (`langfuse.projects`, `openrouter.keys`) are auto-derived from it
+   * rather than requiring manual entry, and a `project_id` field inside an
+   * object-valued map entry is auto-populated.
+   */
+  componentId?: string;
 }
 
 /** Options accepted by {@link renderConfigForm}. */
