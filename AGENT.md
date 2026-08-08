@@ -24,6 +24,7 @@ config HTTP surface (`GET`/`PUT /config`, `GET /config/versions`,
 The library has two layers and two entry points:
 
 ### Framework-free core (`src/config/`)
+
 - Pure TypeScript / DOM — no React dependency.
 - Modules: `panel.ts` (controller), `render.ts` (DOM generation), `schema.ts`
   (JSON Schema parsing), `client.ts` (HTTP client), `collect.ts` (form value
@@ -33,18 +34,21 @@ The library has two layers and two entry points:
   have no bundler — loaded via `<script type="module">`.
 
 ### React wrapper (`src/components/ConfigPanel/`)
+
 - Thin wrapper: `ConfigPanel.tsx` renders the framework-free panel inside a
   React component.
 - Entry point: `src/index.ts` → `@robotsix/ui`.
   Exports `<ConfigPanel>` for React hosts with a bundler.
 
 ### Styles (`src/styles/`)
+
 - Design tokens (`tokens.css`), base reset (`base.css`), component styles
   (`components.css`), utilities (`utilities.css`).
 - Compiled to a single `dist/style.css` with no peer dependencies.
 - All classes are prefixed `rsu-` (RobotSix UI).
 
 ### Build output
+
 Vite produces `dist/` with ES modules (`.js`), CommonJS (`.cjs`), TypeScript
 declarations (`.d.ts`), and the compiled stylesheet (`style.css`).
 
