@@ -2,6 +2,7 @@ modules:
   - id: core
     description: "Library entry points (React and framework-free) and public types"
     paths:
+      - changelog.d/20260807T135306Z-add-agent-md-with-project-context-for-ai-62c8.doc.md
       - src/index.ts
       - src/vanilla.ts
       - changelog.d/20260807T123853Z-config-editor-auto-derive-langfuse-proje-74e7.feature.md
@@ -50,5 +51,6 @@ modules:
   - id: docs
     description: "Documentation"
     paths:
+      - AGENT.md
       - docs/consumption.md
       - docs/config-panel.md
