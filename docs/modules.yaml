@@ -3,8 +3,10 @@ modules:
     description: "Library entry points (React and framework-free) and public types"
     paths:
       - changelog.d/20260807T135306Z-add-agent-md-with-project-context-for-ai-62c8.doc.md
+      - changelog.d/20260809T151447Z-robotsix-ui-add-robotsix-mill-config-yam-c5f1.misc.md
       - src/index.ts
       - src/vanilla.ts
+      - .robotsix-mill/config.yaml
       - changelog.d/20260807T123853Z-config-editor-auto-derive-langfuse-proje-74e7.feature.md
       - changelog.d/20260807T135307Z-use-function-regex-form-for-external-in-5b3d.misc.md
       - changelog.d/*.md
