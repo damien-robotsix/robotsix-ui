@@ -6,6 +6,7 @@ modules:
       - src/index.ts
       - src/vanilla.ts
       - changelog.d/20260807T123853Z-config-editor-auto-derive-langfuse-proje-74e7.feature.md
+      - changelog.d/20260807T135307Z-use-function-regex-form-for-external-in-5b3d.misc.md
       - changelog.d/*.md
 
   - id: styles
