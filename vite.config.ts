@@ -21,7 +21,7 @@ export default defineConfig({
       cssFileName: "style",
     },
     rollupOptions: {
-      external: ["react", "react-dom", "react/jsx-runtime"],
+      external: (id) => /^react(-dom)?(\/|$)/.test(id),
       output: {
         globals: {
           react: "React",
