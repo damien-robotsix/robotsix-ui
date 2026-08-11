@@ -63,6 +63,28 @@ inline validation errors, and version history with rollback.
 | `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed |
 | `"advanced": true`                        | hidden behind "Show advanced settings"       |
 
+## Standalone CSS
+
+Non-JS consumers (Python services, static sites, deployment scripts) can fetch
+the compiled stylesheet directly from GitHub Releases — no npm required:
+
+```
+https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.29/style.css
+```
+
+Replace `v0.1.29` with the desired version tag. The file is a single,
+self-contained stylesheet with all `--rsu-*` design tokens, base reset, and
+component styles. It has no peer dependencies.
+
+A minimal Python helper is included for programmatic resolution:
+
+```python
+from robotsix_ui import css_url
+
+url = css_url("v0.1.29")
+# → "https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.29/style.css"
+```
+
 ## Documentation
 
 - [The shared config panel](docs/config-panel.md) — mounting it, the schema
