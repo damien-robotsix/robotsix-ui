@@ -73,3 +73,19 @@ jobs:
           git tag -a "v$OLD_VERSION" -m "Release v$OLD_VERSION"
           git push origin main
           git push origin "v$OLD_VERSION"
+
+      - name: Build release assets
+        run: |
+          git fetch --tags
+          git checkout "v$OLD_VERSION"
+          npm ci
+          npm run build
+
+      - name: Create GitHub Release with CSS asset
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v$OLD_VERSION" \
+            --title "v$OLD_VERSION" \
+            --notes "Release v$OLD_VERSION" \
+            dist/style.css

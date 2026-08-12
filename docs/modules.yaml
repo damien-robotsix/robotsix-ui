@@ -57,3 +57,8 @@ modules:
       - AGENT.md
       - docs/consumption.md
       - docs/config-panel.md
+
+  - id: python-helper
+    description: "Python helper for resolving robotsix-ui CSS release URLs"
+    paths:
+      - robotsix_ui/__init__.py
