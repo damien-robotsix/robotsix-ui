@@ -1,0 +1,1 @@
+Release v0.1.31: roll up changelog fragments including the `componentId` auto-derive config-panel feature, distribution of pre-built CSS as a GitHub Release asset, CI lint fix, AGENT.md addition, rollup externals improvement, Mill config declaration, and triage boilerplate enablement.

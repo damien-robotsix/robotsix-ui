@@ -1,5 +1,26 @@
-## 0.1.31 (unreleased)
+## 0.1.32 (unreleased)
 
+## 0.1.31 (2026-08-14)
+
+- Add `componentId` option to the config panel. When set, map-entry keys
+  (`langfuse.projects`, `openrouter.keys`) are auto-derived as read-only text
+  rather than requiring manual entry, and the `project_id` field inside an
+  object-valued map entry is auto-populated from the component id — eliminating
+  redundant manual fields.
+- Auto-release workflow now uploads `dist/style.css` as a GitHub Release asset
+  on every version tag. Non-JS consumers can fetch the compiled stylesheet
+  directly from the release download URL.
+- Fix CI lint job by applying Prettier formatting to
+  `.github/workflows/dependabot-auto-merge.yml` and `CHANGELOG.md`.
+- Add AGENT.md with project context for AI coding tools (identity, architecture,
+  commands, conventions, release flow).
+- Use a function form with regex for `rollupOptions.external` to automatically
+  externalize all React and ReactDOM subpath imports, instead of a hardcoded
+  string array.
+- Add `.robotsix-mill/config.yaml` declaring `languages: [typescript]` to
+  prevent inappropriate Python-scoped periodic workflow proposals.
+- Enable triage_boilerplate periodic agent for scanning triage tickets and
+  proposing boilerplate response templates.
 
 ## 0.1.30 (2026-08-12)
 
