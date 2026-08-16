@@ -302,6 +302,29 @@ describe("array sections", () => {
     const collected = collectConfigValues(arraySchema, container);
     expect(collected.accounts).toEqual([{ id: "work", host: "imap.example.com" }]);
   });
+
+  it("recollects renumbered items after removal", () => {
+    const current = {
+      accounts: [
+        { id: "work", host: "smtp.example.com" },
+        { id: "home", host: "imap.example.com" },
+      ],
+    };
+    renderConfigForm(container, arraySchema, current);
+
+    // Remove the first item — reindexArrayItems renumbers the second to index 0.
+    (container.querySelector(".rsu-config-array-remove") as HTMLButtonElement).click();
+    expect(container.querySelectorAll(".rsu-config-array-item")).toHaveLength(1);
+
+    const collected = collectConfigValues(arraySchema, container);
+    expect(collected.accounts).toEqual([{ id: "home", host: "imap.example.com" }]);
+
+    // Mirroring map.test.ts: the diff after removal reflects the renumbered list.
+    const updates = diffConfigValues(current, collected, arraySchema) as {
+      accounts: unknown[];
+    };
+    expect(updates.accounts).toEqual([{ id: "home", host: "imap.example.com" }]);
+  });
 });
 
 describe("field errors", () => {
