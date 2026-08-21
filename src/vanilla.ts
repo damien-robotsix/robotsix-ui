@@ -17,3 +17,4 @@
  */
 
 export * from "./config/index.js";
+export * from "./appshell/index.js";

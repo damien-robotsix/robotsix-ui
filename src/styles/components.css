@@ -339,3 +339,144 @@
   border-radius: var(--rsu-radius-lg);
   box-shadow: var(--rsu-shadow-sm);
 }
+
+/* ── AppShell ───────────────────────────────────────────────── */
+
+.rsu-appshell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--rsu-space-md);
+  padding: var(--rsu-space-sm) var(--rsu-space-lg);
+  background: var(--rsu-color-bg);
+  border-bottom: var(--rsu-border-width) solid var(--rsu-color-border);
+}
+
+.rsu-appshell-brand {
+  font-size: var(--rsu-font-size-lg);
+  font-weight: var(--rsu-font-weight-semibold);
+  color: var(--rsu-color-text);
+  white-space: nowrap;
+}
+
+/* Hamburger button — hidden on wide viewports, shown by the media query below. */
+.rsu-appshell-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--rsu-space-sm);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.rsu-appshell-toggle-bar {
+  width: 18px;
+  height: 2px;
+  background: var(--rsu-color-text);
+  border-radius: 9999px;
+}
+
+.rsu-appshell-nav {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.rsu-appshell-nav-list {
+  display: flex;
+  gap: var(--rsu-space-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rsu-appshell-nav-item {
+  margin: 0;
+}
+
+.rsu-appshell-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--rsu-space-xs);
+  padding: var(--rsu-space-xs) var(--rsu-space-md);
+  font-size: var(--rsu-font-size-sm);
+  font-weight: var(--rsu-font-weight-medium);
+  color: var(--rsu-color-text-secondary);
+  border-radius: var(--rsu-radius-md);
+  transition:
+    color var(--rsu-transition-fast),
+    background var(--rsu-transition-fast);
+}
+
+.rsu-appshell-link:hover {
+  color: var(--rsu-color-text);
+  background: var(--rsu-color-bg-secondary);
+  text-decoration: none;
+}
+
+.rsu-appshell-link--active {
+  color: var(--rsu-color-text);
+  background: var(--rsu-color-bg-secondary);
+}
+
+.rsu-appshell-icon {
+  font-size: var(--rsu-font-size-md);
+  line-height: 1;
+}
+
+.rsu-appshell-right {
+  display: flex;
+  align-items: center;
+  gap: var(--rsu-space-sm);
+  margin-left: auto;
+}
+
+.rsu-appshell-settings {
+  font-size: var(--rsu-font-size-sm);
+  font-weight: var(--rsu-font-weight-medium);
+  color: var(--rsu-color-text-secondary);
+}
+
+.rsu-appshell-settings:hover {
+  color: var(--rsu-color-text);
+  text-decoration: none;
+}
+
+.rsu-appshell-slot {
+  display: flex;
+  align-items: center;
+  gap: var(--rsu-space-sm);
+}
+
+/* On narrow viewports the nav collapses behind the hamburger button. */
+@media (max-width: 640px) {
+  .rsu-appshell-toggle {
+    display: inline-flex;
+  }
+
+  .rsu-appshell-nav {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    padding: var(--rsu-space-sm) var(--rsu-space-lg);
+    background: var(--rsu-color-bg);
+    border-bottom: var(--rsu-border-width) solid var(--rsu-color-border);
+  }
+
+  .rsu-appshell--open .rsu-appshell-nav {
+    display: block;
+  }
+
+  .rsu-appshell-nav-list {
+    flex-direction: column;
+  }
+
+  .rsu-appshell-link {
+    display: flex;
+    width: 100%;
+    padding: var(--rsu-space-sm) var(--rsu-space-md);
+  }
+}
