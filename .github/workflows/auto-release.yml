@@ -81,11 +81,18 @@ jobs:
           npm ci
           npm run build
 
-      - name: Create GitHub Release with CSS asset
+      # The stylesheet alone is not a consumable panel. A server-rendered UI
+      # with no bundler loads the framework-free bundle with a plain
+      # <script type="module">, so vanilla.js has to be fetchable the same way
+      # style.css is — otherwise every non-React component can style a config
+      # panel it has no way to mount.
+      - name: Create GitHub Release with CSS and vanilla-JS assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "v$OLD_VERSION" \
             --title "v$OLD_VERSION" \
             --notes "Release v$OLD_VERSION" \
-            dist/style.css
+            dist/style.css \
+            dist/vanilla.js \
+            dist/vanilla.js.map
