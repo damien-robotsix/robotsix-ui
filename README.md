@@ -63,26 +63,43 @@ inline validation errors, and version history with rollback.
 | `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed |
 | `"advanced": true`                        | hidden behind "Show advanced settings"       |
 
-## Standalone CSS
+## Standalone assets
 
 Non-JS consumers (Python services, static sites, deployment scripts) can fetch
-the compiled stylesheet directly from GitHub Releases — no npm required:
+the built files directly from GitHub Releases — no npm required. Every version
+tag publishes two:
 
 ```
-https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.29/style.css
+https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34/style.css
+https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34/vanilla.js
 ```
 
-Replace `v0.1.29` with the desired version tag. The file is a single,
-self-contained stylesheet with all `--rsu-*` design tokens, base reset, and
-component styles. It has no peer dependencies.
+Replace `v0.1.34` with the desired version tag.
+
+`style.css` is a single, self-contained stylesheet with all `--rsu-*` design
+tokens, base reset, and component styles. `vanilla.js` is the framework-free
+`@robotsix/ui/vanilla` build — an ES module exporting `mountConfigPanel`, with
+no React and no bundler required. A component needs both: the stylesheet alone
+styles a panel it has no way to mount.
+
+```html
+<link rel="stylesheet" href="/static/robotsix-ui.css" />
+<div id="settings"></div>
+<script type="module">
+  import { mountConfigPanel } from "/static/robotsix-ui-vanilla.js";
+  mountConfigPanel(document.getElementById("settings"));
+</script>
+```
 
 A minimal Python helper is included for programmatic resolution:
 
 ```python
-from robotsix_ui import css_url
+from robotsix_ui import css_url, vanilla_js_url
 
-url = css_url("v0.1.29")
-# → "https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.29/style.css"
+css_url("v0.1.34")
+# → "https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34/style.css"
+vanilla_js_url("v0.1.34")
+# → "https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34/vanilla.js"
 ```
 
 ## Documentation

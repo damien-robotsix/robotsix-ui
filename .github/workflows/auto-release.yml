@@ -63,8 +63,11 @@ jobs:
           echo "OLD_VERSION=$OLD_VERSION" >> "$GITHUB_ENV"
           echo "NEW_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
 
-          # Prepend a new unreleased section for the next dev cycle
-          sed -i "1s/^/## $NEW_VERSION (unreleased)\n\n\n/" CHANGELOG.md
+          # Prepend a new unreleased section for the next dev cycle.
+          # Two newlines, not three: a third leaves a double blank line before
+          # the previous heading, which `prettier --check .` rejects — so every
+          # release commit left main's own lint job red until someone noticed.
+          sed -i "1s/^/## $NEW_VERSION (unreleased)\n\n/" CHANGELOG.md
 
       - name: Commit, tag, and push
         run: |
@@ -81,11 +84,18 @@ jobs:
           npm ci
           npm run build
 
-      - name: Create GitHub Release with CSS asset
+      # The stylesheet alone is not a consumable panel. A server-rendered UI
+      # with no bundler loads the framework-free bundle with a plain
+      # <script type="module">, so vanilla.js has to be fetchable the same way
+      # style.css is — otherwise every non-React component can style a config
+      # panel it has no way to mount.
+      - name: Create GitHub Release with CSS and vanilla-JS assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create "v$OLD_VERSION" \
             --title "v$OLD_VERSION" \
             --notes "Release v$OLD_VERSION" \
-            dist/style.css
+            dist/style.css \
+            dist/vanilla.js \
+            dist/vanilla.js.map

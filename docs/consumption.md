@@ -66,6 +66,22 @@ cp node_modules/@robotsix/ui/dist/style.css public/vendor/robotsix-ui.css
 
 Then link it from your HTML or import from your own bundle.
 
+### Option E: Fetch the release assets (no npm at all)
+
+A server-rendered UI with no node toolchain fetches the built files from the
+GitHub Release for a version tag. Both are published on every tag:
+
+```bash
+BASE=https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34
+curl -fsSL "$BASE/style.css"   -o static/robotsix-ui.css
+curl -fsSL "$BASE/vanilla.js"  -o static/robotsix-ui-vanilla.js
+```
+
+Fetch both, not just the stylesheet: `vanilla.js` is what mounts the panel the
+stylesheet styles. Python consumers can resolve the URLs with the bundled
+`robotsix_ui.css_url()` / `robotsix_ui.vanilla_js_url()` helpers rather than
+hand-building them.
+
 ## What the stylesheet provides
 
 | Layer          | File             | Purpose                                                                                                       |
