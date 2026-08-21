@@ -10,6 +10,7 @@ modules:
       - changelog.d/20260807T123853Z-config-editor-auto-derive-langfuse-proje-74e7.feature.md
       - changelog.d/20260807T135307Z-use-function-regex-form-for-external-in-5b3d.misc.md
       - changelog.d/20260812T094234Z-robotsix-ui-enable-triage-boilerplate-pe-30e8.misc.md
+      - changelog.d/20260821T094525Z-add-a-shared-appshell-navigation-menu-co-c896.feature.md
       - changelog.d/*.md
 
   - id: styles
@@ -47,6 +48,21 @@ modules:
       - src/components/ConfigPanel/ConfigPanel.test.tsx
       - src/components/ConfigPanel/index.ts
 
+  - id: app-shell
+    description: "Framework-free app shell: the fleet's shared top-level navigation"
+    paths:
+      - src/appshell/index.ts
+      - src/appshell/types.ts
+      - src/appshell/appshell.ts
+      - src/appshell/appshell.test.ts
+
+  - id: app-shell-react
+    description: "React wrapper that mounts the framework-free app shell"
+    paths:
+      - src/components/AppShell/AppShell.tsx
+      - src/components/AppShell/AppShell.test.tsx
+      - src/components/AppShell/index.ts
+
   - id: test-support
     description: "Test setup utilities"
     paths:
@@ -56,6 +72,7 @@ modules:
     description: "Documentation"
     paths:
       - AGENT.md
+      - docs/app-shell.md
       - docs/consumption.md
       - docs/config-panel.md
 
