@@ -72,6 +72,7 @@ modules:
     description: "Documentation"
     paths:
       - AGENT.md
+      - docs/app-shell.md
       - docs/consumption.md
       - docs/config-panel.md
 
