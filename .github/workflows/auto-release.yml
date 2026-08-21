@@ -63,8 +63,11 @@ jobs:
           echo "OLD_VERSION=$OLD_VERSION" >> "$GITHUB_ENV"
           echo "NEW_VERSION=$NEW_VERSION" >> "$GITHUB_ENV"
 
-          # Prepend a new unreleased section for the next dev cycle
-          sed -i "1s/^/## $NEW_VERSION (unreleased)\n\n\n/" CHANGELOG.md
+          # Prepend a new unreleased section for the next dev cycle.
+          # Two newlines, not three: a third leaves a double blank line before
+          # the previous heading, which `prettier --check .` rejects — so every
+          # release commit left main's own lint job red until someone noticed.
+          sed -i "1s/^/## $NEW_VERSION (unreleased)\n\n/" CHANGELOG.md
 
       - name: Commit, tag, and push
         run: |
