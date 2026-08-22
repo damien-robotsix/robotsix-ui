@@ -4,6 +4,7 @@ modules:
     paths:
       - changelog.d/20260807T135306Z-add-agent-md-with-project-context-for-ai-62c8.doc.md
       - changelog.d/20260809T151447Z-robotsix-ui-add-robotsix-mill-config-yam-c5f1.misc.md
+      - src/css.d.ts
       - src/index.ts
       - src/vanilla.ts
       - .robotsix-mill/config.yaml

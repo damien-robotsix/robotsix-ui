@@ -25,7 +25,9 @@ export function AppShell({ className, rightSlot, ...options }: AppShellProps) {
   const [slot, setSlot] = useState<HTMLElement | null>(null);
   // Keep the latest options reachable without re-mounting on every render.
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   useEffect(() => {
     const host = hostRef.current;

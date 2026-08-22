@@ -20,7 +20,9 @@ export function ConfigPanel({ className, ...options }: ConfigPanelProps) {
   const handleRef = useRef<ConfigPanelHandle | null>(null);
   // Keep the latest options reachable without re-mounting on every render.
   const optionsRef = useRef(options);
-  optionsRef.current = options;
+  useEffect(() => {
+    optionsRef.current = options;
+  });
 
   useEffect(() => {
     const host = hostRef.current;
