@@ -12,6 +12,7 @@ modules:
       - changelog.d/20260807T135307Z-use-function-regex-form-for-external-in-5b3d.misc.md
       - changelog.d/20260812T094234Z-robotsix-ui-enable-triage-boilerplate-pe-30e8.misc.md
       - changelog.d/20260821T094525Z-add-a-shared-appshell-navigation-menu-co-c896.feature.md
+      - changelog.d/20260821T135748Z-update-robotsix-mill-config-yaml-languag-d33e.misc.md
       - changelog.d/*.md
 
   - id: styles
