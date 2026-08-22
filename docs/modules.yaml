@@ -80,4 +80,6 @@ modules:
   - id: python-helper
     description: "Python helper for resolving robotsix-ui CSS release URLs"
     paths:
+      - pyproject.toml
       - robotsix_ui/__init__.py
+      - robotsix_ui/test_init.py
