@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ConfigClient } from "./client.js";
 import { mountConfigPanel } from "./panel.js";
-import { ConfigValidationError } from "./types.js";
+import { ConfigContractError, ConfigValidationError } from "./types.js";
 
 const schema = {
   type: "object",
@@ -153,6 +153,44 @@ describe("mountConfigPanel", () => {
     const banner = host.querySelector(".rsu-config-banner") as HTMLElement;
     expect(banner.hidden).toBe(false);
     expect(banner.textContent).toContain("boom");
+  });
+
+  it("refuses to render a payload with no config document", async () => {
+    // Rendering it would fill every field from the schema defaults, and the
+    // operator's next Save would write those defaults over the live config.
+    const client = fakeClient({
+      getConfig: vi
+        .fn()
+        .mockRejectedValue(new ConfigContractError("GET /config", 'no "config" object')),
+    });
+    mountConfigPanel(host, { client });
+    await settle();
+
+    expect(host.querySelector('[data-key="log_level"]')).toBeNull();
+    const banner = host.querySelector(".rsu-config-banner") as HTMLElement;
+    expect(banner.hidden).toBe(false);
+    expect(banner.textContent).toContain("config");
+    expect((host.querySelector(".rsu-config-save") as HTMLButtonElement).disabled).toBe(true);
+  });
+
+  it("re-reads instead of re-rendering when a save answers off-contract", async () => {
+    const client = fakeClient({
+      putConfig: vi
+        .fn()
+        .mockRejectedValue(new ConfigContractError("PUT /config", 'no "config" object')),
+    });
+    const panel = mountConfigPanel(host, { client });
+    await settle();
+
+    (host.querySelector('[data-key="log_level"]') as HTMLSelectElement).value = "debug";
+    const saved = await panel.save();
+    await settle();
+
+    // The write itself was accepted, so the panel re-reads rather than
+    // rendering an empty document over the form.
+    expect(saved).toBe(true);
+    expect(client.getConfig).toHaveBeenCalledTimes(2);
+    expect((host.querySelector('[data-key="log_level"]') as HTMLSelectElement).value).toBe("info");
   });
 
   it("skips the initial fetch when the config is supplied", async () => {
