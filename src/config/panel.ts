@@ -26,7 +26,7 @@ import type {
   ConfigWriteResponse,
   DeployPlane,
 } from "./types.js";
-import { ConfigValidationError } from "./types.js";
+import { ConfigContractError, ConfigValidationError } from "./types.js";
 
 /** Options for {@link mountConfigPanel}. */
 export interface ConfigPanelOptions extends ConfigClientOptions, ConfigFormOptions {
@@ -180,6 +180,12 @@ class ConfigPanelController {
       if (err instanceof ConfigValidationError) {
         const placed = err.key ? showFieldError(this.formEl, err.key, err.message) : false;
         if (!placed) this.showBanner(err.message, "error");
+      } else if (err instanceof ConfigContractError) {
+        // The write itself was accepted — only the response is off-contract,
+        // so re-read rather than re-rendering from a document we do not have.
+        this.showBanner(`Saved, but ${err.message}. Re-reading the config.`, "error");
+        void this.reload();
+        return true;
       } else {
         this.showBanner(`Save failed: ${message(err)}`, "error");
       }
@@ -211,10 +217,21 @@ class ConfigPanelController {
     }
   }
 
-  /** Render *response* into the form, resetting schema/loaded and the save button. */
+  /**
+   * Render *response* into the form, resetting schema/loaded and the save button.
+   *
+   * Throws {@link ConfigContractError} when the payload carries no `config`
+   * document: rendering one anyway means every field falls back to its schema
+   * default, and the operator's next Save writes those defaults over the live
+   * config.
+   */
   renderForm(response: ConfigResponse): void {
+    const loaded: unknown = response.config;
+    if (typeof loaded !== "object" || loaded === null || Array.isArray(loaded)) {
+      throw new ConfigContractError("GET /config", 'no "config" object in the response');
+    }
     this.schema = response.schema;
-    this.loaded = response.config || {};
+    this.loaded = loaded as ConfigValues;
     renderConfigForm(this.formEl, this.schema, this.loaded, {
       plane: this.plane,
       componentId: this.componentId,

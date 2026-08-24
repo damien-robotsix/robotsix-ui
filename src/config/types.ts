@@ -112,6 +112,27 @@ export interface ConfigProblem {
   instance?: string;
 }
 
+/**
+ * Thrown when a component answers with something other than the envelope
+ * `config-ownership.md` defines — most often the config document spread
+ * across the top level instead of nested under `config`.
+ *
+ * This is never recoverable by rendering anyway: an absent `config` key used
+ * to leave the panel rendering every field at its schema default, and the
+ * operator's next Save wrote those defaults over the component's live config.
+ * Fail loudly instead.
+ */
+export class ConfigContractError extends Error {
+  /** The route that answered off-contract, e.g. `"GET /config"`. */
+  readonly route: string;
+
+  constructor(route: string, detail: string) {
+    super(`${route} did not return the standard config envelope: ${detail}`);
+    this.name = "ConfigContractError";
+    this.route = route;
+  }
+}
+
 /** Thrown by {@link ConfigClient} when the surface rejects a write. */
 export class ConfigValidationError extends Error {
   readonly problem: ConfigProblem;

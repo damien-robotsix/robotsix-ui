@@ -16,6 +16,20 @@ validation, as required by robotsix-standards
 
 The panel needs nothing else. It never contains component-specific code.
 
+### The response envelopes are not optional
+
+`GET /config`, `PUT /config` and `POST /config/rollback` must return the config
+document **under a `config` key** (`{"config": …, "schema": …, "version": …}`),
+and `GET /config/versions` must return `{"versions": […]}`. A component that
+spreads its config across the top level instead hands the panel an empty
+document: every field then renders at its schema default, and the operator's
+next Save writes those defaults over the live config — exactly how robotsix-chat
+lost its settings on 2026-08-24.
+
+The client refuses such a response with a `ConfigContractError` rather than
+rendering it, so the failure surfaces as a load error in the panel instead of a
+silent config wipe. If you see one, fix the component's response shape.
+
 ## Mounting it — server-rendered UI (no bundler)
 
 Every fleet UI today is a server-rendered page with plain `<script>` tags, so

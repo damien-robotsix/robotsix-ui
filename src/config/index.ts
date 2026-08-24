@@ -31,6 +31,7 @@ export {
 } from "./schema.js";
 export { escAttr, escHtml, renderInlineMarkdown } from "./html.js";
 export {
+  ConfigContractError,
   ConfigValidationError,
   parseProblemKey,
   type ConfigFormOptions,

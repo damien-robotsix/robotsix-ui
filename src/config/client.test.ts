@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import { ConfigClient } from "./client.js";
-import { ConfigValidationError, parseProblemKey } from "./types.js";
+import { ConfigContractError, ConfigValidationError, parseProblemKey } from "./types.js";
 
 function jsonResponse(body: unknown, status = 200): Response {
   return {
@@ -81,6 +81,52 @@ describe("ConfigClient", () => {
     expect(url).toBe("/config/rollback");
     expect(init.method).toBe("POST");
     expect(JSON.parse(init.body)).toEqual({ version: 6 });
+  });
+});
+
+describe("ConfigClient contract enforcement", () => {
+  // A component that spreads its config across the top level used to reach the
+  // panel as an empty document, which renders every field at its schema
+  // default — and the next Save writes those defaults over the live config.
+
+  it("rejects a GET /config response with the document at the top level", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue(jsonResponse({ log_level: "info", schema: {}, version: 7 }));
+    const client = new ConfigClient({ fetchImpl });
+
+    await expect(client.getConfig()).rejects.toBeInstanceOf(ConfigContractError);
+    await expect(client.getConfig()).rejects.toThrow(/GET \/config/);
+  });
+
+  it("names the top-level keys it did see", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ log_level: "info", version: 7 }));
+    const client = new ConfigClient({ fetchImpl });
+
+    await expect(client.getConfig()).rejects.toThrow(/log_level, version/);
+  });
+
+  it("rejects a PUT /config response with no config document", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ version: 8, status: "ok" }));
+    const client = new ConfigClient({ fetchImpl });
+
+    await expect(client.putConfig({ log_level: "debug" })).rejects.toBeInstanceOf(
+      ConfigContractError,
+    );
+  });
+
+  it("rejects a rollback response with no config document", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse({ version: 9, status: "ok" }));
+    const client = new ConfigClient({ fetchImpl });
+
+    await expect(client.rollback(6)).rejects.toBeInstanceOf(ConfigContractError);
+  });
+
+  it("rejects a bare-list version history", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(jsonResponse([{ version: 7 }]));
+    const client = new ConfigClient({ fetchImpl });
+
+    await expect(client.getVersions()).rejects.toBeInstanceOf(ConfigContractError);
   });
 });
 
