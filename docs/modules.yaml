@@ -18,6 +18,7 @@ modules:
       - changelog.d/20260829T080848Z-enable-mypy-baseline-periodic-workflow-o-af72.feature.md
       - changelog.d/20260829T080848Z-enable-test-gap-periodic-workflow-on-rob-4b60.feature.md
       - changelog.d/20260829T094234Z-robotsix-ui-package-the-robotsix-ui-pyth-fec0.feature.md
+      - changelog.d/20260829T102056Z-test-gap-add-unit-tests-for-src-config-h-03ae.misc.md
       - changelog.d/*.md
 
   - id: styles
@@ -42,6 +43,7 @@ modules:
       - src/config/client.ts
       - src/config/panel.ts
       - src/config/html.ts
+      - src/config/html.test.ts
       - src/config/schema.test.ts
       - src/config/render.test.ts
       - src/config/map.test.ts
