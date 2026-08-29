@@ -15,6 +15,7 @@ modules:
       - changelog.d/20260821T135748Z-update-robotsix-mill-config-yaml-languag-d33e.misc.md
       - changelog.d/20260828T164926Z-robotsix-ui-enable-agent-check-periodic-0c10.misc.md
       - changelog.d/20260828T164926Z-robotsix-ui-enable-pin-bump-periodic-wor-a392.misc.md
+      - changelog.d/20260829T080848Z-enable-test-gap-periodic-workflow-on-rob-4b60.feature.md
       - changelog.d/*.md
 
   - id: styles
