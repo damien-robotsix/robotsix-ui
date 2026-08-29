@@ -1,0 +1,1 @@
+Add dedicated unit tests for the `src/config/html.ts` escaping and inline-markdown utilities (`escHtml`, `escAttr`, `cssEscape`, `renderInlineMarkdown`), covering HTML/attribute escaping, markdown rendering order, http(s) link sanitization, and the `CSS.escape` fallback branch.
