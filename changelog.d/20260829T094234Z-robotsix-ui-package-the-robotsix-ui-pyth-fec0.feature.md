@@ -1,1 +1,0 @@
-Make the `robotsix-ui` Python package pip/uv-installable by adding a hatchling build backend and declaring `robotsix_ui` as the wheel package, so consumers can install it and import the release-asset URL helpers (`css_url`, `vanilla_js_url`).
