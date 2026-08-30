@@ -2,24 +2,10 @@ modules:
   - id: core
     description: "Library entry points (React and framework-free) and public types"
     paths:
-      - changelog.d/20260807T135306Z-add-agent-md-with-project-context-for-ai-62c8.doc.md
-      - changelog.d/20260809T151447Z-robotsix-ui-add-robotsix-mill-config-yam-c5f1.misc.md
       - src/css.d.ts
       - src/index.ts
       - src/vanilla.ts
       - .robotsix-mill/config.yaml
-      - changelog.d/20260807T123853Z-config-editor-auto-derive-langfuse-proje-74e7.feature.md
-      - changelog.d/20260807T135307Z-use-function-regex-form-for-external-in-5b3d.misc.md
-      - changelog.d/20260812T094234Z-robotsix-ui-enable-triage-boilerplate-pe-30e8.misc.md
-      - changelog.d/20260821T094525Z-add-a-shared-appshell-navigation-menu-co-c896.feature.md
-      - changelog.d/20260821T135748Z-update-robotsix-mill-config-yaml-languag-d33e.misc.md
-      - changelog.d/20260828T164926Z-robotsix-ui-enable-agent-check-periodic-0c10.misc.md
-      - changelog.d/20260828T164926Z-robotsix-ui-enable-pin-bump-periodic-wor-a392.misc.md
-      - changelog.d/20260829T080848Z-enable-mypy-baseline-periodic-workflow-o-af72.feature.md
-      - changelog.d/20260829T080848Z-enable-test-gap-periodic-workflow-on-rob-4b60.feature.md
-      - changelog.d/20260829T094234Z-robotsix-ui-package-the-robotsix-ui-pyth-fec0.feature.md
-      - changelog.d/20260829T102056Z-test-gap-add-unit-tests-for-src-config-h-03ae.misc.md
-      - changelog.d/*.md
 
   - id: styles
     description: "Design tokens, base CSS, shared component styles, and utilities"

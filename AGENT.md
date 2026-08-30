@@ -87,18 +87,17 @@ PR and push to `main`.
 
 ## Release Workflow
 
-Releases are automated via `.github/workflows/auto-release.yml`:
+Releases are automated via [release-please](https://github.com/googleapis/release-please)
+(`.github/workflows/release-please.yml`):
 
-1. On every push to `main` (excluding `chore(release)` and `[skip ci]` commits),
-   the workflow dates the top unreleased section in `CHANGELOG.md`, bumps the
-   version with `npm version patch`, and adds a new unreleased section for the
-   next dev cycle.
-2. Manual dispatch is also available with `patch`, `minor`, or `major` bump
-   choices.
-3. A git tag (`vX.Y.Z`) is created and pushed alongside the commit.
+1. On every push to `main`, release-please analyses conventional-commit
+   messages and opens (or updates) a release PR that bumps `package.json`
+   version and updates `CHANGELOG.md`.
+2. When the release PR is merged, release-please creates a GitHub Release
+   with auto-generated notes. A follow-up job builds the library and uploads
+   `style.css`, `vanilla.js`, and `vanilla.js.map` as release assets.
 
-**CHANGELOG** follows [Keep a Changelog](https://keepachangelog.com/) format
-(`CHANGELOG.md`). Add entries under the top `## X.Y.Z (unreleased)` heading.
-The release workflow dates it on release.
-
-**Versioning**: `npm version <bump>` — do not hand-edit `package.json` version.
+**Commit subjects and PR titles must be conventional**
+(`feat:`/`fix:`/`chore:`/`docs:`/`refactor:`/`test:`/`ci:`) — release-please
+generates `CHANGELOG.md` from them. Do not hand-edit `CHANGELOG.md` entries or
+`package.json` version; the release PR handles both.
