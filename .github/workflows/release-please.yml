@@ -11,6 +11,9 @@ permissions:
 jobs:
   release-please:
     uses: damien-robotsix/robotsix-github-workflows/.github/workflows/release-please.yml@94d7adb43db9ddd7222ad25834231ac41314359b # main
+    permissions:
+      contents: write
+      pull-requests: write
     with:
       app-id: ${{ vars.RELEASE_APP_ID }}
       sync-uv-lock: false
