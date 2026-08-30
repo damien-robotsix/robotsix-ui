@@ -10,16 +10,15 @@ permissions:
 
 jobs:
   release-please:
-    runs-on: ubuntu-latest
-    outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
-      tag_name: ${{ steps.release.outputs.tag_name }}
-    steps:
-      - uses: googleapis/release-please-action@5c625bfb5d1ff62eadeeb3772007f7f66fdcf071 # v4
-        id: release
-        with:
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
+    uses: damien-robotsix/robotsix-github-workflows/.github/workflows/release-please.yml@94d7adb43db9ddd7222ad25834231ac41314359b # main
+    permissions:
+      contents: write
+      pull-requests: write
+    with:
+      app-id: ${{ vars.RELEASE_APP_ID }}
+      sync-uv-lock: false
+    secrets:
+      app-private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
 
   upload-assets:
     needs: release-please
