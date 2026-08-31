@@ -110,6 +110,7 @@ emits:
 | `"type": "boolean"`                       | checkbox                                                                            |
 | `"enum": [...]`                           | dropdown                                                                            |
 | `"type": "object"`                        | its own titled section, nested to any depth                                         |
+| `"type": "object"` with `enabled: boolean` (default `false`) | collapsible feature block, collapsed by default; click title to expand |
 | `"type": "array"` of objects              | repeatable section with add/remove                                                  |
 | `"type": "array"` of scalars              | one JSON-list input                                                                 |
 | `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed                                        |
@@ -123,11 +124,20 @@ operator actually types overwrites it.
 
 ### Hover tooltips
 
-Each setting label's hover tooltip surfaces information that is not already
-visible on the row: a field with a schema `description` shows that text (with
-the full dotted key path), and a field without one shows no redundant tooltip —
-except a nested field, whose full dotted path still appears so the namespacing
-context is available.
+Hover over any setting name to see its help text. Each field's tooltip shows:
+
+- The schema `description` (if present) with full inline markdown support (`code`, bold, italic, links)
+- For top-level fields without a description: no tooltip (redundant with visible context)
+- For nested fields without a description: the full dotted key path (for namespace clarity)
+- For fields with descriptions: the description plus the dotted key path on a second line
+
+Long descriptions (>140 characters or multi-line) also display a "Show advanced" section in the panel body with expand/collapse toggles, so operators can see full details without tooltip truncation.
+
+### Collapsible feature blocks
+
+An object-typed field that contains a boolean `enabled` property renders as a collapsible **feature block**. When `enabled` defaults to `false`, the block starts collapsed — the operator sees only the title and expand button. Click the title to reveal the block's other fields (the feature's configuration knobs). When `enabled` defaults to `true`, the block starts expanded.
+
+This keeps disabled features (like `sftp`, `public_fetch`, `gateway_route`) out of the operator's way without hiding them completely. Re-opening a disabled block later reveals all its fields unchanged and ready to configure.
 
 ## `x-deploy-plane`
 
