@@ -254,6 +254,71 @@ describe("renderConfigForm", () => {
     expect(block.classList.contains("rsu-config-desc--collapsed")).toBe(false);
     expect(toggle.textContent).toBe("less");
   });
+
+  const featureSchema: ConfigSchema = {
+    type: "object",
+    properties: {
+      sftp: {
+        type: "object",
+        properties: {
+          enabled: { type: "boolean", default: false },
+          host: { type: "string", default: "localhost" },
+        },
+      },
+    },
+  };
+
+  it("collapses a disabled feature block by default", () => {
+    renderConfigForm(container, featureSchema, {});
+
+    const section = container.querySelector(".rsu-config-section--collapsible") as HTMLElement;
+    expect(section).not.toBeNull();
+    expect(section.classList.contains("rsu-config-section--collapsed")).toBe(true);
+    const toggle = section.querySelector(".rsu-config-section-toggle") as HTMLElement;
+    expect(toggle.textContent).toBe("sftp");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    // The block's knobs live inside the collapsible body, still rendered.
+    expect(field("sftp.host").value).toBe("localhost");
+    expect(section.querySelector(".rsu-config-section-body")?.contains(field("sftp.host"))).toBe(
+      true,
+    );
+  });
+
+  it("expands a feature block whose current value enables it", () => {
+    renderConfigForm(container, featureSchema, { sftp: { enabled: true } });
+
+    const section = container.querySelector(".rsu-config-section--collapsible") as HTMLElement;
+    expect(section.classList.contains("rsu-config-section--collapsed")).toBe(false);
+    expect(section.querySelector(".rsu-config-section-toggle")?.getAttribute("aria-expanded")).toBe(
+      "true",
+    );
+  });
+
+  it("toggles a collapsed feature block open on click", () => {
+    renderConfigForm(container, featureSchema, {});
+
+    const section = container.querySelector(".rsu-config-section--collapsible") as HTMLElement;
+    const toggle = section.querySelector(".rsu-config-section-toggle") as HTMLElement;
+
+    toggle.click();
+    expect(section.classList.contains("rsu-config-section--collapsed")).toBe(false);
+    expect(toggle.getAttribute("aria-expanded")).toBe("true");
+
+    toggle.click();
+    expect(section.classList.contains("rsu-config-section--collapsed")).toBe(true);
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("leaves a plain object section non-collapsible", () => {
+    renderConfigForm(container, schema, {});
+
+    // `imap` has no `enabled` switch, so it stays a plain <h3> section.
+    const titles = [...container.querySelectorAll(".rsu-config-section-title")];
+    const imapTitle = titles.find((el) => el.textContent === "imap") as HTMLElement;
+    expect(imapTitle.tagName).toBe("H3");
+    expect(imapTitle.closest(".rsu-config-section-toggle")).toBeNull();
+    expect(container.querySelector(".rsu-config-section--collapsible")).toBeNull();
+  });
 });
 
 describe("array sections", () => {
