@@ -12,6 +12,8 @@ export { collectConfigValues, diffConfigValues } from "./collect.js";
 export {
   ADVANCED_CLASS,
   FOREIGN_CLASS,
+  COLLAPSIBLE_SECTION_CLASS,
+  SECTION_COLLAPSED_CLASS,
   clearFieldErrors,
   hasAdvancedFields,
   renderConfigForm,

@@ -31,6 +31,10 @@ import type {
 export const ADVANCED_CLASS = "rsu-advanced";
 /** Marks a row/section owned by the other plane — rendered read-only. */
 export const FOREIGN_CLASS = "rsu-config-foreign";
+/** Marks a feature block whose title toggles its body open and shut. */
+export const COLLAPSIBLE_SECTION_CLASS = "rsu-config-section--collapsible";
+/** Marks a collapsible feature block that is currently collapsed. */
+export const SECTION_COLLAPSED_CLASS = "rsu-config-section--collapsed";
 
 interface RenderContext {
   plane: DeployPlane;
@@ -72,6 +76,17 @@ export function renderConfigForm(
     if (!block) return;
     const collapsed = block.classList.toggle("rsu-config-desc--collapsed");
     (button as HTMLElement).textContent = collapsed ? "more…" : "less";
+  });
+
+  // Wire the feature-block collapse toggle the same way, so clicking a
+  // disabled block's title reveals (or re-hides) its knobs.
+  container.addEventListener("click", (event) => {
+    const toggle = (event.target as HTMLElement).closest(".rsu-config-section-toggle");
+    if (!toggle) return;
+    const section = toggle.closest(".rsu-config-section");
+    if (!section) return;
+    const collapsed = section.classList.toggle(SECTION_COLLAPSED_CLASS);
+    toggle.setAttribute("aria-expanded", String(!collapsed));
   });
 }
 
@@ -175,7 +190,8 @@ function renderNode(
       // pydantic class name ("ImapConfig"), which reads worse than "imap".
       const section = makeSection(key, resolved.description);
       applyFlags(section, resolved, ctx);
-      renderNode(resolved, currentVal, fullKey, section, ctx);
+      const body = makeFeatureBlockBody(section, resolved, currentVal);
+      renderNode(resolved, currentVal, fullKey, body, ctx);
       container.appendChild(section);
       continue;
     }
@@ -214,6 +230,50 @@ function applyFlags(el: HTMLElement, node: JsonSchemaNode, ctx: RenderContext): 
   const foreign = fieldPlane(node) !== ctx.plane;
   if (foreign) el.classList.add(FOREIGN_CLASS);
   return foreign;
+}
+
+/**
+ * Make an object section that carries its own boolean `enabled` switch — a
+ * "feature block" like `sftp`, `public_fetch` or `gateway_route` — collapse
+ * to just its title when the switch is off, so a disabled feature's knobs stay
+ * out of the operator's way until they expand it.
+ *
+ * Turns the section title into a toggle button and starts the block collapsed
+ * whenever `enabled` resolves to false (from the current config, else the
+ * schema default).  Returns the element the block's children should render
+ * into: a collapsible body for a feature block, otherwise the section itself
+ * (a plain object section is not collapsible).
+ */
+function makeFeatureBlockBody(
+  section: HTMLElement,
+  node: JsonSchemaNode,
+  current: unknown,
+): HTMLElement {
+  const enabledProp = node.properties?.enabled;
+  const isFeatureBlock = enabledProp !== undefined && enabledProp.type === "boolean";
+  if (!isFeatureBlock) return section;
+
+  const values = isPlainObject(current) ? current : {};
+  const enabled =
+    values.enabled !== undefined ? values.enabled === true : enabledProp.default === true;
+
+  section.classList.add(COLLAPSIBLE_SECTION_CLASS);
+  if (!enabled) section.classList.add(SECTION_COLLAPSED_CLASS);
+
+  const title = section.querySelector(".rsu-config-section-title");
+  if (title) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "rsu-config-section-title rsu-config-section-toggle";
+    button.setAttribute("aria-expanded", String(enabled));
+    button.innerHTML = title.innerHTML;
+    title.replaceWith(button);
+  }
+
+  const body = document.createElement("div");
+  body.className = "rsu-config-section-body";
+  section.appendChild(body);
+  return body;
 }
 
 /** Wire the change callback on every input in the row. */

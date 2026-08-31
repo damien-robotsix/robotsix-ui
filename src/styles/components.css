@@ -85,6 +85,32 @@
   letter-spacing: 0.04em;
 }
 
+/* A feature block whose title toggles its body open and shut. */
+.rsu-config-section-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--rsu-space-xs);
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rsu-config-section-toggle::before {
+  content: "▾";
+  font-size: 0.8em;
+}
+
+.rsu-config-section--collapsed .rsu-config-section-toggle::before {
+  content: "▸";
+}
+
+.rsu-config-section--collapsed .rsu-config-section-body {
+  display: none;
+}
+
 .rsu-config-row {
   display: grid;
   grid-template-columns: minmax(8rem, 14rem) minmax(0, 1fr) auto;
