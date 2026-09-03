@@ -220,15 +220,6 @@
 
 /* ── Actions and history ─────────────────────────────────────── */
 
-.rsu-config-advanced-bar {
-  display: flex;
-  gap: var(--rsu-space-sm);
-  align-items: center;
-  margin-bottom: var(--rsu-space-md);
-  font-size: var(--rsu-font-size-sm);
-  color: var(--rsu-color-text-secondary);
-}
-
 .rsu-config-actions {
   display: flex;
   gap: var(--rsu-space-md);

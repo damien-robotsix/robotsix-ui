@@ -10,14 +10,11 @@
 export { ConfigClient, type ConfigClientOptions } from "./client.js";
 export { collectConfigValues, diffConfigValues } from "./collect.js";
 export {
-  ADVANCED_CLASS,
   FOREIGN_CLASS,
   COLLAPSIBLE_SECTION_CLASS,
   SECTION_COLLAPSED_CLASS,
   clearFieldErrors,
-  hasAdvancedFields,
   renderConfigForm,
-  setAdvancedVisible,
   showFieldError,
 } from "./render.js";
 export { mountConfigPanel, type ConfigPanelHandle, type ConfigPanelOptions } from "./panel.js";

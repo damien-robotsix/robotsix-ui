@@ -17,7 +17,7 @@ const schema: ConfigSchema = {
       properties: {
         public_key: { type: "string", default: "" },
         secret_key: { type: "string", format: "password", writeOnly: true, default: "" },
-        project_id: { type: "string", default: "", advanced: true },
+        project_id: { type: "string", default: "" },
       },
     },
   },
@@ -76,6 +76,7 @@ function nameInput(index = 0): HTMLInputElement {
 beforeEach(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
+  sessionStorage.clear();
 });
 
 describe("map rendering", () => {
@@ -97,13 +98,15 @@ describe("map rendering", () => {
     expect(key.closest(".rsu-config-row")?.textContent).toContain("set");
   });
 
-  it("hides an advanced field inside a map entry", () => {
+  it("renders every field inside a map entry without an advanced tier", () => {
     renderConfigForm(container, schema, current);
 
+    // `project_id` was `advanced: true` in an older schema — the advanced tier
+    // is gone, so it renders plainly like any other field in the entry.
     const row = field("langfuse.projects.robotsix-auto-mail.project_id").closest(
       ".rsu-config-row",
     ) as HTMLElement;
-    expect(row.hidden).toBe(true);
+    expect(row.hidden).toBe(false);
   });
 
   it("adds and removes entries", () => {

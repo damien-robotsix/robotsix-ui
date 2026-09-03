@@ -48,7 +48,7 @@ use the React-free build:
 ```
 
 That is the whole integration. The panel fetches `GET /config`, renders the
-schema, and wires save, the advanced toggle, and the history tab.
+schema, and wires save, the collapsible groups, and the history tab.
 
 Copy the two files in during your build or image step. The package's `prepare`
 script builds `dist/` on install, so no build toolchain is needed on your side
@@ -114,7 +114,7 @@ emits:
 | `"type": "array"` of objects                                 | repeatable section with add/remove                                                  |
 | `"type": "array"` of scalars                                 | one JSON-list input                                                                 |
 | `"format": "password", "writeOnly": true`                    | masked input + set/unset badge, never echoed                                        |
-| `"advanced": true`                                           | hidden behind "Show advanced settings"                                              |
+| `"group": "…"`                                               | fold the key into the labelled collapsible group instead of its own section         |
 | `"description"`                                              | inline help (`code`, bold, italic, http links); also the primary hover-tooltip text |
 | `$ref` / `$defs`, `anyOf: [X, null]`                         | resolved and unwrapped before rendering                                             |
 
@@ -131,13 +131,33 @@ Hover over any setting name to see its help text. Each field's tooltip shows:
 - For nested fields without a description: the full dotted key path (for namespace clarity)
 - For fields with descriptions: the description plus the dotted key path on a second line
 
-Long descriptions (>140 characters or multi-line) also display a "Show advanced" section in the panel body with expand/collapse toggles, so operators can see full details without tooltip truncation.
+Long descriptions (>140 characters or multi-line) also display a "more…" toggle so operators can expand the full detail without tooltip truncation.
 
-### Collapsible feature blocks
+### Collapsible sections and groups
 
-An object-typed field that contains a boolean `enabled` property renders as a collapsible **feature block**. When `enabled` defaults to `false`, the block starts collapsed — the operator sees only the title and expand button. Click the title to reveal the block's other fields (the feature's configuration knobs). When `enabled` defaults to `true`, the block starts expanded.
+Every settings group renders under a collapsible header. A group is the
+"General" section (for ungrouped top-level scalars), a titled object section,
+or a **labelled group** produced by the `group` annotation:
 
-This keeps disabled features (like `sftp`, `public_fetch`, `gateway_route`) out of the operator's way without hiding them completely. Re-opening a disabled block later reveals all its fields unchanged and ready to configure.
+```python
+class Config(BaseModel):
+    model: str = Field(json_schema_extra={"group": "LLM / OpenRouter"})
+    api_key: SecretStr = Field(json_schema_extra={"group": "LLM / OpenRouter"})
+    langfuse_host: str = Field(json_schema_extra={"group": "Langfuse"})
+```
+
+All keys carrying the same `group` label fold into a single section titled by
+that label — so an operator sees one "LLM / OpenRouter" header instead of a
+flat list of `model`, `api_key`, etc. Clicking any group header collapses or
+expands its body; the choice persists for the session.
+
+An object-typed field that contains a boolean `enabled` property renders as a
+collapsible **feature block** and starts collapsed when the feature is off —
+the operator sees only the title and expand button. When `enabled` defaults to
+`true`, the block starts expanded. This keeps disabled features (like `sftp`,
+`public_fetch`, `gateway_route`) out of the operator's way without hiding them
+completely; re-opening a disabled block later reveals all its fields unchanged
+and ready to configure.
 
 ## `x-deploy-plane`
 
@@ -166,5 +186,4 @@ larger screen, the parts are exported too:
 - `diffConfigValues(loaded, entered)` — reduce to changed keys only
 - `ConfigClient` — the four routes, with `422` `problem+json` mapped to a typed
   `ConfigValidationError` carrying the offending `key`
-- `setAdvancedVisible` / `hasAdvancedFields` / `showFieldError` /
-  `clearFieldErrors` — for a host-owned chrome
+- `showFieldError` / `clearFieldErrors` — for a host-owned chrome

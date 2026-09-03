@@ -8,7 +8,7 @@ const schema = {
   properties: {
     log_level: { type: "string", enum: ["info", "debug"], default: "info" },
     api_key: { type: "string", format: "password", writeOnly: true },
-    workers: { type: "integer", default: 4, advanced: true },
+    workers: { type: "integer", default: 4 },
   },
 };
 
@@ -33,6 +33,7 @@ let host: HTMLElement;
 beforeEach(() => {
   host = document.createElement("div");
   document.body.appendChild(host);
+  sessionStorage.clear();
 });
 
 /** Let the panel's in-flight load/save promises settle. */
@@ -109,22 +110,16 @@ describe("mountConfigPanel", () => {
     expect(banner.textContent).toBe("nope");
   });
 
-  it("reveals advanced fields through the toggle", async () => {
+  it("renders every field without an advanced toggle", async () => {
     mountConfigPanel(host, { client: fakeClient() });
     await settle();
 
-    const bar = host.querySelector(".rsu-config-advanced-bar") as HTMLElement;
-    const toggle = host.querySelector(".rsu-config-advanced-toggle") as HTMLInputElement;
     const row = host
       .querySelector('[data-key="workers"]')
       ?.closest(".rsu-config-row") as HTMLElement;
-
-    expect(bar.hidden).toBe(false);
-    expect(row.hidden).toBe(true);
-
-    toggle.checked = true;
-    toggle.dispatchEvent(new Event("change"));
     expect(row.hidden).toBe(false);
+    expect(host.querySelector(".rsu-config-advanced-bar")).toBeNull();
+    expect(host.querySelector(".rsu-config-advanced-toggle")).toBeNull();
   });
 
   it("lists version history and rolls back", async () => {
