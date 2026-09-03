@@ -27,13 +27,11 @@ import type {
   RenderConfigFormOptions,
 } from "./types.js";
 
-/** Marks a row/section that the "Show advanced settings" toggle controls. */
-export const ADVANCED_CLASS = "rsu-advanced";
 /** Marks a row/section owned by the other plane — rendered read-only. */
 export const FOREIGN_CLASS = "rsu-config-foreign";
-/** Marks a feature block whose title toggles its body open and shut. */
+/** Marks a section whose header toggles its body open and shut. */
 export const COLLAPSIBLE_SECTION_CLASS = "rsu-config-section--collapsible";
-/** Marks a collapsible feature block that is currently collapsed. */
+/** Marks a collapsible section that is currently collapsed. */
 export const SECTION_COLLAPSED_CLASS = "rsu-config-section--collapsed";
 
 interface RenderContext {
@@ -46,8 +44,8 @@ interface RenderContext {
 /**
  * Render *schema* into *container*, pre-filled from *current*.
  *
- * Replaces any previous content.  Advanced fields start hidden; call
- * {@link setAdvancedVisible} to reveal them.
+ * Replaces any previous content.  Every settings group renders under a
+ * collapsible section header; open/closed state persists for the session.
  */
 export function renderConfigForm(
   container: HTMLElement,
@@ -64,7 +62,6 @@ export function renderConfigForm(
     componentId: options.componentId,
   };
   renderNode(root, current ?? {}, "", container, ctx);
-  setAdvancedVisible(container, false);
 
   // Wire the collapsible-description toggle via event delegation so it
   // covers rows and sections uniformly — even those rendered later by
@@ -78,8 +75,8 @@ export function renderConfigForm(
     (button as HTMLElement).textContent = collapsed ? "more…" : "less";
   });
 
-  // Wire the feature-block collapse toggle the same way, so clicking a
-  // disabled block's title reveals (or re-hides) its knobs.
+  // Wire the section-collapse toggle the same way: clicking any group header
+  // reveals (or re-hides) its body, and the choice sticks for the session.
   container.addEventListener("click", (event) => {
     const toggle = (event.target as HTMLElement).closest(".rsu-config-section-toggle");
     if (!toggle) return;
@@ -87,19 +84,40 @@ export function renderConfigForm(
     if (!section) return;
     const collapsed = section.classList.toggle(SECTION_COLLAPSED_CLASS);
     toggle.setAttribute("aria-expanded", String(!collapsed));
+    saveSectionCollapsed(sectionTitle(section as HTMLElement), collapsed);
   });
 }
 
-/** True when the rendered form contains at least one advanced field. */
-export function hasAdvancedFields(container: HTMLElement): boolean {
-  return container.querySelector(`.${ADVANCED_CLASS}`) !== null;
+/** The section's header label, used as its stable per-session key. */
+function sectionTitle(section: HTMLElement): string {
+  const toggle = section.querySelector(".rsu-config-section-toggle");
+  return (toggle as HTMLElement | null)?.textContent?.trim() ?? "";
 }
 
-/** Show or hide every advanced field in a rendered form. */
-export function setAdvancedVisible(container: HTMLElement, visible: boolean): void {
-  container.querySelectorAll(`.${ADVANCED_CLASS}`).forEach((el) => {
-    (el as HTMLElement).hidden = !visible;
-  });
+const SECTION_STATE_PREFIX = "rsu-config:section:";
+
+/**
+ * The session-persisted collapsed flag for *title*, or `null` when the
+ * operator has not touched that section this session.
+ */
+function loadSectionCollapsed(title: string): boolean | null {
+  try {
+    const raw = sessionStorage.getItem(SECTION_STATE_PREFIX + title);
+    return raw === null ? null : raw === "1";
+  } catch {
+    // Storage unavailable (private mode, SSR): collapse state just won't persist.
+    return null;
+  }
+}
+
+/** Persist a group header's open/closed choice for the rest of the session. */
+function saveSectionCollapsed(title: string, collapsed: boolean): void {
+  try {
+    if (collapsed) sessionStorage.setItem(SECTION_STATE_PREFIX + title, "1");
+    else sessionStorage.removeItem(SECTION_STATE_PREFIX + title);
+  } catch {
+    // Non-fatal: same as loadSectionCollapsed.
+  }
 }
 
 /** Clear any inline validation error previously placed on a field. */
@@ -140,14 +158,50 @@ function renderNode(
 
   const required = schema.required || [];
   const values = isPlainObject(current) ? current : {};
-  let entries = Object.entries(properties);
+  const entries = Object.entries(properties);
 
-  // At the top level, scalars are grouped under "General" so they cannot float
-  // between named object sections.
+  // Bucket entries by their optional `group` label so related keys render
+  // under one collapsible header instead of a flat list of sections.
+  const groups = new Map<string, [string, JsonSchemaNode][]>();
+  const ungrouped: [string, JsonSchemaNode][] = [];
+  for (const entry of entries) {
+    const resolved = resolveRef(entry[1], ctx.defs);
+    const label = typeof resolved.group === "string" ? resolved.group.trim() : "";
+    if (label) {
+      const bucket = groups.get(label);
+      if (bucket) bucket.push(entry);
+      else groups.set(label, [entry]);
+    } else {
+      ungrouped.push(entry);
+    }
+  }
+
+  // Render each group under its own collapsible header.
+  for (const [label, members] of groups) {
+    const section = makeSection(label);
+    applySectionState(section, false);
+    const body = sectionBody(section);
+    for (const [key, propSchema] of members) {
+      renderProperty(
+        body,
+        key,
+        prefix ? `${prefix}.${key}` : key,
+        propSchema,
+        values[key],
+        required,
+        ctx,
+      );
+    }
+    container.appendChild(section);
+  }
+
+  // Then the ungrouped entries.  At the top level scalars go under "General"
+  // so they cannot float between named object sections; objects keep their own
+  // sections.  Nested levels render scalars inline.
   if (prefix === "") {
     const scalars: [string, JsonSchemaNode][] = [];
     const objects: [string, JsonSchemaNode][] = [];
-    for (const entry of entries) {
+    for (const entry of ungrouped) {
       const resolved = resolveRef(entry[1], ctx.defs);
       // A list of objects and an open-ended map each render as their own
       // repeatable section, so they belong with the sections rather than as
@@ -160,53 +214,103 @@ function renderNode(
     }
     if (scalars.length > 0) {
       const section = makeSection("General");
+      applySectionState(section, false);
+      const body = sectionBody(section);
       for (const [key, propSchema] of scalars) {
-        section.appendChild(buildRow(key, key, propSchema, values[key], required, ctx));
+        body.appendChild(buildRow(key, key, propSchema, values[key], required, ctx));
       }
       container.appendChild(section);
     }
-    entries = objects;
+    for (const [key, propSchema] of objects) {
+      renderProperty(container, key, key, propSchema, values[key], required, ctx);
+    }
+    return;
   }
 
-  for (const [key, propSchema] of entries) {
-    const fullKey = prefix ? `${prefix}.${key}` : key;
-    const resolved = resolveRef(propSchema, ctx.defs);
-    const currentVal = values[key];
-
-    const itemObject = arrayItemObject(resolved, ctx.defs);
-    if (itemObject) {
-      container.appendChild(buildArraySection(key, fullKey, resolved, itemObject, currentVal, ctx));
-      continue;
-    }
-
-    const mapValues = mapValueSchema(resolved, ctx.defs);
-    if (mapValues) {
-      container.appendChild(buildMapSection(key, fullKey, resolved, mapValues, currentVal, ctx));
-      continue;
-    }
-
-    if (isObjectNode(resolved)) {
-      // The field's own key names the section — a `$ref`'s title is the
-      // pydantic class name ("ImapConfig"), which reads worse than "imap".
-      const section = makeSection(key, resolved.description);
-      applyFlags(section, resolved, ctx);
-      const body = makeFeatureBlockBody(section, resolved, currentVal);
-      renderNode(resolved, currentVal, fullKey, body, ctx);
-      container.appendChild(section);
-      continue;
-    }
-
-    container.appendChild(buildRow(fullKey, key, propSchema, currentVal, required, ctx));
+  for (const [key, propSchema] of ungrouped) {
+    renderProperty(container, key, `${prefix}.${key}`, propSchema, values[key], required, ctx);
   }
 }
 
+/** Render one property into *container* — a row, object section, or repeatable section. */
+function renderProperty(
+  container: HTMLElement,
+  key: string,
+  fullKey: string,
+  propSchema: JsonSchemaNode,
+  currentVal: unknown,
+  requiredKeys: string[],
+  ctx: RenderContext,
+): void {
+  const resolved = resolveRef(propSchema, ctx.defs);
+
+  const itemObject = arrayItemObject(resolved, ctx.defs);
+  if (itemObject) {
+    container.appendChild(buildArraySection(key, fullKey, resolved, itemObject, currentVal, ctx));
+    return;
+  }
+
+  const mapValues = mapValueSchema(resolved, ctx.defs);
+  if (mapValues) {
+    container.appendChild(buildMapSection(key, fullKey, resolved, mapValues, currentVal, ctx));
+    return;
+  }
+
+  if (isObjectNode(resolved)) {
+    // The field's own key names the section — a `$ref`'s title is the
+    // pydantic class name ("ImapConfig"), which reads worse than "imap".
+    const section = makeSection(key, resolved.description);
+    applyFlags(section, resolved, ctx);
+    const body = makeFeatureBlockBody(section, resolved, currentVal);
+    renderNode(resolved, currentVal, fullKey, body, ctx);
+    container.appendChild(section);
+    return;
+  }
+
+  container.appendChild(buildRow(fullKey, key, propSchema, currentVal, requiredKeys, ctx));
+}
+
+/** Build a collapsible section with a toggle-button header and a body element. */
 function makeSection(title: string, description?: string): HTMLElement {
   const section = document.createElement("div");
-  section.className = "rsu-config-section";
-  section.innerHTML =
-    `<h3 class="rsu-config-section-title">${escHtml(title)}</h3>` +
-    (description ? renderDescription(description) : "");
+  section.className = `rsu-config-section ${COLLAPSIBLE_SECTION_CLASS}`;
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "rsu-config-section-title rsu-config-section-toggle";
+  toggle.setAttribute("aria-expanded", "true");
+  toggle.textContent = title;
+  section.appendChild(toggle);
+  if (description) {
+    const desc = document.createElement("div");
+    desc.innerHTML = renderDescription(description);
+    section.appendChild(desc);
+  }
+  const body = document.createElement("div");
+  body.className = "rsu-config-section-body";
+  section.appendChild(body);
   return section;
+}
+
+/** The body element of a collapsible section. */
+function sectionBody(section: HTMLElement): HTMLElement {
+  return section.querySelector(".rsu-config-section-body") as HTMLElement;
+}
+
+/**
+ * Set a section's collapsed state, applying the per-session preference when
+ * present, else *defaultCollapsed*.
+ */
+function applySectionState(section: HTMLElement, defaultCollapsed: boolean): void {
+  const stored = loadSectionCollapsed(sectionTitle(section));
+  const collapsed = stored !== null ? stored : defaultCollapsed;
+  setSectionCollapsed(section, collapsed);
+}
+
+/** Toggle *section*'s collapsed class and the toggle button's `aria-expanded`. */
+function setSectionCollapsed(section: HTMLElement, collapsed: boolean): void {
+  section.classList.toggle(SECTION_COLLAPSED_CLASS, collapsed);
+  const toggle = section.querySelector(".rsu-config-section-toggle");
+  if (toggle) toggle.setAttribute("aria-expanded", String(!collapsed));
 }
 
 function renderDescription(description: string): string {
@@ -226,7 +330,6 @@ function renderDescription(description: string): string {
 }
 
 function applyFlags(el: HTMLElement, node: JsonSchemaNode, ctx: RenderContext): boolean {
-  if (node.advanced) el.classList.add(ADVANCED_CLASS);
   const foreign = fieldPlane(node) !== ctx.plane;
   if (foreign) el.classList.add(FOREIGN_CLASS);
   return foreign;
@@ -238,11 +341,9 @@ function applyFlags(el: HTMLElement, node: JsonSchemaNode, ctx: RenderContext): 
  * to just its title when the switch is off, so a disabled feature's knobs stay
  * out of the operator's way until they expand it.
  *
- * Turns the section title into a toggle button and starts the block collapsed
- * whenever `enabled` resolves to false (from the current config, else the
- * schema default).  Returns the element the block's children should render
- * into: a collapsible body for a feature block, otherwise the section itself
- * (a plain object section is not collapsible).
+ * Every section is collapsible; this only sets the *default* open/closed state
+ * (collapsed for a disabled feature block, otherwise open) and returns the
+ * body the section's children should render into.
  */
 function makeFeatureBlockBody(
   section: HTMLElement,
@@ -251,29 +352,15 @@ function makeFeatureBlockBody(
 ): HTMLElement {
   const enabledProp = node.properties?.enabled;
   const isFeatureBlock = enabledProp !== undefined && enabledProp.type === "boolean";
-  if (!isFeatureBlock) return section;
-
   const values = isPlainObject(current) ? current : {};
-  const enabled =
-    values.enabled !== undefined ? values.enabled === true : enabledProp.default === true;
+  const enabled = isFeatureBlock
+    ? values.enabled !== undefined
+      ? values.enabled === true
+      : enabledProp.default === true
+    : true;
 
-  section.classList.add(COLLAPSIBLE_SECTION_CLASS);
-  if (!enabled) section.classList.add(SECTION_COLLAPSED_CLASS);
-
-  const title = section.querySelector(".rsu-config-section-title");
-  if (title) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "rsu-config-section-title rsu-config-section-toggle";
-    button.setAttribute("aria-expanded", String(enabled));
-    button.innerHTML = title.innerHTML;
-    title.replaceWith(button);
-  }
-
-  const body = document.createElement("div");
-  body.className = "rsu-config-section-body";
-  section.appendChild(body);
-  return body;
+  applySectionState(section, isFeatureBlock && !enabled);
+  return sectionBody(section);
 }
 
 /** Wire the change callback on every input in the row. */
@@ -438,17 +525,16 @@ function buildArraySection(
   currentVal: unknown,
   ctx: RenderContext,
 ): HTMLElement {
-  const section = document.createElement("div");
-  section.className = "rsu-config-section rsu-config-array";
+  const section = makeSection(labelKey, node.description);
+  section.classList.add("rsu-config-array");
   section.dataset.arrayKey = prefix;
   applyFlags(section, node, ctx);
-  section.innerHTML =
-    `<h3 class="rsu-config-section-title">${escHtml(labelKey)}</h3>` +
-    (node.description ? renderDescription(node.description) : "");
+  applySectionState(section, false);
+  const body = sectionBody(section);
 
   const items = document.createElement("div");
   items.className = "rsu-config-array-items";
-  section.appendChild(items);
+  body.appendChild(items);
 
   const values = Array.isArray(currentVal) ? currentVal : [];
   values.forEach((item, index) => appendArrayItem(items, prefix, index, itemSchema, item, ctx));
@@ -460,10 +546,9 @@ function buildArraySection(
   addBtn.addEventListener("click", () => {
     const index = items.querySelectorAll(":scope > .rsu-config-array-item").length;
     appendArrayItem(items, prefix, index, itemSchema, {}, ctx);
-    setAdvancedVisible(items, false);
     ctx.onChange?.();
   });
-  section.appendChild(addBtn);
+  body.appendChild(addBtn);
   return section;
 }
 
@@ -515,17 +600,16 @@ function buildMapSection(
   currentVal: unknown,
   ctx: RenderContext,
 ): HTMLElement {
-  const section = document.createElement("div");
-  section.className = "rsu-config-section rsu-config-map";
+  const section = makeSection(labelKey, node.description);
+  section.classList.add("rsu-config-map");
   section.dataset.mapKey = prefix;
   applyFlags(section, node, ctx);
-  section.innerHTML =
-    `<h3 class="rsu-config-section-title">${escHtml(labelKey)}</h3>` +
-    (node.description ? renderDescription(node.description) : "");
+  applySectionState(section, false);
+  const body = sectionBody(section);
 
   const entries = document.createElement("div");
   entries.className = "rsu-config-map-entries";
-  section.appendChild(entries);
+  body.appendChild(entries);
 
   const values = isPlainObject(currentVal) ? currentVal : {};
   for (const [name, value] of Object.entries(values)) {
@@ -538,10 +622,9 @@ function buildMapSection(
   addBtn.textContent = `+ Add ${labelKey} entry`;
   addBtn.addEventListener("click", () => {
     appendMapEntry(entries, prefix, "", valueSchema, undefined, ctx);
-    setAdvancedVisible(entries, false);
     ctx.onChange?.();
   });
-  section.appendChild(addBtn);
+  body.appendChild(addBtn);
   return section;
 }
 

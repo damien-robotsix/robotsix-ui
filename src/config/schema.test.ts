@@ -23,22 +23,22 @@ describe("resolveRef", () => {
 
   it("propagates field-level extras onto the resolved definition", () => {
     const resolved = resolveRef(
-      { $ref: "#/$defs/ImapConfig", advanced: true, description: "Mailbox" },
+      { $ref: "#/$defs/ImapConfig", group: "LLM / OpenRouter", description: "Mailbox" },
       defs,
     );
-    expect(resolved.advanced).toBe(true);
+    expect(resolved.group).toBe("LLM / OpenRouter");
     expect(resolved.description).toBe("Mailbox");
     // The definition itself is not mutated.
-    expect(defs.ImapConfig).not.toHaveProperty("advanced");
+    expect(defs.ImapConfig).not.toHaveProperty("group");
   });
 
   it("unwraps a nullable union to its single non-null branch", () => {
     const resolved = resolveRef(
-      { anyOf: [{ $ref: "#/$defs/ImapConfig" }, { type: "null" }], advanced: true },
+      { anyOf: [{ $ref: "#/$defs/ImapConfig" }, { type: "null" }], group: "LLM / OpenRouter" },
       defs,
     );
     expect(resolved.type).toBe("object");
-    expect(resolved.advanced).toBe(true);
+    expect(resolved.group).toBe("LLM / OpenRouter");
   });
 
   it("leaves a genuine multi-branch union alone", () => {

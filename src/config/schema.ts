@@ -9,7 +9,7 @@ import type { ConfigSchema, DeployPlane, JsonSchemaNode } from "./types.js";
  * `Field(json_schema_extra=…)` sit on the wrapper schema, not on the `$defs`
  * entry — so they must be propagated down when the ref is resolved.
  */
-const FIELD_EXTRAS = ["advanced", "description", "default", "title", "x-deploy-plane"] as const;
+const FIELD_EXTRAS = ["group", "description", "default", "title", "x-deploy-plane"] as const;
 
 function propagateExtras(source: JsonSchemaNode, target: JsonSchemaNode): JsonSchemaNode {
   const clone: JsonSchemaNode = { ...target };

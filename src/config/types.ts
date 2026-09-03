@@ -30,10 +30,11 @@ export interface JsonSchemaNode {
   $ref?: string;
   $defs?: Record<string, JsonSchemaNode>;
   /**
-   * Presentational only — hides the field behind the panel's "Show advanced
-   * settings" toggle.  Defined by config-standard.md § 4.
+   * Presentational only — groups related fields under one collapsible section
+   * header.  Every key carrying the same `group` label renders inside a single
+   * section titled by that label, instead of each getting its own section.
    */
-  advanced?: boolean;
+  group?: string;
   /**
    * Which plane owns the field.  Defaults to `"component"`.  A panel renders
    * the fields its own plane owns and greys out the rest, so the deploy UI and

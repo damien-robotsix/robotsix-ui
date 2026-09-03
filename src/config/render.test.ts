@@ -1,19 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { collectConfigValues, diffConfigValues } from "./collect.js";
-import {
-  clearFieldErrors,
-  hasAdvancedFields,
-  renderConfigForm,
-  setAdvancedVisible,
-  showFieldError,
-} from "./render.js";
+import { clearFieldErrors, renderConfigForm, showFieldError } from "./render.js";
 import type { ConfigSchema } from "./types.js";
 
 const schema: ConfigSchema = {
   type: "object",
   properties: {
     log_level: { type: "string", enum: ["info", "debug"], default: "info" },
-    workers: { type: "integer", default: 4, advanced: true },
+    workers: { type: "integer", default: 4 },
     enabled: { type: "boolean", default: true },
     tags: { type: "array", items: { type: "string" }, default: [] },
     api_key: { type: "string", format: "password", writeOnly: true },
@@ -40,6 +34,7 @@ function field(key: string): HTMLInputElement | HTMLSelectElement {
 beforeEach(() => {
   container = document.createElement("div");
   document.body.appendChild(container);
+  sessionStorage.clear();
 });
 
 describe("renderConfigForm", () => {
@@ -75,6 +70,51 @@ describe("renderConfigForm", () => {
     expect(titles).toContain("imap");
   });
 
+  it("groups annotated keys under one collapsible header", () => {
+    const groupedSchema: ConfigSchema = {
+      type: "object",
+      properties: {
+        model: { type: "string", default: "gpt-4o", group: "LLM / OpenRouter" },
+        api_key: {
+          type: "string",
+          format: "password",
+          writeOnly: true,
+          group: "LLM / OpenRouter",
+        },
+        langfuse_host: { type: "string", default: "localhost", group: "Langfuse" },
+        workers: { type: "integer", default: 4 },
+      },
+    };
+    renderConfigForm(container, groupedSchema, {});
+
+    // One collapsible header per distinct `group` label, plus General for the
+    // ungrouped scalar.  The group members are direct rows, not their own
+    // flat sections.
+    const titles = [...container.querySelectorAll(".rsu-config-section-title")].map(
+      (el) => el.textContent,
+    );
+    expect(titles).toContain("LLM / OpenRouter");
+    expect(titles).toContain("Langfuse");
+    expect(titles).toContain("General");
+    expect(titles.filter((t) => t === "model")).toHaveLength(0);
+    expect(titles.filter((t) => t === "api_key")).toHaveLength(0);
+
+    // The group sections are collapsible and contain their members' rows.
+    const sections = [...container.querySelectorAll<HTMLElement>(".rsu-config-section")];
+    const llmGroup = sections.find(
+      (s) => s.querySelector(".rsu-config-section-title")?.textContent === "LLM / OpenRouter",
+    ) as HTMLElement;
+    expect(llmGroup.classList.contains("rsu-config-section--collapsible")).toBe(true);
+    expect(llmGroup.querySelector('[data-key="model"]')).not.toBeNull();
+    expect(llmGroup.querySelector('[data-key="api_key"]')).not.toBeNull();
+    expect(llmGroup.querySelector('[data-key="langfuse_host"]')).toBeNull();
+
+    // A grouped scalar is still collected under its original key.
+    const collected = collectConfigValues(groupedSchema, container);
+    expect(collected.model).toBe("gpt-4o");
+    expect(collected.langfuse_host).toBe("localhost");
+  });
+
   it("never echoes a secret and badges whether one is set", () => {
     renderConfigForm(container, schema, { api_key: "**********" });
 
@@ -91,15 +131,15 @@ describe("renderConfigForm", () => {
     expect(row?.querySelector(".rsu-badge")?.textContent).toBe("not set");
   });
 
-  it("hides advanced fields until they are revealed", () => {
+  it("renders every field in its group without an advanced tier", () => {
     renderConfigForm(container, schema, {});
 
-    expect(hasAdvancedFields(container)).toBe(true);
+    // `workers` was `advanced: true` in an older schema — the advanced tier is
+    // gone, so it renders plainly alongside the other General rows.
     const row = field("workers").closest(".rsu-config-row") as HTMLElement;
-    expect(row.hidden).toBe(true);
-
-    setAdvancedVisible(container, true);
     expect(row.hidden).toBe(false);
+    expect(container.querySelector(".rsu-advanced")).toBeNull();
+    expect(container.querySelector(".rsu-config-advanced-bar")).toBeNull();
   });
 
   it("disables fields owned by the other plane", () => {
@@ -309,15 +349,18 @@ describe("renderConfigForm", () => {
     expect(toggle.getAttribute("aria-expanded")).toBe("false");
   });
 
-  it("leaves a plain object section non-collapsible", () => {
+  it("renders a plain object section collapsible and expanded by default", () => {
     renderConfigForm(container, schema, {});
 
-    // `imap` has no `enabled` switch, so it stays a plain <h3> section.
+    // `imap` has no `enabled` switch, but every settings group is collapsible
+    // now — it just starts expanded.
     const titles = [...container.querySelectorAll(".rsu-config-section-title")];
     const imapTitle = titles.find((el) => el.textContent === "imap") as HTMLElement;
-    expect(imapTitle.tagName).toBe("H3");
-    expect(imapTitle.closest(".rsu-config-section-toggle")).toBeNull();
-    expect(container.querySelector(".rsu-config-section--collapsible")).toBeNull();
+    expect(imapTitle.tagName).toBe("BUTTON");
+    expect(imapTitle.closest(".rsu-config-section-toggle")).not.toBeNull();
+    expect(imapTitle.getAttribute("aria-expanded")).toBe("true");
+    const imapSection = imapTitle.closest(".rsu-config-section") as HTMLElement;
+    expect(imapSection.classList.contains("rsu-config-section--collapsed")).toBe(false);
   });
 });
 

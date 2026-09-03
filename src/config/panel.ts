@@ -2,21 +2,16 @@
  * The shared Settings panel.
  *
  * Mount it and a component gets the whole affordance the standard requires:
- * typed inputs from the committed schema, an advanced toggle, masked secrets
- * with merge-on-write, changed-keys-only saves, inline `422` messages, and a
- * version history with rollback (config-ownership.md, "Standard UI affordance").
+ * typed inputs from the committed schema, collapsible settings groups, masked
+ * secrets with merge-on-write, changed-keys-only saves, inline `422` messages,
+ * and a version history with rollback (config-ownership.md, "Standard UI
+ * affordance").
  */
 
 import { ConfigClient, type ConfigClientOptions } from "./client.js";
 import { collectConfigValues, diffConfigValues } from "./collect.js";
 import { escHtml } from "./html.js";
-import {
-  clearFieldErrors,
-  hasAdvancedFields,
-  renderConfigForm,
-  setAdvancedVisible,
-  showFieldError,
-} from "./render.js";
+import { clearFieldErrors, renderConfigForm, showFieldError } from "./render.js";
 import type {
   ConfigFormOptions,
   ConfigResponse,
@@ -65,10 +60,6 @@ const PANEL_HTML = `
   </div>
   <div class="rsu-config-banner" hidden></div>
   <div class="rsu-config-tabpanel" data-tab="fields">
-    <label class="rsu-config-advanced-bar" hidden>
-      <input type="checkbox" class="rsu-config-advanced-toggle">
-      Show advanced settings
-    </label>
     <div class="rsu-config-form"></div>
     <div class="rsu-config-actions">
       <button type="button" class="rsu-btn rsu-config-save" disabled>Save</button>
@@ -100,8 +91,6 @@ interface PanelContext {
   saveBtn: HTMLButtonElement;
   versionEl: HTMLElement;
   historyBody: HTMLElement;
-  advancedBar: HTMLElement;
-  advancedToggle: HTMLInputElement;
   schema: ConfigSchema;
   loaded: ConfigValues;
   componentId?: string;
@@ -124,8 +113,6 @@ class ConfigPanelController {
   private readonly saveBtn: HTMLButtonElement;
   private readonly versionEl: HTMLElement;
   private readonly historyBody: HTMLElement;
-  private readonly advancedBar: HTMLElement;
-  private readonly advancedToggle: HTMLInputElement;
   private readonly componentId?: string;
   private schema: ConfigSchema;
   private loaded: ConfigValues;
@@ -140,8 +127,6 @@ class ConfigPanelController {
     this.saveBtn = ctx.saveBtn;
     this.versionEl = ctx.versionEl;
     this.historyBody = ctx.historyBody;
-    this.advancedBar = ctx.advancedBar;
-    this.advancedToggle = ctx.advancedToggle;
     this.componentId = ctx.componentId;
     this.schema = ctx.schema;
     this.loaded = ctx.loaded;
@@ -239,8 +224,6 @@ class ConfigPanelController {
         this.saveBtn.disabled = false;
       },
     });
-    this.advancedBar.hidden = !hasAdvancedFields(this.formEl);
-    this.advancedToggle.checked = false;
     this.versionEl.textContent = response.version ? `version ${response.version}` : "";
     this.saveBtn.disabled = true;
   }
@@ -301,8 +284,6 @@ export function mountConfigPanel(
   const titleEl = root.querySelector(".rsu-config-panel-title") as HTMLElement;
   const banner = root.querySelector(".rsu-config-banner") as HTMLElement;
   const formEl = root.querySelector(".rsu-config-form") as HTMLElement;
-  const advancedBar = root.querySelector(".rsu-config-advanced-bar") as HTMLElement;
-  const advancedToggle = root.querySelector(".rsu-config-advanced-toggle") as HTMLInputElement;
   const saveBtn = root.querySelector(".rsu-config-save") as HTMLButtonElement;
   const versionEl = root.querySelector(".rsu-config-version") as HTMLElement;
   const historyBody = root.querySelector(".rsu-config-history tbody") as HTMLElement;
@@ -323,8 +304,6 @@ export function mountConfigPanel(
     saveBtn,
     versionEl,
     historyBody,
-    advancedBar,
-    advancedToggle,
     schema: { type: "object", properties: {} },
     loaded: {},
   });
@@ -334,9 +313,6 @@ export function mountConfigPanel(
       panel.selectTab((el as HTMLElement).dataset.tab || "fields"),
     );
   });
-  advancedToggle.addEventListener("change", () =>
-    setAdvancedVisible(formEl, advancedToggle.checked),
-  );
   saveBtn.addEventListener("click", () => void panel.save());
   historyBody.addEventListener("click", (event) => {
     const target = (event.target as HTMLElement).closest(".rsu-config-rollback");

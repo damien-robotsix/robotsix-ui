@@ -98,9 +98,12 @@ function collectArrayItems(
   const section = ctx.container.querySelector(`[data-array-key="${cssEscape(prefix)}"]`);
   if (!section) return null;
   const items: unknown[] = [];
-  // Direct children only — a nested array section owns its own items.
+  // Direct children only — a nested array section owns its own items.  The
+  // items live inside the collapsible section body, so go through it.
   section
-    .querySelectorAll(":scope > .rsu-config-array-items > .rsu-config-array-item")
+    .querySelectorAll(
+      ":scope > .rsu-config-section-body > .rsu-config-array-items > .rsu-config-array-item",
+    )
     .forEach((el) => {
       const index = (el as HTMLElement).dataset.arrayIndex;
       if (index === undefined) return;
@@ -128,7 +131,9 @@ function collectMapEntries(
   if (!section) return null;
   const entries: ConfigValues = {};
   section
-    .querySelectorAll(":scope > .rsu-config-map-entries > .rsu-config-map-entry")
+    .querySelectorAll(
+      ":scope > .rsu-config-section-body > .rsu-config-map-entries > .rsu-config-map-entry",
+    )
     .forEach((el) => {
       const name = ((el as HTMLElement).dataset.mapName || "").trim();
       if (!name) return;
