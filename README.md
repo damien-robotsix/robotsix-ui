@@ -50,7 +50,7 @@ import "@robotsix/ui/style.css";
 ```
 
 The panel handles typed inputs, nested and repeatable sections, masked secrets
-with merge-on-write, the advanced-settings toggle, changed-keys-only saves,
+with merge-on-write, collapsible settings groups, changed-keys-only saves,
 inline validation errors, and version history with rollback.
 
 | Schema                                    | Renders as                                   |
@@ -61,7 +61,7 @@ inline validation errors, and version history with rollback.
 | `"type": "object"`                        | a titled section, nested to any depth        |
 | `"type": "array"` of objects              | repeatable section with add/remove           |
 | `"format": "password", "writeOnly": true` | masked input + set/unset badge, never echoed |
-| `"advanced": true`                        | hidden behind "Show advanced settings"       |
+| `"group": "…"`                            | grouped under a collapsible section header   |
 
 ## Standalone assets
 
