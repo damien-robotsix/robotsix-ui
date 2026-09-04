@@ -25,6 +25,10 @@ modules:
       - src/config/types.ts
       - src/config/schema.ts
       - src/config/render.ts
+      - src/config/section-state.ts
+      - src/config/render-rows.ts
+      - src/config/render-array.ts
+      - src/config/render-map.ts
       - src/config/collect.ts
       - src/config/client.ts
       - src/config/panel.ts
