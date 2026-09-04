@@ -7,9 +7,26 @@ name = "robotsix-ui"
 version = "0.1.0"
 requires-python = ">=3.9"
 
+[project.optional-dependencies]
+dev = [
+    "mypy>=1.11",
+    "pytest>=8.0",
+    "ruff>=0.6",
+]
+
 [tool.hatch.build.targets.wheel]
 packages = ["robotsix_ui"]
 
 [tool.pytest.ini_options]
 testpaths = ["robotsix_ui"]
 python_files = ["test_*.py"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py39"
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+files = ["robotsix_ui"]
+exclude = ['(^|/)test_.*\.py$']
