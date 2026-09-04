@@ -1,4 +1,5 @@
 import pytest
+
 from robotsix_ui import css_url, vanilla_js_url
 
 
