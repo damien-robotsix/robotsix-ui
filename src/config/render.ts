@@ -41,7 +41,11 @@ import { buildMapSection } from "./render-map.js";
 
 // Re-export the public CSS-class constants so existing importers of
 // `./render.js` keep working after the split.
-export { COLLAPSIBLE_SECTION_CLASS, FOREIGN_CLASS, SECTION_COLLAPSED_CLASS } from "./section-state.js";
+export {
+  COLLAPSIBLE_SECTION_CLASS,
+  FOREIGN_CLASS,
+  SECTION_COLLAPSED_CLASS,
+} from "./section-state.js";
 
 /**
  * Render *schema* into *container*, pre-filled from *current*.
