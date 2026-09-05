@@ -1,5 +1,34 @@
 ## 0.1.49 (unreleased)
 
+## [1.0.0](https://github.com/damien-robotsix/robotsix-ui/compare/v0.1.49...v1.0.0) (2026-09-05)
+
+
+### ⚠ BREAKING CHANGES
+
+* the ConfigField type and the FormField export are removed; ConfigPanel now takes a config surface (or an initial GET /config response) instead of a schema/config/onChange triple.
+
+### Features
+
+* Add a shared AppShell / navigation-menu component to robotsix-ui (fleet-wide menu unification, blocker) (20260821T094525Z-add-a-shared-appshell-navigation-menu-co-c896) ([#40](https://github.com/damien-robotsix/robotsix-ui/issues/40)) ([b56bec2](https://github.com/damien-robotsix/robotsix-ui/commit/b56bec274be072246bf90aad86a86fa634ba791b))
+* ConfigPanel UX: foldable group headers, remove advanced-settings mechanism, smart grouping (20260902T151953Z-configpanel-ux-foldable-group-headers-re-cd3a) ([#78](https://github.com/damien-robotsix/robotsix-ui/issues/78)) ([0a655e5](https://github.com/damien-robotsix/robotsix-ui/commit/0a655e5b7be6a6f16b5ec67a28cd1c7255c35f06))
+* **config:** render dict-valued config as keyed map sections ([#11](https://github.com/damien-robotsix/robotsix-ui/issues/11)) ([461e25e](https://github.com/damien-robotsix/robotsix-ui/commit/461e25ec6a9d076b7bd8bbc7a6f03eca18bc4342))
+* Enable mypy_baseline periodic workflow on robotsix-ui (20260829T080848Z-enable-mypy-baseline-periodic-workflow-o-af72) ([#69](https://github.com/damien-robotsix/robotsix-ui/issues/69)) ([8c2ead5](https://github.com/damien-robotsix/robotsix-ui/commit/8c2ead5aec05dca80a2274d42993a1a0cad0abe2))
+* Enable test_gap periodic workflow on robotsix-ui (20260829T080848Z-enable-test-gap-periodic-workflow-on-rob-4b60) ([#68](https://github.com/damien-robotsix/robotsix-ui/issues/68)) ([de19e26](https://github.com/damien-robotsix/robotsix-ui/commit/de19e26aa19d58ea422ee82dc8500bc19745f72a))
+* make ConfigPanel the fleet's JSON-Schema-driven settings panel ([#10](https://github.com/damien-robotsix/robotsix-ui/issues/10)) ([91fd5de](https://github.com/damien-robotsix/robotsix-ui/commit/91fd5de1e51a0bcc0403b7cb37dd56e5a61d374b))
+* **release:** publish the vanilla JS bundle as a release asset ([#39](https://github.com/damien-robotsix/robotsix-ui/issues/39)) ([5d82a66](https://github.com/damien-robotsix/robotsix-ui/commit/5d82a66a402b5377f4672232e3d25cc45980b27a))
+* robotsix-ui: Distribute pre-built CSS as a standalone download for non-JS consumers (20260811T142428Z-robotsix-ui-distribute-pre-built-css-as-5db0) ([#36](https://github.com/damien-robotsix/robotsix-ui/issues/36)) ([6df47b8](https://github.com/damien-robotsix/robotsix-ui/commit/6df47b8dce0c236e640abe3e5f6e538d0e3ba974))
+* robotsix-ui: package the robotsix_ui Python module so it is pip/uv-importable (20260829T094234Z-robotsix-ui-package-the-robotsix-ui-pyth-fec0) ([#70](https://github.com/damien-robotsix/robotsix-ui/issues/70)) ([3a6550d](https://github.com/damien-robotsix/robotsix-ui/commit/3a6550df9c9cf08a4716501de6ab120cf3fde83e))
+* Tag git release v0.1.31 (componentId auto-derive) — git-tag only, NO registry publish (20260814T130953Z-tag-git-release-v0-1-31-componentid-auto-a0c3) ([#38](https://github.com/damien-robotsix/robotsix-ui/issues/38)) ([7af30c3](https://github.com/damien-robotsix/robotsix-ui/commit/7af30c33ebfefad7b858aca3e7a8d98396103c22))
+
+
+### Bug Fixes
+
+* CI failure: CI on main (20260809T144842Z-ci-failure-ci-on-main-ecfe) ([#31](https://github.com/damien-robotsix/robotsix-ui/issues/31)) ([2a11970](https://github.com/damien-robotsix/robotsix-ui/commit/2a119708c295b95cec7247dc8829352ada5a1d2c))
+* CI failure: CI on main (20260821T185940Z-ci-failure-ci-on-main-839d) ([#56](https://github.com/damien-robotsix/robotsix-ui/issues/56)) ([21c9432](https://github.com/damien-robotsix/robotsix-ui/commit/21c94324cdbc1bd3f0c4f1f06766183401466c1c))
+* ci_fix: out-of-scope CI failure — build, typecheck, lint, test (all fail at npm ci step) in package.json — resolve typescript / typescript-eslint peer dependency conflict (20260821T180414Z-ci-fix-out-of-scope-ci-failure-build-typ-91ca) ([#54](https://github.com/damien-robotsix/robotsix-ui/issues/54)) ([7f3d86f](https://github.com/damien-robotsix/robotsix-ui/commit/7f3d86f326bcfb5f9db54fe5c35b804ae397bc2e))
+* **config:** refuse a response that carries no config document ([#57](https://github.com/damien-robotsix/robotsix-ui/issues/57)) ([bf65507](https://github.com/damien-robotsix/robotsix-ui/commit/bf65507394284cfeb2fd4f8b43542fb0f06b9a53))
+* **docs:** put the module taxonomy in the schema's list form ([#25](https://github.com/damien-robotsix/robotsix-ui/issues/25)) ([f86edc0](https://github.com/damien-robotsix/robotsix-ui/commit/f86edc07b123e2ea0c8fb00961c535ffc1f64249))
+
 ## 0.1.48 (2026-08-29)
 
 ## 0.1.47 (2026-08-29)
