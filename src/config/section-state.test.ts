@@ -150,15 +150,19 @@ describe("setSectionCollapsed", () => {
 });
 
 describe("applySectionState", () => {
-  it("prefers the stored per-session choice over the default", () => {
+  it("prefers a stored collapsed choice over an expanded default", () => {
     saveSectionCollapsed("Mailbox", true);
     const section = makeSection("Mailbox");
     applySectionState(section, false);
     expect(section.classList.contains(SECTION_COLLAPSED_CLASS)).toBe(true);
+  });
 
+  it("treats an expanded choice as untouched, falling back to the default", () => {
+    // Expanding removes the stored flag (see saveSectionCollapsed), so the next
+    // render applies the default rather than remembering the expand.
     saveSectionCollapsed("Mailbox", false);
     const expanded = makeSection("Mailbox");
-    applySectionState(expanded, true);
+    applySectionState(expanded, false);
     expect(expanded.classList.contains(SECTION_COLLAPSED_CLASS)).toBe(false);
   });
 
