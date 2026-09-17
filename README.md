@@ -51,7 +51,10 @@ import "@robotsix/ui/style.css";
 
 The panel handles typed inputs, nested and repeatable sections, masked secrets
 with merge-on-write, collapsible settings groups, changed-keys-only saves,
-inline validation errors, and version history with rollback.
+inline validation errors, and version history with rollback. An optional
+`componentId` option auto-derives read-only keys for map entries (e.g.
+`langfuse.projects`, `openrouter.keys`) and auto-populates a `project_id`
+field inside object-valued map entries.
 
 | Schema                                    | Renders as                                   |
 | ----------------------------------------- | -------------------------------------------- |

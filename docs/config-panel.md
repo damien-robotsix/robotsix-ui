@@ -88,16 +88,17 @@ drift from the vanilla one.
 
 ## Options
 
-| Option    | Meaning                                                              |
-| --------- | -------------------------------------------------------------------- |
-| `baseUrl` | Prefix for the four config routes. Defaults to same-origin root.     |
-| `headers` | Extra request headers (auth token, CSRF).                            |
-| `client`  | A pre-built `ConfigClient`, when you need custom transport.          |
-| `title`   | Heading above the form. Defaults to `"Settings"`.                    |
-| `history` | Set `false` to hide the version-history tab.                         |
-| `plane`   | `"component"` (default) or `"deploy"` — see below.                   |
-| `initial` | A `GET /config` response, to skip the initial fetch.                 |
-| `onSaved` | Called with `{config, version}` after a successful save or rollback. |
+| Option        | Meaning                                                                                                                                                                                          |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `baseUrl`     | Prefix for the four config routes. Defaults to same-origin root.                                                                                                                                 |
+| `headers`     | Extra request headers (auth token, CSRF).                                                                                                                                                        |
+| `client`      | A pre-built `ConfigClient`, when you need custom transport.                                                                                                                                      |
+| `componentId` | When set, map-entry keys (`langfuse.projects`, `openrouter.keys`) are auto-derived from it and rendered read-only, and a `project_id` field inside an object-valued map entry is auto-populated. |
+| `title`       | Heading above the form. Defaults to `"Settings"`.                                                                                                                                                |
+| `history`     | Set `false` to hide the version-history tab.                                                                                                                                                     |
+| `plane`       | `"component"` (default) or `"deploy"` — see below.                                                                                                                                               |
+| `initial`     | A `GET /config` response, to skip the initial fetch.                                                                                                                                             |
+| `onSaved`     | Called with `{config, version}` after a successful save or rollback.                                                                                                                             |
 
 ## What the schema controls
 
