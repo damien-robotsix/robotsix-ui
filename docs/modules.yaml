@@ -13,6 +13,7 @@ modules:
       - src/styles/tokens.css
       - src/styles/base.css
       - src/styles/components.css
+      - src/styles/components.css.test.ts
       - src/styles/utilities.css
       - src/styles/index.css
 
