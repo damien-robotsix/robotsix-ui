@@ -79,6 +79,7 @@ modules:
       - docs/app-shell.md
       - docs/consumption.md
       - docs/config-panel.md
+      - docs/modules.yaml
 
   - id: python-helper
     description: "Python helper for resolving robotsix-ui CSS release URLs"
