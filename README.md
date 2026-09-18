@@ -14,6 +14,8 @@ public npm registry publish. Pin a git tag or commit SHA in your
 }
 ```
 
+**Requirements:** Node 20.19 or later.
+
 The `prepare` script builds the library automatically when you run
 `npm install`, so no pre-built artifacts are committed to the
 repository.
