@@ -6,6 +6,22 @@ modules:
       - src/index.ts
       - src/vanilla.ts
       - .robotsix-mill/config.yaml
+      - .robotsix-mill/periodic/agent_check.yaml
+      - .robotsix-mill/periodic/audit.yaml
+      - .robotsix-mill/periodic/bc_check.yaml
+      - .robotsix-mill/periodic/completeness_check.yaml
+      - .robotsix-mill/periodic/copy_paste.yaml
+      - .robotsix-mill/periodic/docstring_coverage.yaml
+      - .robotsix-mill/periodic/health.yaml
+      - .robotsix-mill/periodic/module_curator.yaml
+      - .robotsix-mill/periodic/module_size.yaml
+      - .robotsix-mill/periodic/mypy_baseline.yaml
+      - .robotsix-mill/periodic/pin_bump.yaml
+      - .robotsix-mill/periodic/repo_description_sync.yaml
+      - .robotsix-mill/periodic/survey.yaml
+      - .robotsix-mill/periodic/test_gap.yaml
+      - .robotsix-mill/periodic/trace_review.yaml
+      - .robotsix-mill/periodic/triage_boilerplate.yaml
 
   - id: styles
     description: "Design tokens, base CSS, shared component styles, and utilities"
