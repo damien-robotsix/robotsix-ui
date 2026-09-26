@@ -121,14 +121,7 @@ describe("buildRow", () => {
 
   it("resolves a $ref before choosing the row type", () => {
     const defs: Record<string, JsonSchemaNode> = { Level: { type: "string", enum: ["a", "b"] } };
-    const row = buildRow(
-      "level",
-      "level",
-      { $ref: "#/$defs/Level" },
-      undefined,
-      [],
-      ctx({ defs }),
-    );
+    const row = buildRow("level", "level", { $ref: "#/$defs/Level" }, undefined, [], ctx({ defs }));
     expect(row.querySelector("select")).not.toBeNull();
   });
 
@@ -246,7 +239,14 @@ describe("buildSelectRow", () => {
 
 describe("buildNumberRow", () => {
   it("adds an integer step for integer nodes", () => {
-    const row = buildRow("workers", "workers", { type: "integer", default: 4 }, undefined, [], ctx());
+    const row = buildRow(
+      "workers",
+      "workers",
+      { type: "integer", default: 4 },
+      undefined,
+      [],
+      ctx(),
+    );
     expect(input(row).getAttribute("step")).toBe("1");
     expect(input(row).value).toBe("4");
   });
@@ -274,7 +274,14 @@ describe("buildBooleanRow", () => {
   });
 
   it("uses the schema default when there is no current value", () => {
-    const row = buildRow("enabled", "enabled", { type: "boolean", default: true }, undefined, [], ctx());
+    const row = buildRow(
+      "enabled",
+      "enabled",
+      { type: "boolean", default: true },
+      undefined,
+      [],
+      ctx(),
+    );
     expect(input(row).checked).toBe(true);
   });
 });
