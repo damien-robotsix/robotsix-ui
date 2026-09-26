@@ -98,8 +98,12 @@ modules:
       - docs/modules.yaml
 
   - id: python-helper
-    description: "Python helper for resolving robotsix-ui CSS release URLs"
+    description: >
+      Python helper for resolving and fetching robotsix-ui release assets
+      (URL builders plus a hardened fetch_assets function and CLI)
     paths:
       - pyproject.toml
       - robotsix_ui/__init__.py
+      - robotsix_ui/__main__.py
       - robotsix_ui/test_init.py
+      - robotsix_ui/test_fetch.py
