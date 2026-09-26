@@ -82,6 +82,32 @@ stylesheet styles. Python consumers can resolve the URLs with the bundled
 `robotsix_ui.css_url()` / `robotsix_ui.vanilla_js_url()` helpers rather than
 hand-building them.
 
+### Option F: Hardened Python fetcher (`robotsix_ui.fetch_assets`)
+
+The `robotsix_ui` Python package ships a single hardened downloader so
+consumers do not each re-implement retry/validation logic. It fetches both
+`style.css` and `vanilla.js` for a version tag into a destination directory,
+with 5× retry and exponential backoff on server (5xx) errors, version-tag
+validation, and a zero-byte-file guard.
+
+From Python:
+
+```python
+from robotsix_ui import fetch_assets
+
+fetch_assets("static/robotsix-ui", "v0.1.48")
+# writes static/robotsix-ui/style.css and static/robotsix-ui/vanilla.js
+```
+
+From the command line (build/deploy scripts, Dockerfiles, Makefiles):
+
+```bash
+python -m robotsix_ui fetch --version v0.1.48 --dest static/robotsix-ui
+```
+
+The version is a single argument — pin it in one place rather than
+duplicating a literal across download snippets.
+
 ## What the stylesheet provides
 
 | Layer          | File             | Purpose                                                                                                       |
