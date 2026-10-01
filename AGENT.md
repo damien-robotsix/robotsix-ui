@@ -89,7 +89,7 @@ on every PR and push to `main`.
   match `^rsu-[a-z0-9-]+$` (`custom-property-pattern`). The only sanctioned
   exceptions carry an inline `stylelint-disable-next-line` with a rationale
   (e.g. the public `.sr-only` accessibility utility). Run with `npm run
-  lint:css`; `--fix` auto-corrects most standard-config violations.
+lint:css`; `--fix` auto-corrects most standard-config violations.
 - **Module registration**: every source and test file must be listed in
   `docs/modules.yaml` under the appropriate module.
 
