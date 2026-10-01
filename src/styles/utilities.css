@@ -11,6 +11,7 @@
  * Use for skip-to-content links, hidden labels, and other assistive-tech
  * affordances that should not appear in the visual layout.
  */
+/* stylelint-disable-next-line selector-class-pattern -- standard, un-prefixed accessibility utility shipped as public API */
 .sr-only {
   position: absolute;
   width: 1px;
@@ -18,6 +19,7 @@
   padding: 0;
   margin: -1px;
   overflow: hidden;
+  /* stylelint-disable-next-line property-no-deprecated -- `clip` is the cross-browser screen-reader-hiding technique; kept alongside modern layout */
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
