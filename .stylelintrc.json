@@ -1,0 +1,7 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "selector-class-pattern": "^rsu-[a-z0-9-]+$",
+    "custom-property-pattern": "^rsu-[a-z0-9-]+$"
+  }
+}

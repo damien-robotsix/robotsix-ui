@@ -59,14 +59,15 @@ npm run build       # Vite library build → dist/
 npm run dev         # Vite build in watch mode
 npm test            # Vitest (jsdom environment)
 npm run test:coverage  # Vitest with coverage (thresholds: 90% lines/functions, 80% branches)
-npm run lint        # ESLint on src/
+npm run lint        # ESLint on src/ + Stylelint on src/styles/**/*.css
+npm run lint:css    # Stylelint on src/styles/**/*.css
 npm run typecheck   # tsc --noEmit (strict mode)
 npm run format      # Prettier --check
 npm run format:fix  # Prettier --write
 ```
 
-CI runs `lint`, `format`, `typecheck`, `test:coverage`, and `build` on every
-PR and push to `main`.
+CI runs `lint`, `lint:css`, `format`, `typecheck`, `test:coverage`, and `build`
+on every PR and push to `main`.
 
 ## Coding Conventions
 
@@ -82,6 +83,13 @@ PR and push to `main`.
 - **CSS**: class names prefixed `rsu-`. Design tokens are CSS custom properties
   (e.g. `--rsu-color-primary`). Themes use `data-theme` attribute and
   `prefers-color-scheme`.
+- **Stylelint** (`.stylelintrc.json`): extends `stylelint-config-standard` and
+  enforces the naming contract — every class selector must match
+  `^rsu-[a-z0-9-]+$` (`selector-class-pattern`) and every custom property must
+  match `^rsu-[a-z0-9-]+$` (`custom-property-pattern`). The only sanctioned
+  exceptions carry an inline `stylelint-disable-next-line` with a rationale
+  (e.g. the public `.sr-only` accessibility utility). Run with `npm run
+  lint:css`; `--fix` auto-corrects most standard-config violations.
 - **Module registration**: every source and test file must be listed in
   `docs/modules.yaml` under the appropriate module.
 
