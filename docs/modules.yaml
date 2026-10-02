@@ -69,17 +69,17 @@ modules:
   - id: app-shell
     description: "Framework-free app shell: the fleet's shared top-level navigation"
     paths:
-      - src/appshell/index.ts
-      - src/appshell/types.ts
-      - src/appshell/appshell.ts
-      - src/appshell/appshell.test.ts
+      - src/app-shell/index.ts
+      - src/app-shell/types.ts
+      - src/app-shell/appshell.ts
+      - src/app-shell/appshell.test.ts
 
   - id: app-shell-react
     description: "React wrapper that mounts the framework-free app shell"
     paths:
-      - src/components/AppShell/AppShell.tsx
-      - src/components/AppShell/AppShell.test.tsx
-      - src/components/AppShell/index.ts
+      - src/app-shell-react/AppShell.tsx
+      - src/app-shell-react/AppShell.test.tsx
+      - src/app-shell-react/index.ts
 
   - id: test-support
     description: "Test setup utilities"
