@@ -38,33 +38,33 @@ modules:
       Schema-driven settings panel: the fleet's reference implementation of the
       config-ownership standard's UI affordance and HTTP surface.
     paths:
-      - src/config/index.ts
-      - src/config/types.ts
-      - src/config/schema.ts
-      - src/config/render.ts
-      - src/config/section-state.ts
-      - src/config/section-state.test.ts
-      - src/config/render-rows.ts
-      - src/config/render-rows.test.ts
-      - src/config/render-array.ts
-      - src/config/render-map.ts
-      - src/config/collect.ts
-      - src/config/client.ts
-      - src/config/panel.ts
-      - src/config/html.ts
-      - src/config/html.test.ts
-      - src/config/schema.test.ts
-      - src/config/render.test.ts
-      - src/config/map.test.ts
-      - src/config/client.test.ts
-      - src/config/panel.test.ts
+      - src/config-panel/index.ts
+      - src/config-panel/types.ts
+      - src/config-panel/schema.ts
+      - src/config-panel/render.ts
+      - src/config-panel/section-state.ts
+      - src/config-panel/section-state.test.ts
+      - src/config-panel/render-rows.ts
+      - src/config-panel/render-rows.test.ts
+      - src/config-panel/render-array.ts
+      - src/config-panel/render-map.ts
+      - src/config-panel/collect.ts
+      - src/config-panel/client.ts
+      - src/config-panel/panel.ts
+      - src/config-panel/html.ts
+      - src/config-panel/html.test.ts
+      - src/config-panel/schema.test.ts
+      - src/config-panel/render.test.ts
+      - src/config-panel/map.test.ts
+      - src/config-panel/client.test.ts
+      - src/config-panel/panel.test.ts
 
   - id: config-panel-react
     description: "React wrapper that mounts the framework-free config panel"
     paths:
-      - src/components/ConfigPanel/ConfigPanel.tsx
-      - src/components/ConfigPanel/ConfigPanel.test.tsx
-      - src/components/ConfigPanel/index.ts
+      - src/config-panel-react/ConfigPanel.tsx
+      - src/config-panel-react/ConfigPanel.test.tsx
+      - src/config-panel-react/index.ts
 
   - id: app-shell
     description: "Framework-free app shell: the fleet's shared top-level navigation"

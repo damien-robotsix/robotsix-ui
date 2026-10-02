@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
-import { mountConfigPanel } from "../../config/panel.js";
-import type { ConfigPanelHandle, ConfigPanelOptions } from "../../config/panel.js";
+import { mountConfigPanel } from "../config-panel/panel.js";
+import type { ConfigPanelHandle, ConfigPanelOptions } from "../config-panel/panel.js";
 
 export interface ConfigPanelProps extends ConfigPanelOptions {
   /** Extra class names for the wrapper element. */

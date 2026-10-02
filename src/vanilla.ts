@@ -16,5 +16,5 @@
  * two can never render a component's settings differently.
  */
 
-export * from "./config/index.js";
+export * from "./config-panel/index.js";
 export * from "./appshell/index.js";
