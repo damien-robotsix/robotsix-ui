@@ -37,7 +37,7 @@ config HTTP surface (`GET`/`PUT /config`, `GET /config/versions`,
 
 The library has two layers and two entry points:
 
-### Framework-free core (`src/config/`)
+### Framework-free core (`src/config-panel/`)
 
 - Pure TypeScript / DOM — no React dependency.
 - Modules: `panel.ts` (controller), `render.ts` (DOM generation), `schema.ts`
@@ -47,7 +47,7 @@ The library has two layers and two entry points:
   Exports `mountConfigPanel(element, options)` for server-rendered UIs that
   have no bundler — loaded via `<script type="module">`.
 
-### React wrapper (`src/components/ConfigPanel/`)
+### React wrapper (`src/config-panel-react/`)
 
 - Thin wrapper: `ConfigPanel.tsx` renders the framework-free panel inside a
   React component.
