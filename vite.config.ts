@@ -53,7 +53,7 @@ export default defineConfig({
         "src/**/*.test.ts",
         "src/**/*.test.tsx",
         "src/test-setup.ts",
-        "src/config/index.ts",
+        "src/config-panel/index.ts",
         "src/index.ts",
         "src/vanilla.ts",
       ],
