@@ -13,6 +13,20 @@ Consumers pin a git tag or commit SHA in their `package.json`:
 The `prepare` script builds the library on `npm install`, so no pre-built
 artifacts are committed.
 
+### Canonical repository slug
+
+The canonical GitHub slug for this repository is **`robotsix-ui`**
+(`github.com/damien-robotsix/robotsix-ui`) — a live, distinct repository, not a
+rename redirect. Every internal reference to the slug must use `robotsix-ui`:
+`package.json` `repository.url`, the `_RELEASE_BASE` constant in
+`robotsix_ui/__init__.py` (and its test), and the install/download URLs in
+`README.md` and `docs/`. The `upload-assets` job in
+`.github/workflows/release-please.yml` attaches release assets to this same
+repository, so `css_url()` / `vanilla_js_url()` and the documented download
+URLs resolve directly against `robotsix-ui`. Do not switch any of these to
+another slug (e.g. `robotsix-mill`, the separate mill-tooling repository) — that
+would break asset resolution.
+
 The library owns the fleet's **only** settings renderer — a schema-driven
 config panel. Components do not write their own settings UI; they mount this
 one, driven by their committed `config/config.schema.json` and the standard
