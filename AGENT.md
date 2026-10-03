@@ -35,24 +35,43 @@ config HTTP surface (`GET`/`PUT /config`, `GET /config/versions`,
 
 ## Architecture
 
-The library has two layers and two entry points:
+The library has two layers and two entry points.
 
-### Framework-free core (`src/config-panel/`)
+### Per-module layout
 
-- Pure TypeScript / DOM — no React dependency.
-- Modules: `panel.ts` (controller), `render.ts` (DOM generation), `schema.ts`
-  (JSON Schema parsing), `client.ts` (HTTP client), `collect.ts` (form value
-  collection), `html.ts` (utilities), `types.ts`.
-- Entry point: `src/vanilla.ts` → `@robotsix/ui/vanilla`.
-  Exports `mountConfigPanel(element, options)` for server-rendered UIs that
-  have no bundler — loaded via `<script type="module">`.
+Each module ships two co-located variants under `src/`:
 
-### React wrapper (`src/config-panel-react/`)
+- `src/<module-id>/` — the **framework-free core**: pure TypeScript / DOM with
+  no React dependency, re-exported through `src/vanilla.ts` →
+  `@robotsix/ui/vanilla` for server-rendered UIs that have no bundler (loaded
+  via `<script type="module">`).
+- `src/<module-id>-react/` — the **React wrapper**: a thin component that
+  renders the framework-free core inside React, re-exported through
+  `src/index.ts` → `@robotsix/ui` for React hosts with a bundler. The React
+  wrapper imports its core from the sibling `../<module-id>/` directory.
 
-- Thin wrapper: `ConfigPanel.tsx` renders the framework-free panel inside a
-  React component.
-- Entry point: `src/index.ts` → `@robotsix/ui`.
-  Exports `<ConfigPanel>` for React hosts with a bundler.
+This supersedes the previous `src/components/` pattern for React wrappers:
+both variants of a module now live next to each other at `src/<module-id>/`
+and `src/<module-id>-react/`. Every source and test file must still be listed
+in `docs/modules.yaml` under its module.
+
+The modules currently shipped are `config-panel` and `app-shell`.
+
+### Config panel (`src/config-panel/` + `src/config-panel-react/`)
+
+- Framework-free core modules: `panel.ts` (controller), `render.ts` (DOM
+  generation), `schema.ts` (JSON Schema parsing), `client.ts` (HTTP client),
+  `collect.ts` (form value collection), `html.ts` (utilities), `types.ts`.
+  The vanilla entry exports `mountConfigPanel(element, options)`.
+- React wrapper: `ConfigPanel.tsx` renders the framework-free panel inside a
+  React component and exports `<ConfigPanel>`.
+
+### App shell (`src/app-shell/` + `src/app-shell-react/`)
+
+- Framework-free core (`src/app-shell/`): the vanilla app-shell mount, exported
+  through `src/vanilla.ts`.
+- React wrapper (`src/app-shell-react/`): the React component that renders the
+  framework-free shell, exported through `src/index.ts`.
 
 ### Styles (`src/styles/`)
 
