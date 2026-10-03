@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { ReactNode } from "react";
-import { mountAppShell } from "../../appshell/appshell.js";
-import type { AppShellHandle, AppShellOptions } from "../../appshell/types.js";
+import { mountAppShell } from "../app-shell/appshell.js";
+import type { AppShellHandle, AppShellOptions } from "../app-shell/types.js";
 
 export interface AppShellProps extends Omit<AppShellOptions, "rightSlot"> {
   /** Per-app controls rendered into the shell's right slot. */
