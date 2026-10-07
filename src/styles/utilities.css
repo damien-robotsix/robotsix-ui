@@ -24,3 +24,134 @@
   white-space: nowrap;
   border: 0;
 }
+
+/* ── Page layout ────────────────────────────────────────────── */
+
+/*
+ * Centered, padded content column for a dashboard page mounted under
+ * AppShell. Consumers wrap their page body in `.rsu-page`; combine with
+ * `.rsu-page-header` / `.rsu-page-title` for the standard heading row and
+ * `.rsu-page-grid` for a responsive card grid.
+ */
+.rsu-page {
+  max-width: 72rem;
+  padding: var(--rsu-space-lg);
+  margin: 0 auto;
+}
+
+.rsu-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rsu-space-md);
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--rsu-space-lg);
+}
+
+.rsu-page-title {
+  margin: 0;
+  font-size: var(--rsu-font-size-xl);
+  font-weight: var(--rsu-font-weight-semibold);
+  line-height: var(--rsu-line-height-heading);
+}
+
+.rsu-page-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: var(--rsu-space-md);
+}
+
+/* ── Data table ─────────────────────────────────────────────── */
+
+/*
+ * Framework-free table skin for dashboard data grids. Apply `.rsu-table`
+ * to a `<table>`; header cells pick up the secondary background and body
+ * rows highlight on hover.
+ */
+.rsu-table {
+  width: 100%;
+  font-size: var(--rsu-font-size-sm);
+  border-collapse: collapse;
+}
+
+.rsu-table th,
+.rsu-table td {
+  padding: var(--rsu-space-sm) var(--rsu-space-md);
+  text-align: left;
+  border-bottom: var(--rsu-border-width) solid var(--rsu-color-border);
+}
+
+.rsu-table th {
+  font-weight: var(--rsu-font-weight-semibold);
+  color: var(--rsu-color-text-secondary);
+  background: var(--rsu-color-bg-secondary);
+}
+
+.rsu-table tbody tr:hover {
+  background: var(--rsu-color-bg-secondary);
+}
+
+/* ── List ───────────────────────────────────────────────────── */
+
+/*
+ * Vertical stack of bordered rows for compact data lists (e.g. calendar
+ * day items). Apply `.rsu-list` to a `<ul>`/`<ol>` or container and
+ * `.rsu-list-item` to each row.
+ */
+.rsu-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rsu-space-sm);
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.rsu-list-item {
+  display: flex;
+  gap: var(--rsu-space-md);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--rsu-space-sm) var(--rsu-space-md);
+  background: var(--rsu-color-bg);
+  border: var(--rsu-border-width) solid var(--rsu-color-border);
+  border-radius: var(--rsu-radius-md);
+}
+
+/* ── Form layout ────────────────────────────────────────────── */
+
+/*
+ * Stacked form / filter-bar layout. `.rsu-form` stacks fields vertically;
+ * add the `.rsu-form--inline` modifier for a horizontal filter bar.
+ * `.rsu-field` groups a label with its control, `.rsu-field-label` styles
+ * the label, and `.rsu-form-actions` is a horizontal button row.
+ */
+.rsu-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rsu-space-md);
+}
+
+.rsu-form--inline {
+  flex-flow: row wrap;
+  align-items: flex-end;
+}
+
+.rsu-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--rsu-space-xs);
+}
+
+.rsu-field-label {
+  font-size: var(--rsu-font-size-sm);
+  font-weight: var(--rsu-font-weight-medium);
+  color: var(--rsu-color-text-secondary);
+}
+
+.rsu-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--rsu-space-sm);
+  align-items: center;
+}
