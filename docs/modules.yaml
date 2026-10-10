@@ -47,8 +47,11 @@ modules:
       - src/config-panel/render-rows.ts
       - src/config-panel/render-rows.test.ts
       - src/config-panel/render-array.ts
+      - src/config-panel/render-array.test.ts
       - src/config-panel/render-map.ts
+      - src/config-panel/render-map.test.ts
       - src/config-panel/collect.ts
+      - src/config-panel/collect.test.ts
       - src/config-panel/client.ts
       - src/config-panel/panel.ts
       - src/config-panel/html.ts
