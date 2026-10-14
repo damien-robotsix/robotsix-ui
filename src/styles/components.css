@@ -275,7 +275,7 @@
 .rsu-config-row input[type="password"]:focus,
 .rsu-config-row select:focus {
   border-color: var(--rsu-color-border-focus);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 15%);
   outline: none;
 }
 
@@ -467,7 +467,7 @@
 }
 
 /* On narrow viewports the nav collapses behind the hamburger button. */
-@media (max-width: 640px) {
+@media (width <= 640px) {
   .rsu-appshell-toggle {
     display: inline-flex;
   }

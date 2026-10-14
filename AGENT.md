@@ -13,6 +13,20 @@ Consumers pin a git tag or commit SHA in their `package.json`:
 The `prepare` script builds the library on `npm install`, so no pre-built
 artifacts are committed.
 
+### Canonical repository slug
+
+The canonical GitHub slug for this repository is **`robotsix-ui`**
+(`github.com/damien-robotsix/robotsix-ui`) — a live, distinct repository, not a
+rename redirect. Every internal reference to the slug must use `robotsix-ui`:
+`package.json` `repository.url`, the `_RELEASE_BASE` constant in
+`robotsix_ui/__init__.py` (and its test), and the install/download URLs in
+`README.md` and `docs/`. The `upload-assets` job in
+`.github/workflows/release-please.yml` attaches release assets to this same
+repository, so `css_url()` / `vanilla_js_url()` and the documented download
+URLs resolve directly against `robotsix-ui`. Do not switch any of these to
+another slug (e.g. `robotsix-mill`, the separate mill-tooling repository) — that
+would break asset resolution.
+
 The library owns the fleet's **only** settings renderer — a schema-driven
 config panel. Components do not write their own settings UI; they mount this
 one, driven by their committed `config/config.schema.json` and the standard
@@ -21,24 +35,43 @@ config HTTP surface (`GET`/`PUT /config`, `GET /config/versions`,
 
 ## Architecture
 
-The library has two layers and two entry points:
+The library has two layers and two entry points.
 
-### Framework-free core (`src/config/`)
+### Per-module layout
 
-- Pure TypeScript / DOM — no React dependency.
-- Modules: `panel.ts` (controller), `render.ts` (DOM generation), `schema.ts`
-  (JSON Schema parsing), `client.ts` (HTTP client), `collect.ts` (form value
-  collection), `html.ts` (utilities), `types.ts`.
-- Entry point: `src/vanilla.ts` → `@robotsix/ui/vanilla`.
-  Exports `mountConfigPanel(element, options)` for server-rendered UIs that
-  have no bundler — loaded via `<script type="module">`.
+Each module ships two co-located variants under `src/`:
 
-### React wrapper (`src/components/ConfigPanel/`)
+- `src/<module-id>/` — the **framework-free core**: pure TypeScript / DOM with
+  no React dependency, re-exported through `src/vanilla.ts` →
+  `@robotsix/ui/vanilla` for server-rendered UIs that have no bundler (loaded
+  via `<script type="module">`).
+- `src/<module-id>-react/` — the **React wrapper**: a thin component that
+  renders the framework-free core inside React, re-exported through
+  `src/index.ts` → `@robotsix/ui` for React hosts with a bundler. The React
+  wrapper imports its core from the sibling `../<module-id>/` directory.
 
-- Thin wrapper: `ConfigPanel.tsx` renders the framework-free panel inside a
-  React component.
-- Entry point: `src/index.ts` → `@robotsix/ui`.
-  Exports `<ConfigPanel>` for React hosts with a bundler.
+This supersedes the previous `src/components/` pattern for React wrappers:
+both variants of a module now live next to each other at `src/<module-id>/`
+and `src/<module-id>-react/`. Every source and test file must still be listed
+in `docs/modules.yaml` under its module.
+
+The modules currently shipped are `config-panel` and `app-shell`.
+
+### Config panel (`src/config-panel/` + `src/config-panel-react/`)
+
+- Framework-free core modules: `panel.ts` (controller), `render.ts` (DOM
+  generation), `schema.ts` (JSON Schema parsing), `client.ts` (HTTP client),
+  `collect.ts` (form value collection), `html.ts` (utilities), `types.ts`.
+  The vanilla entry exports `mountConfigPanel(element, options)`.
+- React wrapper: `ConfigPanel.tsx` renders the framework-free panel inside a
+  React component and exports `<ConfigPanel>`.
+
+### App shell (`src/app-shell/` + `src/app-shell-react/`)
+
+- Framework-free core (`src/app-shell/`): the vanilla app-shell mount, exported
+  through `src/vanilla.ts`.
+- React wrapper (`src/app-shell-react/`): the React component that renders the
+  framework-free shell, exported through `src/index.ts`.
 
 ### Styles (`src/styles/`)
 
@@ -59,14 +92,15 @@ npm run build       # Vite library build → dist/
 npm run dev         # Vite build in watch mode
 npm test            # Vitest (jsdom environment)
 npm run test:coverage  # Vitest with coverage (thresholds: 90% lines/functions, 80% branches)
-npm run lint        # ESLint on src/
+npm run lint        # ESLint on src/ + Stylelint on src/styles/**/*.css
+npm run lint:css    # Stylelint on src/styles/**/*.css
 npm run typecheck   # tsc --noEmit (strict mode)
 npm run format      # Prettier --check
 npm run format:fix  # Prettier --write
 ```
 
-CI runs `lint`, `format`, `typecheck`, `test:coverage`, and `build` on every
-PR and push to `main`.
+CI runs `lint`, `lint:css`, `format`, `typecheck`, `test:coverage`, and `build`
+on every PR and push to `main`.
 
 ## Coding Conventions
 
@@ -82,6 +116,13 @@ PR and push to `main`.
 - **CSS**: class names prefixed `rsu-`. Design tokens are CSS custom properties
   (e.g. `--rsu-color-primary`). Themes use `data-theme` attribute and
   `prefers-color-scheme`.
+- **Stylelint** (`.stylelintrc.json`): extends `stylelint-config-standard` and
+  enforces the naming contract — every class selector must match
+  `^rsu-[a-z0-9-]+$` (`selector-class-pattern`) and every custom property must
+  match `^rsu-[a-z0-9-]+$` (`custom-property-pattern`). The only sanctioned
+  exceptions carry an inline `stylelint-disable-next-line` with a rationale
+  (e.g. the public `.sr-only` accessibility utility). Run with `npm run
+lint:css`; `--fix` auto-corrects most standard-config violations.
 - **Module registration**: every source and test file must be listed in
   `docs/modules.yaml` under the appropriate module.
 
