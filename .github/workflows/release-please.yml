@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   release-please:
-    uses: damien-robotsix/robotsix-github-workflows/.github/workflows/release-please.yml@94d7adb43db9ddd7222ad25834231ac41314359b # main
+    uses: damien-robotsix/robotsix-github-workflows/.github/workflows/release-please.yml@3e3e01a6eec8588bfcc756954640fa91e3801ff1 # main
     permissions:
       contents: write
       pull-requests: write
