@@ -58,7 +58,7 @@ modules:
       - src/config-panel/html.test.ts
       - src/config-panel/schema.test.ts
       - src/config-panel/render.test.ts
-      - src/config-panel/map.test.ts
+      - src/config-panel/map-rendering-integration.test.ts
       - src/config-panel/client.test.ts
       - src/config-panel/panel.test.ts
 
