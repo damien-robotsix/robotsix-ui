@@ -32,6 +32,7 @@ modules:
       - src/styles/components.css.test.ts
       - src/styles/utilities.css
       - src/styles/index.css
+      - docs/utilities.md
 
   - id: config-panel
     description: >
