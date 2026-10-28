@@ -1,0 +1,22 @@
+name: Dependency Review
+
+on:
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dependency-review:
+    name: Dependency review
+    permissions:
+      contents: read # read the PR's base and head dependency manifests
+      # Documented exception: write lets the reusable workflow post the
+      # review summary as a PR comment (comment-summary-in-pr).
+      pull-requests: write # post the dependency-review summary comment on the PR
+    uses: damien-robotsix/robotsix-github-workflows/.github/workflows/dependency-review.yml@47523e8aa2d34d41da060d29b57f75ab262cb840 # v1.4.0
+    with:
+      fail-on-severity: moderate
