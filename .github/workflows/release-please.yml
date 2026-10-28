@@ -4,16 +4,21 @@ on:
   push:
     branches: [main]
 
-permissions:
-  contents: write
-  pull-requests: write
+permissions: {} # no workflow-level default; each job grants its own
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Never cancel an in-flight release run: it may be mid-way through
+  # cutting a tag or uploading assets.
+  cancel-in-progress: false
 
 jobs:
   release-please:
+    name: Release Please
     uses: damien-robotsix/robotsix-github-workflows/.github/workflows/release-please.yml@3e3e01a6eec8588bfcc756954640fa91e3801ff1 # main
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # create release tags and GitHub Releases
+      pull-requests: write # open and update the release PR
     with:
       app-id: ${{ vars.RELEASE_APP_ID }}
       sync-uv-lock: false
@@ -21,17 +26,19 @@ jobs:
       app-private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
 
   upload-assets:
+    name: Upload release assets
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: write # upload assets to the GitHub Release
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ needs.release-please.outputs.tag_name }}
+          persist-credentials: false
 
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v4.3.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "22"
           cache: "npm"
@@ -42,8 +49,9 @@ jobs:
       - name: Upload release assets
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ needs.release-please.outputs.tag_name }}
         run: |
-          gh release upload "${{ needs.release-please.outputs.tag_name }}" \
+          gh release upload "$TAG_NAME" \
             dist/style.css \
             dist/vanilla.js \
             dist/vanilla.js.map \
