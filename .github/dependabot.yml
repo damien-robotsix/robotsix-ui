@@ -4,6 +4,12 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    ignore:
+      # typescript-eslint (8.x) declares the peer `typescript >=4.8.4 <6.1.0`;
+      # bumping past it breaks `npm ci` with ERESOLVE. Remove this entry once
+      # typescript-eslint supports TypeScript 7.
+      - dependency-name: "typescript"
+        versions: [">=6.1.0"]
   - package-ecosystem: pip
     directory: "/"
     schedule:
