@@ -1,0 +1,54 @@
+# Standard pre-commit set (see robotsix-standards docs/pre-commit-baseline.md
+# and docs/python.md#pre-commit-hooks). Mixed TS/Python repo: ruff is scoped to
+# the Python package (robotsix_ui/); the TypeScript side runs the repo's own
+# eslint / prettier / stylelint configs through local hooks.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: ["--maxkb=1024"]
+        exclude: |
+          (?x)(
+            uv\.lock|
+            \.secrets\.baseline
+          )
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.17.3
+    hooks:
+      - id: ruff-check
+        args: [--fix, --exit-non-zero-on-fix]
+        files: ^robotsix_ui/
+      - id: ruff-format
+        files: ^robotsix_ui/
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args:
+          - "--baseline"
+          - ".secrets.baseline"
+        exclude: '(^|/)(package-lock\.json|\.secrets\.baseline)$'
+  # Local hooks reuse the repo's existing JS tooling configs; they require
+  # `npm ci` to have been run so the binaries resolve from node_modules.
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: npx --no-install eslint
+        language: system
+        files: ^src/.*\.(ts|tsx)$
+      - id: prettier
+        name: prettier --check
+        entry: npx --no-install prettier --check --ignore-unknown
+        language: system
+        types: [text]
+      - id: stylelint
+        name: stylelint
+        entry: npx --no-install stylelint
+        language: system
+        files: ^src/styles/.*\.css$
