@@ -119,6 +119,12 @@ emits:
 | `"description"`                                              | shown only as the hover tooltip on the field label; no inline help text is rendered |
 | `$ref` / `$defs`, `anyOf: [X, null]`                         | resolved and unwrapped before rendering                                             |
 
+An object-typed field with no nested properties (a free-form map such as
+`llmio_tier_overrides`), or any field whose current value is a plain object, is
+edited as one raw JSON-object input, the same way lists are. The input shows the
+JSON serialisation of the value and is labelled "JSON object". Invalid JSON is
+skipped on save, so the stored value survives.
+
 Secrets follow merge-on-write: the field renders blank, and a blank field is
 omitted from the update, so the stored secret survives. Only a value the
 operator actually types overwrites it.
