@@ -6,7 +6,7 @@
  */
 
 import { escAttr, escHtml } from "./html.js";
-import { isSecretField, resolveRef } from "./schema.js";
+import { isPlainObject, isSecretField, resolveRef } from "./schema.js";
 import { applyFlags, type RenderContext } from "./section-state.js";
 import type { JsonSchemaNode } from "./types.js";
 
@@ -75,6 +75,7 @@ export function buildRow(
 
   if (isSecretField(node)) return buildSecretRow(params);
   if (node.type === "array" || Array.isArray(displayVal)) return buildJsonListRow(params);
+  if (node.type === "object" || isPlainObject(displayVal)) return buildJsonObjectRow(params);
   if (Array.isArray(node.enum)) return buildSelectRow(params);
   if (node.type === "integer" || node.type === "number") return buildNumberRow(params);
   if (node.type === "boolean") return buildBooleanRow(params);
@@ -102,12 +103,21 @@ function buildSecretRow(p: RowBuilderParams): HTMLElement {
 function buildJsonListRow(p: RowBuilderParams): HTMLElement {
   // A plain (non-object) list is edited as raw JSON.  An unparseable value is
   // skipped on collect so the stored value survives.
-  const jsonVal = JSON.stringify(p.displayVal === "" ? [] : p.displayVal);
+  return buildJsonRow(p, [], "JSON list");
+}
+
+function buildJsonObjectRow(p: RowBuilderParams): HTMLElement {
+  // A free-form object (no sub-form) is edited as raw JSON, like a list.
+  return buildJsonRow(p, {}, "JSON object");
+}
+
+function buildJsonRow(p: RowBuilderParams, emptyVal: unknown, hint: string): HTMLElement {
+  const jsonVal = JSON.stringify(p.displayVal === "" ? emptyVal : p.displayVal);
   p.row.innerHTML =
     p.label +
     `<input type="text" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
     ` data-json="1" value="${escAttr(jsonVal)}" spellcheck="false"${p.disabled}>` +
-    '<span class="rsu-config-hint">JSON list</span>';
+    `<span class="rsu-config-hint">${escHtml(hint)}</span>`;
   return wireRow(p.row, p.ctx);
 }
 

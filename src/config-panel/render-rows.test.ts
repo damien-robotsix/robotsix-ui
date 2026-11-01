@@ -1,4 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
+import { collectConfigValues } from "./collect.js";
 import { buildRow } from "./render-rows.js";
 import type { RenderContext } from "./section-state.js";
 import type { JsonSchemaNode } from "./types.js";
@@ -209,6 +210,70 @@ describe("buildJsonListRow", () => {
   it("disables spellcheck on the JSON input", () => {
     const row = buildRow("tags", "tags", { type: "array" }, [], [], ctx());
     expect(input(row).getAttribute("spellcheck")).toBe("false");
+  });
+});
+
+describe("buildJsonObjectRow", () => {
+  it("serialises the current object value as JSON", () => {
+    const row = buildRow(
+      "overrides",
+      "overrides",
+      { type: "object" },
+      { fast: { model: "m" } },
+      [],
+      ctx(),
+    );
+    expect(input(row).type).toBe("text");
+    expect(input(row).value).toBe('{"fast":{"model":"m"}}');
+    expect(input(row).value).not.toContain("[object Object]");
+    expect(input(row).getAttribute("data-json")).toBe("1");
+    expect(row.querySelector(".rsu-config-hint")?.textContent).toBe("JSON object");
+  });
+
+  it("routes an object value with no explicit type to a JSON object input", () => {
+    const row = buildRow("overrides", "overrides", {}, { a: 1 }, [], ctx());
+    expect(input(row).getAttribute("data-json")).toBe("1");
+    expect(input(row).value).toBe('{"a":1}');
+    expect(row.querySelector(".rsu-config-hint")?.textContent).toBe("JSON object");
+  });
+
+  it("renders an empty object when the display value is the empty string", () => {
+    const row = buildRow("overrides", "overrides", { type: "object" }, undefined, [], ctx());
+    expect(input(row).value).toBe("{}");
+  });
+
+  it("disables spellcheck on the JSON input", () => {
+    const row = buildRow("overrides", "overrides", { type: "object" }, {}, [], ctx());
+    expect(input(row).getAttribute("spellcheck")).toBe("false");
+  });
+
+  it("lets a secret field take precedence over an object value", () => {
+    const row = buildRow(
+      "creds",
+      "creds",
+      { type: "object", format: "password", writeOnly: true },
+      { a: 1 },
+      [],
+      ctx(),
+    );
+    expect(input(row).type).toBe("password");
+    expect(input(row).getAttribute("data-json")).toBeNull();
+  });
+
+  it("round-trips an edited object through collect and skips invalid JSON", () => {
+    const schema: JsonSchemaNode = {
+      type: "object",
+      properties: { overrides: { type: "object" } },
+    };
+    const container = document.createElement("div");
+    container.appendChild(
+      buildRow("overrides", "overrides", { type: "object" }, { a: 1 }, [], ctx()),
+    );
+    expect(collectConfigValues(schema, container)).toEqual({ overrides: { a: 1 } });
+    input(container).value = '{"b":{"c":2}}';
+    expect(collectConfigValues(schema, container)).toEqual({ overrides: { b: { c: 2 } } });
+    input(container).value = "{not json";
+    expect(collectConfigValues(schema, container)).toEqual({});
   });
 });
 
