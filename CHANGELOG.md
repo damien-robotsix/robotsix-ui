@@ -1,5 +1,13 @@
 ## 0.1.49 (unreleased)
 
+## [1.0.1](https://github.com/damien-robotsix/robotsix-ui/compare/v1.0.0...v1.0.1) (2026-11-01)
+
+
+### Bug Fixes
+
+* ConfigPanel: object-typed settings render as "[object Object]" — edit them as JSON like lists (20261101T090409Z-configpanel-object-typed-settings-render-b122) ([#190](https://github.com/damien-robotsix/robotsix-ui/issues/190)) ([f62ec92](https://github.com/damien-robotsix/robotsix-ui/commit/f62ec92324a1a28b61b37d7a439f1f79270ee2a1))
+* ConfigPanel: show field descriptions only in the hover tooltip, drop the inline help text under each setting (20261101T090135Z-configpanel-show-field-descriptions-only-bccc) ([#189](https://github.com/damien-robotsix/robotsix-ui/issues/189)) ([fce9187](https://github.com/damien-robotsix/robotsix-ui/commit/fce9187cadeddf30043f8d6d0b748921191c60c4))
+
 ## [1.0.0](https://github.com/damien-robotsix/robotsix-ui/compare/v0.1.49...v1.0.0) (2026-10-21)
 
 
