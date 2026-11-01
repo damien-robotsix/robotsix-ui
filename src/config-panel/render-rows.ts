@@ -5,7 +5,7 @@
  * testable, wired to the change callback through {@link wireRow}.
  */
 
-import { escAttr, escHtml, renderInlineMarkdown } from "./html.js";
+import { escAttr, escHtml } from "./html.js";
 import { isSecretField, resolveRef } from "./schema.js";
 import { applyFlags, type RenderContext } from "./section-state.js";
 import type { JsonSchemaNode } from "./types.js";
@@ -25,7 +25,6 @@ interface RowBuilderParams {
   row: HTMLElement;
   fullKey: string;
   label: string;
-  help: string;
   disabled: string;
   displayVal: unknown;
   node: JsonSchemaNode;
@@ -61,15 +60,11 @@ export function buildRow(
   const label =
     `<span class="rsu-config-key"${titleAttr}>` +
     `${escHtml(labelKey)}${isRequired ? " *" : ""}</span>`;
-  const help = node.description
-    ? `<span class="rsu-config-help">${renderInlineMarkdown(node.description)}</span>`
-    : "";
 
   const params: RowBuilderParams = {
     row,
     fullKey,
     label,
-    help,
     disabled,
     displayVal,
     node,
@@ -100,8 +95,7 @@ function buildSecretRow(p: RowBuilderParams): HTMLElement {
     ` data-secret="1" value="" placeholder="${escAttr(placeholder)}"` +
     ` autocomplete="off"${p.disabled}>` +
     `<span class="rsu-badge ${alreadySet ? "rsu-badge--success" : "rsu-badge--warning"}">` +
-    `${alreadySet ? "set" : "not set"}</span>` +
-    p.help;
+    `${alreadySet ? "set" : "not set"}</span>`;
   return wireRow(p.row, p.ctx);
 }
 
@@ -113,8 +107,7 @@ function buildJsonListRow(p: RowBuilderParams): HTMLElement {
     p.label +
     `<input type="text" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
     ` data-json="1" value="${escAttr(jsonVal)}" spellcheck="false"${p.disabled}>` +
-    '<span class="rsu-config-hint">JSON list</span>' +
-    p.help;
+    '<span class="rsu-config-hint">JSON list</span>';
   return wireRow(p.row, p.ctx);
 }
 
@@ -130,8 +123,7 @@ function buildSelectRow(p: RowBuilderParams): HTMLElement {
     .join("");
   p.row.innerHTML =
     p.label +
-    `<select class="rsu-config-value" data-key="${escAttr(p.fullKey)}"${p.disabled}>${options}</select>` +
-    p.help;
+    `<select class="rsu-config-value" data-key="${escAttr(p.fullKey)}"${p.disabled}>${options}</select>`;
   return wireRow(p.row, p.ctx);
 }
 
@@ -140,8 +132,7 @@ function buildNumberRow(p: RowBuilderParams): HTMLElement {
   p.row.innerHTML =
     p.label +
     `<input type="number" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
-    ` value="${escAttr(String(p.displayVal))}"${step}${p.disabled}>` +
-    p.help;
+    ` value="${escAttr(String(p.displayVal))}"${step}${p.disabled}>`;
   return wireRow(p.row, p.ctx);
 }
 
@@ -150,8 +141,7 @@ function buildBooleanRow(p: RowBuilderParams): HTMLElement {
   p.row.innerHTML =
     p.label +
     `<input type="checkbox" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
-    `${checked ? " checked" : ""}${p.disabled}>` +
-    p.help;
+    `${checked ? " checked" : ""}${p.disabled}>`;
   return wireRow(p.row, p.ctx);
 }
 
@@ -159,7 +149,6 @@ function buildTextRow(p: RowBuilderParams): HTMLElement {
   p.row.innerHTML =
     p.label +
     `<input type="text" class="rsu-config-value" data-key="${escAttr(p.fullKey)}"` +
-    ` value="${escAttr(String(p.displayVal))}"${p.disabled}>` +
-    p.help;
+    ` value="${escAttr(String(p.displayVal))}"${p.disabled}>`;
   return wireRow(p.row, p.ctx);
 }

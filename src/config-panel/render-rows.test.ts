@@ -81,7 +81,7 @@ describe("buildRow", () => {
     expect(row.querySelector(".rsu-config-key")?.textContent).toBe("name");
   });
 
-  it("renders the description as help text and a tooltip", () => {
+  it("renders the description only as a tooltip, not as inline help", () => {
     const row = buildRow(
       "name",
       "name",
@@ -90,7 +90,7 @@ describe("buildRow", () => {
       [],
       ctx(),
     );
-    expect(row.querySelector(".rsu-config-help")?.textContent).toContain("the display name");
+    expect(row.querySelector(".rsu-config-help")).toBeNull();
     const title = row.querySelector(".rsu-config-key")?.getAttribute("title");
     expect(title).toContain("the display name");
     expect(title).toContain("(name)");
@@ -106,7 +106,7 @@ describe("buildRow", () => {
     expect(row.querySelector(".rsu-config-key")?.getAttribute("title")).toBeNull();
   });
 
-  it("escapes markup in the description help rather than injecting it", () => {
+  it("escapes markup in the description tooltip rather than injecting it", () => {
     const row = buildRow(
       "name",
       "name",
@@ -116,7 +116,10 @@ describe("buildRow", () => {
       ctx(),
     );
     expect(row.querySelector("img")).toBeNull();
-    expect(row.querySelector(".rsu-config-help")?.textContent).toContain("<img onerror=x>");
+    expect(row.querySelector(".rsu-config-help")).toBeNull();
+    expect(row.querySelector(".rsu-config-key")?.getAttribute("title")).toContain(
+      "<img onerror=x>",
+    );
   });
 
   it("resolves a $ref before choosing the row type", () => {

@@ -126,14 +126,9 @@
   overflow-wrap: anywhere;
 }
 
-.rsu-config-help,
 .rsu-config-error {
   grid-column: 2 / -1;
   font-size: var(--rsu-font-size-xs);
-  color: var(--rsu-color-text-secondary);
-}
-
-.rsu-config-error {
   color: var(--rsu-color-error);
 }
 
