@@ -116,7 +116,7 @@ emits:
 | `"type": "array"` of scalars                                 | one JSON-list input                                                                 |
 | `"format": "password", "writeOnly": true`                    | masked input + set/unset badge, never echoed                                        |
 | `"group": "…"`                                               | fold the key into the labelled collapsible group instead of its own section         |
-| `"description"`                                              | inline help (`code`, bold, italic, http links); also the primary hover-tooltip text |
+| `"description"`                                              | shown only as the hover tooltip on the field label; no inline help text is rendered |
 | `$ref` / `$defs`, `anyOf: [X, null]`                         | resolved and unwrapped before rendering                                             |
 
 Secrets follow merge-on-write: the field renders blank, and a blank field is

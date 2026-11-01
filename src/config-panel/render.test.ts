@@ -175,7 +175,10 @@ describe("renderConfigForm", () => {
       {},
     );
     expect(container.querySelector("img")).toBeNull();
-    expect(container.querySelector(".rsu-config-help")?.textContent).toContain("<img onerror=x>");
+    expect(container.querySelector(".rsu-config-help")).toBeNull();
+    expect(container.querySelector(".rsu-config-key")?.getAttribute("title")).toContain(
+      "<img onerror=x>",
+    );
   });
 
   it("shows description in tooltip when present", () => {
@@ -187,6 +190,7 @@ describe("renderConfigForm", () => {
     const title = container.querySelector(".rsu-config-key")?.getAttribute("title");
     expect(title).toContain("help text");
     expect(title).toContain("(a)");
+    expect(container.querySelector(".rsu-config-help")).toBeNull();
   });
 
   it("omits redundant tooltip for a top-level field without a description", () => {
