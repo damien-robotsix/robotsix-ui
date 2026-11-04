@@ -30,6 +30,7 @@ jobs:
     needs: release-please
     if: ${{ needs.release-please.outputs.release_created }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: write # upload assets to the GitHub Release
     steps:
