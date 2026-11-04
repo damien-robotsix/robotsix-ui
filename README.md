@@ -115,7 +115,7 @@ vanilla_js_url("v0.1.34")
   chrome, its options, and the React vs vanilla usage.
 - [Shared dashboard utilities](docs/styles/utilities.md) — page layout, tables, lists,
   and form-layout CSS utilities for building consistent dashboard UIs.
-- [Consuming robotsix-ui Styles](docs/consumption.md) — how to import and customize
+- [Consuming robotsix-ui Styles](docs/styles/index.md) — how to import and customize
   the shared design tokens and base stylesheet in consumer repos.
 
 ## Development

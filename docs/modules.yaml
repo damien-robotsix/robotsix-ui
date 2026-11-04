@@ -32,6 +32,7 @@ modules:
       - tests/styles/components.css.test.ts
       - src/styles/utilities.css
       - src/styles/index.css
+      - docs/styles/index.md
       - docs/styles/utilities.md
 
   - id: config-panel
@@ -98,7 +99,6 @@ modules:
       - README.md
       - SECURITY.md
       - docs/app-shell/index.md
-      - docs/consumption.md
       - docs/config-panel/index.md
       - docs/modules.yaml
 
