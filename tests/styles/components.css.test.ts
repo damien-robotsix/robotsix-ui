@@ -4,7 +4,6 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 const STYLESHEET_PATH = "src/styles/components.css";
-const CONTRACT_TEST_FILE = "src/styles/components.css.test.ts";
 
 /** Storage-key prefix (`rsu-config:section:` in section-state.ts), not a class. */
 const STORAGE_KEY_PREFIX = "rsu-config";
@@ -106,7 +105,7 @@ function tokensOf(files: string[]): RsuTokens {
   return { complete, prefixes };
 }
 
-const allTsFiles = collectTsFiles("src").filter((file) => file !== CONTRACT_TEST_FILE);
+const allTsFiles = collectTsFiles("src");
 const sourceFiles = allTsFiles.filter((file) => !/\.test\.(ts|tsx)$/.test(file));
 const testFiles = allTsFiles.filter((file) => /\.test\.(ts|tsx)$/.test(file));
 
