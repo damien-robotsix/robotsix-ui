@@ -111,7 +111,7 @@ vanilla_js_url("v0.1.34")
 
 - [The shared config panel](docs/config-panel/index.md) — mounting it, the schema
   keywords it reads, and the `x-deploy-plane` ownership annotation.
-- [The shared app shell](docs/app-shell.md) — mounting the top-level navigation
+- [The shared app shell](docs/app-shell/index.md) — mounting the top-level navigation
   chrome, its options, and the React vs vanilla usage.
 - [Shared dashboard utilities](docs/styles/utilities.md) — page layout, tables, lists,
   and form-layout CSS utilities for building consistent dashboard UIs.
