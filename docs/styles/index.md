@@ -187,6 +187,11 @@ assistive-tech affordances that should not appear in the visual layout.
 <a class="sr-only" href="#main-content">Skip to main content</a>
 ```
 
+## Dashboard utilities
+
+For the shared page-layout, table, list, and form-layout utility classes, see
+[Shared dashboard utilities](utilities.md).
+
 ## Repo-specific styling
 
 Everything in `robotsix-ui` is intended to be shared. Repo-specific
