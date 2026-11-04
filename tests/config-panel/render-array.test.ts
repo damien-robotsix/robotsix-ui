@@ -9,9 +9,9 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { buildArraySection } from "./render-array.js";
-import type { RenderContext } from "./section-state.js";
-import type { JsonSchemaNode } from "./types.js";
+import { buildArraySection } from "../../src/config-panel/render-array.js";
+import type { RenderContext } from "../../src/config-panel/section-state.js";
+import type { JsonSchemaNode } from "../../src/config-panel/types.js";
 
 const itemSchema: JsonSchemaNode = {
   type: "object",

@@ -1,6 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
-import { ConfigClient } from "./client.js";
-import { ConfigContractError, ConfigValidationError, parseProblemKey } from "./types.js";
+import { ConfigClient } from "../../src/config-panel/client.js";
+import {
+  ConfigContractError,
+  ConfigValidationError,
+  parseProblemKey,
+} from "../../src/config-panel/types.js";
 
 function jsonResponse(body: unknown, status = 200): Response {
   return {

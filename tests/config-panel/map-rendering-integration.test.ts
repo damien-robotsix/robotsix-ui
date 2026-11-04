@@ -5,9 +5,9 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { collectConfigValues, diffConfigValues } from "./collect.js";
-import { renderConfigForm } from "./render.js";
-import type { ConfigSchema } from "./types.js";
+import { collectConfigValues, diffConfigValues } from "../../src/config-panel/collect.js";
+import { renderConfigForm } from "../../src/config-panel/render.js";
+import type { ConfigSchema } from "../../src/config-panel/types.js";
 
 const schema: ConfigSchema = {
   type: "object",

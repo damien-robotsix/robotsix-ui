@@ -8,9 +8,9 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { buildMapSection } from "./render-map.js";
-import type { RenderContext } from "./section-state.js";
-import type { JsonSchemaNode } from "./types.js";
+import { buildMapSection } from "../../src/config-panel/render-map.js";
+import type { RenderContext } from "../../src/config-panel/section-state.js";
+import type { JsonSchemaNode } from "../../src/config-panel/types.js";
 
 const objectValueSchema: JsonSchemaNode = {
   type: "object",
