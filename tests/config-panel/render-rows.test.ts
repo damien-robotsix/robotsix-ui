@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from "vitest";
-import { collectConfigValues } from "./collect.js";
-import { buildRow } from "./render-rows.js";
-import type { RenderContext } from "./section-state.js";
-import type { JsonSchemaNode } from "./types.js";
+import { collectConfigValues } from "../../src/config-panel/collect.js";
+import { buildRow } from "../../src/config-panel/render-rows.js";
+import type { RenderContext } from "../../src/config-panel/section-state.js";
+import type { JsonSchemaNode } from "../../src/config-panel/types.js";
 
 function ctx(overrides: Partial<RenderContext> = {}): RenderContext {
   return { plane: "component", defs: undefined, ...overrides };

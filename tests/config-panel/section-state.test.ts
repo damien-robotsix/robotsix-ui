@@ -10,7 +10,7 @@
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderConfigForm } from "./render.js";
+import { renderConfigForm } from "../../src/config-panel/render.js";
 import {
   applyFlags,
   applySectionState,
@@ -24,8 +24,8 @@ import {
   sectionTitle,
   setSectionCollapsed,
   type RenderContext,
-} from "./section-state.js";
-import type { ConfigSchema, JsonSchemaNode } from "./types.js";
+} from "../../src/config-panel/section-state.js";
+import type { ConfigSchema, JsonSchemaNode } from "../../src/config-panel/types.js";
 
 const groupedSchema: ConfigSchema = {
   type: "object",

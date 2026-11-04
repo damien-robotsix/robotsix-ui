@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
-import { collectConfigValues, diffConfigValues } from "./collect.js";
-import type { ConfigSchema } from "./types.js";
+import { collectConfigValues, diffConfigValues } from "../../src/config-panel/collect.js";
+import type { ConfigSchema } from "../../src/config-panel/types.js";
 
 let container: HTMLElement;
 
