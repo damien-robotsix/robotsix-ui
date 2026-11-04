@@ -76,7 +76,7 @@ modules:
       - src/app-shell/index.ts
       - src/app-shell/types.ts
       - src/app-shell/appshell.ts
-      - src/app-shell/appshell.test.ts
+      - tests/app-shell/appshell.test.ts
 
   - id: app-shell-react
     description: "React wrapper that mounts the framework-free app shell"
@@ -97,7 +97,7 @@ modules:
       - CHANGELOG.md
       - README.md
       - SECURITY.md
-      - docs/app-shell.md
+      - docs/app-shell/index.md
       - docs/consumption.md
       - docs/config-panel/index.md
       - docs/modules.yaml

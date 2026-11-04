@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { mountAppShell } from "./appshell.js";
+import { mountAppShell } from "../../src/app-shell/appshell.js";
 
 let host: HTMLElement;
 
