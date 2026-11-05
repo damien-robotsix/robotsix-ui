@@ -109,13 +109,13 @@ vanilla_js_url("v0.1.34")
 
 ## Documentation
 
-- [The shared config panel](docs/config-panel.md) — mounting it, the schema
+- [The shared config panel](docs/config-panel/index.md) — mounting it, the schema
   keywords it reads, and the `x-deploy-plane` ownership annotation.
-- [The shared app shell](docs/app-shell.md) — mounting the top-level navigation
+- [The shared app shell](docs/app-shell/index.md) — mounting the top-level navigation
   chrome, its options, and the React vs vanilla usage.
-- [Shared dashboard utilities](docs/utilities.md) — page layout, tables, lists,
+- [Shared dashboard utilities](docs/styles/utilities.md) — page layout, tables, lists,
   and form-layout CSS utilities for building consistent dashboard UIs.
-- [Consuming robotsix-ui Styles](docs/consumption.md) — how to import and customize
+- [Consuming robotsix-ui Styles](docs/styles/index.md) — how to import and customize
   the shared design tokens and base stylesheet in consumer repos.
 
 ## Development

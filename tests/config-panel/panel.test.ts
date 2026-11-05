@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import { ConfigClient } from "./client.js";
-import { mountConfigPanel } from "./panel.js";
-import { ConfigContractError, ConfigValidationError } from "./types.js";
+import { ConfigClient } from "../../src/config-panel/client.js";
+import { mountConfigPanel } from "../../src/config-panel/panel.js";
+import { ConfigContractError, ConfigValidationError } from "../../src/config-panel/types.js";
 
 const schema = {
   type: "object",

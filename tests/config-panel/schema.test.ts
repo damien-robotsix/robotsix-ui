@@ -6,7 +6,7 @@ import {
   isSecretField,
   resolveRef,
   setNestedValue,
-} from "./schema.js";
+} from "../../src/config-panel/schema.js";
 
 describe("resolveRef", () => {
   const defs = {

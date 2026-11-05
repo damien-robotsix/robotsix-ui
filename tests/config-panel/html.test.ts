@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { cssEscape, escAttr, escHtml, renderInlineMarkdown } from "./html.js";
+import { cssEscape, escAttr, escHtml, renderInlineMarkdown } from "../../src/config-panel/html.js";
 
 describe("escHtml", () => {
   it("escapes every character in the ESCAPES table", () => {

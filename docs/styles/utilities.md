@@ -147,4 +147,4 @@ All utilities use the shared design tokens from `tokens.css` (spacing, colors, f
 }
 ```
 
-See [Consuming robotsix-ui Styles](./consumption.md) for token customization details.
+See [Consuming robotsix-ui Styles](index.md) for token customization details.

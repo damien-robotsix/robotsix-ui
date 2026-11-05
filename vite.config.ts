@@ -35,6 +35,8 @@ export default defineConfig({
   plugins: [
     dts({
       include: ["src"],
+      // tsconfig also includes tests/, so pin the declaration root to src/.
+      entryRoot: "src",
       exclude: ["src/**/*.test.ts", "src/**/*.test.tsx", "src/test-setup.ts"],
       // Per-file declarations rather than a single rolled-up bundle: with two
       // library entries each needs its own .d.ts next to its .js.

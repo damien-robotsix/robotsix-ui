@@ -29,10 +29,11 @@ modules:
       - src/styles/tokens.css
       - src/styles/base.css
       - src/styles/components.css
-      - src/styles/components.css.test.ts
+      - tests/styles/components.css.test.ts
       - src/styles/utilities.css
       - src/styles/index.css
-      - docs/utilities.md
+      - docs/styles/index.md
+      - docs/styles/utilities.md
 
   - id: config-panel
     description: >
@@ -44,24 +45,24 @@ modules:
       - src/config-panel/schema.ts
       - src/config-panel/render.ts
       - src/config-panel/section-state.ts
-      - src/config-panel/section-state.test.ts
+      - tests/config-panel/section-state.test.ts
       - src/config-panel/render-rows.ts
-      - src/config-panel/render-rows.test.ts
+      - tests/config-panel/render-rows.test.ts
       - src/config-panel/render-array.ts
-      - src/config-panel/render-array.test.ts
+      - tests/config-panel/render-array.test.ts
       - src/config-panel/render-map.ts
-      - src/config-panel/render-map.test.ts
+      - tests/config-panel/render-map.test.ts
       - src/config-panel/collect.ts
-      - src/config-panel/collect.test.ts
+      - tests/config-panel/collect.test.ts
       - src/config-panel/client.ts
       - src/config-panel/panel.ts
       - src/config-panel/html.ts
-      - src/config-panel/html.test.ts
-      - src/config-panel/schema.test.ts
-      - src/config-panel/render.test.ts
-      - src/config-panel/map-rendering-integration.test.ts
-      - src/config-panel/client.test.ts
-      - src/config-panel/panel.test.ts
+      - tests/config-panel/html.test.ts
+      - tests/config-panel/schema.test.ts
+      - tests/config-panel/render.test.ts
+      - tests/config-panel/map-rendering-integration.test.ts
+      - tests/config-panel/client.test.ts
+      - tests/config-panel/panel.test.ts
 
   - id: config-panel-react
     description: "React wrapper that mounts the framework-free config panel"
@@ -76,7 +77,7 @@ modules:
       - src/app-shell/index.ts
       - src/app-shell/types.ts
       - src/app-shell/appshell.ts
-      - src/app-shell/appshell.test.ts
+      - tests/app-shell/appshell.test.ts
 
   - id: app-shell-react
     description: "React wrapper that mounts the framework-free app shell"
@@ -97,9 +98,8 @@ modules:
       - CHANGELOG.md
       - README.md
       - SECURITY.md
-      - docs/app-shell.md
-      - docs/consumption.md
-      - docs/config-panel.md
+      - docs/app-shell/index.md
+      - docs/config-panel/index.md
       - docs/modules.yaml
 
   - id: python-helper

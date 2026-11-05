@@ -111,8 +111,8 @@ on every PR and push to `main`.
   prefixed with `_`.
 - **Prettier** (`.prettierrc`): semicolons on, double quotes, trailing commas
   everywhere, print width 100, tab width 2.
-- **Testing**: Vitest with `jsdom` environment. Tests co-located with source
-  as `*.test.ts` / `*.test.tsx`. Coverage thresholds enforced in CI.
+- **Testing**: Vitest with `jsdom` environment. Test placement is described in
+  [Testing conventions](#testing-conventions). Coverage thresholds enforced in CI.
 - **CSS**: class names prefixed `rsu-`. Design tokens are CSS custom properties
   (e.g. `--rsu-color-primary`). Themes use `data-theme` attribute and
   `prefers-color-scheme`.
@@ -125,6 +125,12 @@ on every PR and push to `main`.
 lint:css`; `--fix` auto-corrects most standard-config violations.
 - **Module registration**: every source and test file must be listed in
   `docs/modules.yaml` under the appropriate module.
+
+## Testing conventions
+
+- Framework-free core module tests live under `tests/<module-id>/` and mirror
+  `src/<module-id>/`. React wrapper tests stay co-located as `*.test.tsx`
+  inside `src/<module-id>-react/`.
 
 ## Release Workflow
 
