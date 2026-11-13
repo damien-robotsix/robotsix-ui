@@ -18,7 +18,7 @@ dev = [
 packages = ["robotsix_ui"]
 
 [tool.pytest.ini_options]
-testpaths = ["robotsix_ui"]
+testpaths = ["tests/python-helper"]
 python_files = ["test_*.py"]
 
 [tool.ruff]
@@ -28,5 +28,12 @@ target-version = "py39"
 [tool.mypy]
 python_version = "3.9"
 strict = true
-files = ["robotsix_ui"]
-exclude = ['(^|/)test_.*\.py$']
+files = ["robotsix_ui", "tests/python-helper"]
+
+# Tests are type-checked, but without strict's annotation requirements.
+[[tool.mypy.overrides]]
+module = ["test_init", "test_fetch"]
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+disallow_untyped_calls = false
+check_untyped_defs = true

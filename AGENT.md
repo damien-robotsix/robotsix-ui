@@ -131,6 +131,10 @@ lint:css`; `--fix` auto-corrects most standard-config violations.
 - Framework-free core module tests live under `tests/<module-id>/` and mirror
   `src/<module-id>/`. React wrapper tests stay co-located as `*.test.tsx`
   inside `src/<module-id>-react/`.
+- Python helper (`robotsix_ui/`) tests live under `tests/python-helper/`
+  (pytest `testpaths`), never inside the importable package, so they are not
+  shipped in the wheel. They are linted with ruff and type-checked with mypy
+  (non-strict override for test modules) in the CI `python` job.
 
 ## Release Workflow
 

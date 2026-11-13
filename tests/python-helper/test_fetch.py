@@ -1,4 +1,5 @@
 import urllib.error
+from email.message import Message
 
 import pytest
 
@@ -76,7 +77,7 @@ def test_download_retries_on_5xx_then_succeeds(tmp_path, monkeypatch):
     def fake_urlopen(url):
         calls["n"] += 1
         if calls["n"] < 3:
-            raise urllib.error.HTTPError(url, 503, "Service Unavailable", None, None)
+            raise urllib.error.HTTPError(url, 503, "Service Unavailable", Message(), None)
         return _FakeResponse(b"ok")
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
@@ -93,7 +94,7 @@ def test_download_gives_up_after_max_attempts(tmp_path, monkeypatch):
 
     def fake_urlopen(url):
         calls["n"] += 1
-        raise urllib.error.HTTPError(url, 500, "Internal Server Error", None, None)
+        raise urllib.error.HTTPError(url, 500, "Internal Server Error", Message(), None)
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
     monkeypatch.setattr("time.sleep", lambda _seconds: None)
@@ -108,7 +109,7 @@ def test_download_does_not_retry_on_4xx(tmp_path, monkeypatch):
 
     def fake_urlopen(url):
         calls["n"] += 1
-        raise urllib.error.HTTPError(url, 404, "Not Found", None, None)
+        raise urllib.error.HTTPError(url, 404, "Not Found", Message(), None)
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
 
