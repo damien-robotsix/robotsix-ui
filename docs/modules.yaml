@@ -110,5 +110,5 @@ modules:
       - pyproject.toml
       - robotsix_ui/__init__.py
       - robotsix_ui/__main__.py
-      - robotsix_ui/test_init.py
-      - robotsix_ui/test_fetch.py
+      - tests/python-helper/test_init.py
+      - tests/python-helper/test_fetch.py
