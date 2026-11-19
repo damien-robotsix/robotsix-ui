@@ -2,15 +2,18 @@
 
 Every version tag publishes the two files a server-rendered UI needs to
 mount the shared config panel — the compiled stylesheet and the
-framework-free JS bundle — as GitHub Release assets. These helpers build
-their download URLs, and :func:`fetch_assets` downloads both to disk with
-retry/backoff, version-tag validation and an empty-file guard, so Python
-services can fetch them at build or deploy time without needing npm and
-without re-implementing a hardened downloader in every consumer.
+framework-free JS bundle — as GitHub Release assets, along with a
+``SHA256SUMS`` manifest of their digests. These helpers build their
+download URLs, and :func:`fetch_assets` downloads both to disk with
+retry/backoff, version-tag validation, an empty-file guard and SHA-256
+verification against the published manifest, so Python services can
+fetch them at build or deploy time without needing npm and without
+re-implementing a hardened downloader in every consumer.
 """
 
 from __future__ import annotations
 
+import hashlib
 import time
 import urllib.error
 import urllib.request
@@ -68,6 +71,55 @@ _ASSET_BUILDERS = {
     "vanilla.js": vanilla_js_url,
 }
 
+#: Release-asset filename of the SHA-256 checksum manifest published with
+#: each release. Formatted like ``sha256sum`` output.
+_CHECKSUMS_FILENAME = "SHA256SUMS"
+
+
+def _checksums_url(version: str) -> str:
+    """Return the raw GitHub release URL for the ``SHA256SUMS`` manifest."""
+    return f"{_RELEASE_BASE}/{version}/{_CHECKSUMS_FILENAME}"
+
+
+def _sha256_hex(data: bytes) -> str:
+    """Return the lower-case hex SHA-256 digest of ``data``."""
+    return hashlib.sha256(data).hexdigest()
+
+
+def _parse_checksums(manifest: bytes) -> dict[str, str]:
+    """Parse a ``SHA256SUMS`` manifest into ``{filename: hex digest}``.
+
+    Each line follows the standard ``sha256sum`` output format::
+
+        <64-hex-digest>  <filename>
+
+    Blank lines and ``#`` comment lines are ignored. A malformed line, a
+    digest that is not 64 hex characters, or a duplicated filename raises
+    :class:`ValueError`.
+
+    Args:
+        manifest: Raw bytes of the checksum manifest.
+
+    Returns:
+        A mapping of asset filename to its expected lower-case SHA-256 digest.
+
+    Raises:
+        ValueError: If the manifest contains a malformed or duplicate entry.
+    """
+    checksums: dict[str, str] = {}
+    for lineno, raw in enumerate(manifest.decode("utf-8").splitlines(), start=1):
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        parts = line.split(None, 1)
+        if len(parts) != 2 or len(parts[0]) != 64:
+            raise ValueError(f"Malformed SHA256SUMS entry on line {lineno}: {raw!r}")
+        digest, filename = parts
+        if filename in checksums:
+            raise ValueError(f"Duplicate SHA256SUMS entry for {filename!r}")
+        checksums[filename] = digest.lower()
+    return checksums
+
 
 def _download(url: str) -> bytes:
     """Download ``url`` with retry/backoff on 5xx and an empty-file guard.
@@ -110,8 +162,11 @@ def fetch_assets(dest_dir: str | Path, version: str) -> dict[str, Path]:
     Fetches both ``style.css`` and ``vanilla.js`` from the GitHub Release for
     the given tag and writes them into ``dest_dir`` under their published
     names. Each download is hardened: the version tag is validated, transient
-    server (5xx) errors are retried with exponential backoff, and empty
-    responses are rejected.
+    server (5xx) errors are retried with exponential backoff, empty responses
+    are rejected, and every asset's SHA-256 digest is verified against the
+    ``SHA256SUMS`` manifest published with the same release. Verification
+    fails closed — a missing, malformed or mismatching manifest aborts the
+    fetch rather than writing an unverified asset.
 
     Args:
         dest_dir: Directory to write the assets into. Created (with parents)
@@ -122,9 +177,12 @@ def fetch_assets(dest_dir: str | Path, version: str) -> dict[str, Path]:
         A mapping of asset filename to the :class:`~pathlib.Path` written.
 
     Raises:
-        ValueError: If ``version`` is not a ``vMAJOR.MINOR.PATCH`` tag.
+        ValueError: If ``version`` is not a ``vMAJOR.MINOR.PATCH`` tag, or the
+            downloaded ``SHA256SUMS`` manifest is malformed.
         urllib.error.URLError: On a download failure that outlasts retries.
-        RuntimeError: If a downloaded asset is empty.
+        RuntimeError: If a downloaded asset is empty, its SHA-256 digest does
+            not match the published manifest, or no checksum is published for
+            it.
     """
     if not _VERSION_RE.match(version):
         raise ValueError(
@@ -132,9 +190,17 @@ def fetch_assets(dest_dir: str | Path, version: str) -> dict[str, Path]:
         )
     dest = Path(dest_dir)
     dest.mkdir(parents=True, exist_ok=True)
+    expected = _parse_checksums(_download(_checksums_url(version)))
     written: dict[str, Path] = {}
     for filename, url_builder in _ASSET_BUILDERS.items():
+        if filename not in expected:
+            raise RuntimeError(f"No SHA-256 checksum published for {filename!r} in release {version}")
         data = _download(url_builder(version))
+        digest = _sha256_hex(data)
+        if digest != expected[filename]:
+            raise RuntimeError(
+                f"SHA-256 mismatch for {filename!r}: expected {expected[filename]}, got {digest}"
+            )
         target = dest / filename
         target.write_bytes(data)
         written[filename] = target

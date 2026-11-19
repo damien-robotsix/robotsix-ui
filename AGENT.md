@@ -141,8 +141,11 @@ Releases are automated via [release-please](https://github.com/googleapis/releas
    messages and opens (or updates) a release PR that bumps `package.json`
    version and updates `CHANGELOG.md`.
 2. When the release PR is merged, release-please creates a GitHub Release
-   with auto-generated notes. A follow-up job builds the library and uploads
-   `style.css`, `vanilla.js`, and `vanilla.js.map` as release assets.
+   with auto-generated notes. A follow-up job builds the library, computes
+   `SHA256SUMS` (the `sha256sum` manifest of `style.css` and `vanilla.js`),
+   and uploads `style.css`, `vanilla.js`, `vanilla.js.map`, and `SHA256SUMS`
+   as release assets. The Python fetcher verifies each asset against that
+   manifest.
 
 **Commit subjects and PR titles must be conventional**
 (`feat:`/`fix:`/`chore:`/`docs:`/`refactor:`/`test:`/`ci:`) — release-please
