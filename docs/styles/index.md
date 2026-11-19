@@ -88,7 +88,8 @@ The `robotsix_ui` Python package ships a single hardened downloader so
 consumers do not each re-implement retry/validation logic. It fetches both
 `style.css` and `vanilla.js` for a version tag into a destination directory,
 with 5× retry and exponential backoff on server (5xx) errors, version-tag
-validation, and a zero-byte-file guard.
+validation, a zero-byte-file guard, and SHA-256 verification against the
+`SHA256SUMS` manifest published with the same release.
 
 From Python:
 

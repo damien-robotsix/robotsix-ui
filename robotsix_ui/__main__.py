@@ -6,7 +6,8 @@ Usage::
 
 Downloads the ``style.css`` and ``vanilla.js`` release assets for a version
 tag into a destination directory, using the same hardened downloader
-(retry/backoff, version validation, empty-file guard) as
+(retry/backoff, version validation, empty-file guard, SHA-256 verification
+against the published ``SHA256SUMS`` manifest) as
 :func:`robotsix_ui.fetch_assets`.
 """
 

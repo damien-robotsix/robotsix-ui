@@ -1,3 +1,4 @@
+import hashlib
 import urllib.error
 
 import pytest
@@ -23,9 +24,17 @@ class _FakeResponse:
 
 
 def _urlopen_returning(mapping_default):
-    """Build a fake urlopen that returns bytes chosen by URL suffix."""
+    """Build a fake urlopen serving css/js bytes plus a matching SHA256SUMS."""
 
     def fake_urlopen(url):
+        if url.endswith("SHA256SUMS"):
+            css = mapping_default["css"]
+            js = mapping_default["js"]
+            manifest = (
+                f"{hashlib.sha256(css).hexdigest()}  style.css\n"
+                f"{hashlib.sha256(js).hexdigest()}  vanilla.js\n"
+            ).encode()
+            return _FakeResponse(manifest)
         if url.endswith("style.css"):
             return _FakeResponse(mapping_default["css"])
         return _FakeResponse(mapping_default["js"])
@@ -71,21 +80,30 @@ def test_fetch_assets_rejects_empty_body(tmp_path, monkeypatch):
 
 
 def test_download_retries_on_5xx_then_succeeds(tmp_path, monkeypatch):
+    css = b"ok"
+    js = b"js"
+    manifest = (
+        f"{hashlib.sha256(css).hexdigest()}  style.css\n{hashlib.sha256(js).hexdigest()}  vanilla.js\n"
+    ).encode()
     calls = {"n": 0}
 
     def fake_urlopen(url):
         calls["n"] += 1
-        if calls["n"] < 3:
+        if url.endswith("SHA256SUMS"):
+            return _FakeResponse(manifest)
+        if url.endswith("style.css") and calls["n"] < 4:
             raise urllib.error.HTTPError(url, 503, "Service Unavailable", None, None)
-        return _FakeResponse(b"ok")
+        if url.endswith("style.css"):
+            return _FakeResponse(css)
+        return _FakeResponse(js)
 
     monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
     monkeypatch.setattr("time.sleep", lambda _seconds: None)
 
     fetch_assets(tmp_path, "v0.1.48")
-    # 2 failures + 1 success for style.css, then 1 success for vanilla.js.
-    assert calls["n"] == 4
-    assert (tmp_path / "style.css").read_bytes() == b"ok"
+    # SHA256SUMS (1) + style.css (2 failures + 1 success) + vanilla.js (1).
+    assert calls["n"] == 5
+    assert (tmp_path / "style.css").read_bytes() == css
 
 
 def test_download_gives_up_after_max_attempts(tmp_path, monkeypatch):
@@ -115,6 +133,59 @@ def test_download_does_not_retry_on_4xx(tmp_path, monkeypatch):
     with pytest.raises(urllib.error.HTTPError):
         fetch_assets(tmp_path, "v0.1.48")
     assert calls["n"] == 1
+
+
+def test_fetch_assets_rejects_checksum_mismatch(tmp_path, monkeypatch):
+    css = b"css"
+    js = b"js"
+    manifest = (f"{'0' * 64}  style.css\n{hashlib.sha256(js).hexdigest()}  vanilla.js\n").encode()
+
+    def fake_urlopen(url):
+        if url.endswith("SHA256SUMS"):
+            return _FakeResponse(manifest)
+        if url.endswith("style.css"):
+            return _FakeResponse(css)
+        return _FakeResponse(js)
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+
+    with pytest.raises(RuntimeError, match="SHA-256 mismatch for 'style.css'"):
+        fetch_assets(tmp_path, "v0.1.48")
+    # Nothing is written when verification fails.
+    assert not (tmp_path / "style.css").exists()
+    assert not (tmp_path / "vanilla.js").exists()
+
+
+def test_fetch_assets_rejects_missing_checksum_entry(tmp_path, monkeypatch):
+    css = b"css"
+    js = b"js"
+    manifest = f"{hashlib.sha256(js).hexdigest()}  vanilla.js\n".encode()
+
+    def fake_urlopen(url):
+        if url.endswith("SHA256SUMS"):
+            return _FakeResponse(manifest)
+        if url.endswith("style.css"):
+            return _FakeResponse(css)
+        return _FakeResponse(js)
+
+    monkeypatch.setattr("urllib.request.urlopen", fake_urlopen)
+
+    with pytest.raises(RuntimeError, match="No SHA-256 checksum published for 'style.css'"):
+        fetch_assets(tmp_path, "v0.1.48")
+
+
+@pytest.mark.parametrize(
+    "manifest",
+    [
+        b"not-a-hash  style.css\n",
+        b"abc  style.css\n",
+    ],
+)
+def test_fetch_assets_rejects_malformed_manifest(tmp_path, monkeypatch, manifest):
+    monkeypatch.setattr("urllib.request.urlopen", lambda url: _FakeResponse(manifest))
+
+    with pytest.raises(ValueError, match="SHA256SUMS"):
+        fetch_assets(tmp_path, "v0.1.48")
 
 
 def test_cli_fetch_writes_assets(tmp_path, monkeypatch, capsys):
