@@ -72,14 +72,18 @@ field inside object-valued map entries.
 
 Non-JS consumers (Python services, static sites, deployment scripts) can fetch
 the built files directly from GitHub Releases — no npm required. Every version
-tag publishes two:
+tag publishes both the stylesheet and the JS bundle, plus a `SHA256SUMS`
+manifest of their digests:
 
 ```
 https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34/style.css
 https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34/vanilla.js
+https://github.com/damien-robotsix/robotsix-ui/releases/download/v0.1.34/SHA256SUMS
 ```
 
-Replace `v0.1.34` with the desired version tag.
+Replace `v0.1.34` with the desired version tag. If you are not using the
+Python fetcher below, verify downloads against `SHA256SUMS` (the reference
+`sha256sum -c` manifest) — each release's digests are published with it.
 
 `style.css` is a single, self-contained stylesheet with all `--rsu-*` design
 tokens, base reset, and component styles. `vanilla.js` is the framework-free
@@ -96,7 +100,13 @@ styles a panel it has no way to mount.
 </script>
 ```
 
-A minimal Python helper is included for programmatic resolution:
+The bundled Python fetcher `robotsix_ui.fetch_assets` (also exposed as
+`python -m robotsix_ui fetch`) hardens these downloads: it retries server (5xx)
+errors with exponential backoff, validates the version tag, rejects empty
+bodies, and verifies every asset's SHA-256 digest against the `SHA256SUMS`
+manifest published with the same release, failing closed on a missing,
+malformed, or mismatching manifest. A minimal Python helper is included for
+programmatic URL resolution:
 
 ```python
 from robotsix_ui import css_url, vanilla_js_url
